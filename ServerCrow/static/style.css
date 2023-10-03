@@ -1,0 +1,121 @@
+html, body {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width: 90%;
+    height: 100%;
+    background-color: black;
+    overflow: visible;
+    margin-left: auto;
+    margin-right: auto;
+    border: 0px solid green;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    height: 5%;
+    border: 0px solid red
+}
+
+.tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 17px;
+    background-color: white;
+}
+
+.page { 
+    padding: 20px;
+    background-color: white;
+    margin-left: -10px;
+    margin-right: -10px;
+
+}
+
+.display {
+    display: flex;
+    text-align: center;
+    margin-bottom: 10px;
+    width: 100%;
+    color: rgb(0, 0, 0);
+}
+
+.numeroMesa{
+    font-size: 18px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#display {
+    position: relative;
+    background-color: rgb(29, 137, 226);
+    height: 50px;
+    text-align: center;
+    border: 0px solid red;
+    width: 60%;
+    margin-left: 13%;
+    color: white;
+    font-size: 30px;
+}
+
+.button-grid {
+    display: grid;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    
+}
+
+    .grid-item {
+        width: 100%; /* Make the width 100% to fill the grid cell */
+        padding-top: 100%; /* Set padding to create a square aspect ratio (1:1) */
+        position: relative;
+        background-color: #acbbcf; /* Optional: Set a background color for the grid items */
+    }
+
+    .button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 45px;
+        border: 0px solid red;
+        color:rgb(20, 20, 51);
+    }
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancel-button {
+    background-color: red;
+    color: white;
+}
+
+.accept-button {
+    background-color: rgb(8, 141, 8);
+    color: white;
+}
+
+.cancel-button, .accept-button {
+    position: relative;
+    top: 10px;
+    width: 48.5%;
+    font-size: 35px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100px; /* Set the height of the container */
+}
+
