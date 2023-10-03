@@ -1,4 +1,4 @@
-#pragma 
+#pragma once
 #ifndef _PRODUCT_HPP_
 #define _PRODUCT_HPP_
 
