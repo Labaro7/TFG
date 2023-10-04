@@ -1,5 +1,5 @@
+#include "server.h"
 #include "crow_all.h"
-
 #include <sstream>
 
 class ExampleLogHandler : public crow::ILogHandler
@@ -11,22 +11,34 @@ public:
     }
 };
 
-int main()
-{
+int main(){
     crow::SimpleApp app;
+    Server server;
 
     CROW_ROUTE(app, "/")([] {
         auto page = crow::mustache::load_text("index.html");
         return page;
         });
 
-    CROW_ROUTE(app, "/").methods("POST"_method)([](const crow::request& req) {
+    CROW_ROUTE(app, "/").methods("POST"_method)([&server](const crow::request& req) {
         const auto& json_data = crow::json::load(req.body);
         if (!json_data)
             return crow::response(400); // Bad request if unable to parse JSON
 
-        //std::string result = "Received POST data: " + crow::json::dump(json_data);
-        std::cout << "Received: " << json_data << std::endl;
+        std::string result = (std::string)json_data;
+        std::cout << "Received: " << result << std::endl;
+
+        int r = std::stoi(result);
+
+        if (r > 0) {
+            std::shared_ptr<Table> ptr = std::make_shared<Table>(r);
+            server.restaurant->addTable(ptr);
+        }
+        else {
+            server.restaurant->removeTable(1);
+        }
+
+        server.restaurant->printTables();
 
         return crow::response(200);
         });
@@ -86,12 +98,6 @@ int main()
         res.write(os.str());
         res.end();
             });
-
-    // Compile error with message "Handler type is mismatched with URL paramters"
-    //CROW_ROUTE(app,"/another/<int>")
-    //([](int a, int b){
-    //return crow::response(500);
-    //});
 
     // more json example
     CROW_ROUTE(app, "/add_json")
