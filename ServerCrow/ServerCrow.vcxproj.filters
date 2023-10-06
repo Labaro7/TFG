@@ -46,13 +46,22 @@
     <None Include="vcpkg.json">
       <Filter>Archivos de recursos</Filter>
     </None>
-    <None Include="static\script.js">
-      <Filter>Archivos de recursos</Filter>
-    </None>
-    <None Include="static\style.css">
-      <Filter>Archivos de recursos</Filter>
-    </None>
     <None Include="templates\index.html">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="templates\table.html">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="static\index.css">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="static\table.css">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="static\index.js">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="static\table.js">
       <Filter>Archivos de recursos</Filter>
     </None>
   </ItemGroup>

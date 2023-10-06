@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
 <head>
     <title>Number Selector</title>
-    <link rel="stylesheet" type="text/css" href="..\static\style.css">
+    <link rel="stylesheet" type="text/css" href="..\static\index.css">
 </head>
 <body>
     <div class="tabs">
@@ -12,36 +12,39 @@
     </div>
 
     <div id="select-table-page" class="page">
-        <div class="display">
-            <div class="numeroMesa"><b>Nº de mesa</b></div>
-             <input type="text" id="display" readonly>
-        </div>
+        <form action="table" method="get">
+            <div class="display">
+                <div class="numeroMesa"><b>Nº de mesa</b></div>
+                <input type="text" id="display" readonly>
+            </div>
 
-        <div class="button-grid">
-            <div class="grid-item"><div class="button" onclick="appendNumber(7)">7</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(8)">8</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(9)">9</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(4)">4</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(5)">5</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(6)">6</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(1)">1</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(2)">2</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(3)">3</div></div>
-            <div class="grid-item"><div class="button" onclick="appendNumber(0)">0</div></div>
-            <div class="grid-item"><div class="button"></div></div>
-            <div class="grid-item"><div class="button" onclick="clearDisplay()">CE</div></div>
-        </div>
+            <div class="button-grid">
+                <div class="grid-item"><div class="button" onclick="appendNumber(7)">7</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(8)">8</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(9)">9</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(4)">4</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(5)">5</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(6)">6</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(1)">1</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(2)">2</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(3)">3</div></div>
+                <div class="grid-item"><div class="button" onclick="appendNumber(0)">0</div></div>
+                <div class="grid-item"><div class="button"></div></div>
+                <div class="grid-item"><div class="button" onclick="clearDisplay()">CE</div></div>
+            </div>
 
-        <div class="actions">
-            <div class="cancel-button">Cancel</div>
-            <div class="accept-button" onclick="sendNumber()">Accept</div>
-        </div>
+            <div class="actions">
+                <button type="reset" class="cancel-button">Cancel</button>
+                <button type="submit" class="accept-button">Accept</button>
+            </div>
+
+        </form>
     </div>
 
     <div id="current-tables-page" class="page">
         <!-- Content for the "Current Tables" page -->
     </div>
 
-    <script src="..\static\script.js"></script>
+    <script src="..\static\index.js"></script>
 </body>
 </html>

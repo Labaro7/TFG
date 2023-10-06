@@ -71,10 +71,10 @@ html, body {
 }
 
     .grid-item {
-        width: 100%; /* Make the width 100% to fill the grid cell */
-        padding-top: 100%; /* Set padding to create a square aspect ratio (1:1) */
+        width: 100%;
+        padding-top: 100%;
         position: relative;
-        background-color: #acbbcf; /* Optional: Set a background color for the grid items */
+        background-color: #acbbcf;
     }
 
     .button {
@@ -111,11 +111,11 @@ html, body {
     position: relative;
     top: 10px;
     width: 48.5%;
-    font-size: 35px;
+    font-size: 30px;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100px; /* Set the height of the container */
+    height: 100px;
 }
 

@@ -142,9 +142,12 @@
     <ClInclude Include="worker.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="static\script.js" />
-    <None Include="static\style.css" />
+    <None Include="static\index.css" />
+    <None Include="static\index.js" />
+    <None Include="static\table.css" />
+    <None Include="static\table.js" />
     <None Include="templates\index.html" />
+    <None Include="templates\table.html" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

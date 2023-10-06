@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
+<head>
+    <title>Number Selector</title>
+    <link rel="stylesheet" type="text/css" href="..\static\table.css">
+</head>
+<body>
+    <div class="tab">
+        <!-- Buttons to select pages -->
+        <div class="tab-button" onclick="showPage('Box')"><b>Box</b></div>
+        <div class="tab-button" onclick="showPage('Ticket')"><b>Ticket</b></div>
+    </div>
+
+    <div>
+        <!-- Horizontal div for number of clients and table number -->
+        <div class="firstRow">
+            <input class="numClients" type="text" maxlength="3" placeholder="N. of clients">
+            <div class="numTable">Table: 1</div>
+        </div>
+
+        <!-- Horizontal div for last order -->
+        <div class="secondRow">
+            <input type="checkbox">
+            <div>Last Order</div>
+        </div>
+
+        <!-- Buttons for various actions -->
+        <div class="thirdRow">
+            <button>-</button> <!-- Button to eliminate the last line of the order -->
+            <button>N ord.</button> <!-- Button to select the order number -->
+            <button>Save</button> <!-- Button to save with a disk symbol -->
+            <button>Change Table</button> <!-- Button to change the table name -->
+        </div>
+    </div>
+
+    <!-- Buttons for selecting menus -->
+    <div class="fourthRow">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+    </div>
+
+    <div class="sixthRow"
+        <button onclick="goBack()">Go Back</button>
+    </div>
+
+    <script>
+        function showPage(page) {
+            // Add logic to show the selected page
+            console.log('Showing page: ' + page);
+        }
+
+        function goBack() {
+            // Add logic to go back
+            console.log('Going back');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+html, body {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width: 90%;
+    height: 100%;
+    background-color: black;
+    overflow: visible;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid green;
+    color: white;
+    font-size: 17px;
+}
+
+.tab {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    height: 5%;
+    border: 0px solid red
+}
+
+.tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 17px;
+    border: 1px solid red;
+}
+
+    .tab-button::after {
+        content: "";
+        display: block;
+        width: 100%; /* Occupy the full width of the container */
+        height: 10px; /* Adjust height as needed */
+        position: relative;
+        left: 0;
+        background-color: rgb(48, 127, 216); /* Adjust color as needed */
+    }
+
+
+.firstRow, .secondRow, .thirdRow, .fourthRow, .fifthRow, .sixthRow {
+    display: flex;
+}
+
+.firstRow {
+    justify-content: center;
+    justify-content: space-between;
+}
+
+.secondRow {
+}

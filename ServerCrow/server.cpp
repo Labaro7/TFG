@@ -2,6 +2,7 @@
 #include "crow_all.h"
 #include <sstream>
 
+
 class ExampleLogHandler : public crow::ILogHandler
 {
 public:
@@ -20,6 +21,11 @@ int main(){
         return page;
         });
 
+    CROW_ROUTE(app, "/table")([] {
+        auto page = crow::mustache::load_text("table.html");
+        return page;
+        });
+
     CROW_ROUTE(app, "/").methods("POST"_method)([&server](const crow::request& req) {
         const auto& json_data = crow::json::load(req.body);
         if (!json_data)
@@ -28,19 +34,13 @@ int main(){
         std::string result = (std::string)json_data;
         std::cout << "Received: " << result << std::endl;
 
-        int r = std::stoi(result);
+        std::string redirectScript = R"(
+            <script type="text/javascript">
+                window.location.href = 'table.html';
+            </script>
+        )";
 
-        if (r > 0) {
-            std::shared_ptr<Table> ptr = std::make_shared<Table>(r);
-            server.restaurant->addTable(ptr);
-        }
-        else {
-            server.restaurant->removeTable(1);
-        }
-
-        server.restaurant->printTables();
-
-        return crow::response(200);
+        return crow::response(200, redirectScript);
         });
 
     CROW_ROUTE(app, "/about")

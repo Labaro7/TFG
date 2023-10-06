@@ -32,7 +32,7 @@ function clearDisplay() {
 }
 
 // Function to send the number to the server (modify as needed)
-function sendNumber() {
+/*function sendNumber() {
     const display = document.getElementById('display');
     const number = display.value;
 
@@ -59,6 +59,9 @@ function sendNumber() {
         .catch(error => console.error('POST request failed:', error));
 
     clearDisplay();
-}
+
+    window.location.href = 'templates/table.html';
+
+}*/
 
 
