@@ -8,6 +8,10 @@
 #include <cppconn/exception.h>
 #include <cppconn/prepared_statement.h>
 
+// Other includes
+#include "worker.h"
+#include "product.h"
+
 // MySQL constants.
 const std::string SERVER = "tcp://127.0.0.1:3306";
 const std::string USERNAME = "user";
@@ -16,35 +20,52 @@ const std::string DATABASE_NAME = "example_db";
 
 class DataBase {
 public:
-    // Default constructor.
-    DataBase() : stmt(0), pstmt(0) {
-        try
-        {
-            driver = get_driver_instance();
-            con = driver->connect(server, username, password);
-        }
-        catch (sql::SQLException e)
-        {
-            std::cout << "Could not connect to server. Error message: " << e.what() << std::endl;
-            system("pause");
-            exit(1);
-        }
+    DataBase();
+    ~DataBase();
 
-        con->setSchema(dataBaseName);
-    }
-
-    // Destructor.
-    ~DataBase() {
-        delete con;
-        delete stmt;
-        delete pstmt;
-    }
-
-    // Methods.
     sql::Driver* getDriver();
     sql::Connection* getCon();
     sql::Statement* getStmt();
     sql::PreparedStatement* getPstmt();
+
+    // ------------------------------- MySQL methods ------------------------------- //
+    // 
+    // Database
+    void MySqlCreateDatabase(); // CREATE DATABASE
+    void MySqlDropDatabase(); // DROP DATABASE
+    void MySqlUseDatabase(); // USE
+    void MySqlSaveChangesToDataBase(); // COMMIT    
+    //
+    // Table
+    void MySqlCreateTable(); // CREATE TABLE
+    void MySqlDropTable(); // DROP TABLE IF EXISTS
+    void MySqlModifyTable(); // ALTER TABLE
+    void MySqlEmptyTable(); // DELETE FROM
+    //
+    // Row
+    void MySqlInsertRowIntoTable(); // INSERT INTO
+    void MySqlSelectAllFromTable(); // SELECT *
+    void MySqlSelectRowFromTable(); // SELECT
+    void MySqlUpdateRowFromTable(); // UPDATE
+    void MySqlDeleteAllRowsFromTable(); // TRUNCATE TABLE
+    //
+    // ------------------------------- MySQL methods ------------------------------- //
+
+
+    void saveTable(int n_table);
+    void saveWorker(Worker* worker);
+    void saveProduct(Product* product);
+    void saveOrder();
+    void saveAllergen();
+    void saveIngredient();
+
+    void removeTable(int n_table);
+    void removeOrder(Worker* worker);
+    void removeWorker(Product* product);
+    void removeProduct();
+    void removeAllergen();
+    void removeIngredient();
+
 
 private:
 	std::string server = SERVER;
@@ -58,16 +79,4 @@ private:
 	sql::PreparedStatement* pstmt;
 
 }; // class DataBase
-
-
-// Methods implementations.
-// Getters.
-sql::Driver* DataBase::getDriver() { return driver; }
-sql::Connection* DataBase::getCon() { return con; }
-sql::Statement* DataBase::getStmt() { return stmt; }
-sql::PreparedStatement* DataBase::getPstmt() { return pstmt; }
-
-// Setters.
-
-
 #endif

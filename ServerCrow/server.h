@@ -26,6 +26,12 @@ public:
     // Destructor.
     ~Server() { }
 
+    void saveTable(int n_table);
+    void saveWorker(Worker* worker);
+    void saveOrder();
+    void removeTable();
+    void removeOrder();
+
     std::unique_ptr<DataBase> dataBase;
     std::unique_ptr<Restaurant> restaurant;
 

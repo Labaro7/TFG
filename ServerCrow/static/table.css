@@ -9,38 +9,52 @@ html, body {
     border: 1px solid green;
     color: white;
     font-size: 17px;
+    flex-direction: column;
+}
+
+body {
+    height: 97%;
+    flex-direction: column; 
+    align-items: center; 
 }
 
 .tab {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    height: 5%;
-    border: 0px solid red
+    border: 0px solid purple;
 }
 
 .tab-button {
-    padding: 10px 20px;
-    font-size: 16px;
+    position: relative;
+    width: 50%;
+    height: 25px;
     margin: 0 10px;
     cursor: pointer;
+    text-align: center;
     font-size: 17px;
-    border: 1px solid red;
+    border: 0px solid red;
 }
 
     .tab-button::after {
         content: "";
-        display: block;
-        width: 100%; /* Occupy the full width of the container */
-        height: 10px; /* Adjust height as needed */
-        position: relative;
-        left: 0;
-        background-color: rgb(48, 127, 216); /* Adjust color as needed */
+        display: flex;
+        width: 99%;
+        height: 5px;
+        position: absolute;
+        bottom: 0;
+        background-color: rgb(48, 127, 216);
+        border: 0px solid yellow;
     }
 
 
 .firstRow, .secondRow, .thirdRow, .fourthRow, .fifthRow, .sixthRow {
     display: flex;
+    font-size: 30px;
+    margin: 0 10px;
+}
+
+.numClients {
+    width: 50px;
 }
 
 .firstRow {
@@ -49,4 +63,50 @@ html, body {
 }
 
 .secondRow {
+}
+
+.thirdRow {
+    border: 0px solid red;
+}
+
+.thirdRowButton {
+    flex: 1;
+    height: 120px;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    color: black;
+    margin: 0px 5px;
+}
+
+.fourthRow {
+    display: flex;
+    margin-top: 10px;
+    align-content: center;
+    text-align: center;
+    border: 0px solid blue;
+}
+
+.fourthRowButton {
+    flex: 1;
+    background-color: white;
+    color: black;
+    margin: 0px 5px;
+}
+
+.fifthRow {
+    margin-top: 10px;
+    position: relative;
+    height: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content {
+    position: relative;
+    flex: 1;
+    background-color: white;
+    color: black;
 }

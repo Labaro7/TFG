@@ -15,19 +15,19 @@ function showPage(pageId) {
 
 // Function to append a number to the display
 function appendNumber(number) {
-    const display = document.getElementById('display');
+    const display = document.getElementById('tableInput');
     display.value += number;
 }
 
 // Function to append a dot to the display
 function appendDot() {
-    const display = document.getElementById('display');
+    const display = document.getElementById('tableInput');
     display.value += '.';
 }
 
 // Function to clear the display
 function clearDisplay() {
-    const display = document.getElementById('display');
+    const display = document.getElementById('tableInput');
     display.value = '';
 }
 

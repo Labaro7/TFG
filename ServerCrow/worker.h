@@ -6,14 +6,21 @@
 
 class Worker {
 public:
-	Worker() {}
-	~Worker() {}
+	Worker();
+	Worker(std::string name, int rank, std::string start, std::string finish);
+	~Worker();
+
+	std::string getName();
+	int getRank();
+	std::string getStart();
+	std::string getFinish();
+	
 
 private:
 	std::string name;
-	unsigned rank;
-	unsigned start; // Make a Date type?
-	unsigned finish;
+	int rank;
+	std::string start; // Make a Date type?
+	std::string finish;
 };
 
 #endif

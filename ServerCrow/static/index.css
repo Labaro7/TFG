@@ -34,7 +34,7 @@ html, body {
 
 }
 
-.display {
+.tableInput {
     display: flex;
     text-align: center;
     margin-bottom: 10px;
@@ -42,13 +42,13 @@ html, body {
     color: rgb(0, 0, 0);
 }
 
-.numeroMesa{
+.numTable{
     font-size: 18px;
     margin-top: auto;
     margin-bottom: auto;
 }
 
-#display {
+#tableInput {
     position: relative;
     background-color: rgb(29, 137, 226);
     height: 50px;
