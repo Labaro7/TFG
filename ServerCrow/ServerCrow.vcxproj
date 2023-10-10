@@ -130,20 +130,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dataBase.cpp" />
-    <ClCompile Include="server.cpp" />
-    <ClCompile Include="worker.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="crow_all.h" />
-    <ClInclude Include="dataBase.h" />
-    <ClInclude Include="product.h" />
-    <ClInclude Include="restaurant.h" />
-    <ClInclude Include="server.h" />
-    <ClInclude Include="table.h" />
-    <ClInclude Include="worker.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="static\index.css" />
     <None Include="static\index.js" />
     <None Include="static\table.css" />
@@ -151,6 +137,20 @@
     <None Include="templates\index.html" />
     <None Include="templates\table.html" />
     <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="headers\crow_all.h" />
+    <ClInclude Include="headers\dataBase.h" />
+    <ClInclude Include="headers\product.h" />
+    <ClInclude Include="headers\restaurant.h" />
+    <ClInclude Include="headers\server.h" />
+    <ClInclude Include="headers\table.h" />
+    <ClInclude Include="headers\worker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\dataBase.cpp" />
+    <ClCompile Include="src\server.cpp" />
+    <ClCompile Include="src\worker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

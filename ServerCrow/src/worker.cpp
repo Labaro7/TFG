@@ -1,4 +1,4 @@
-#include "worker.h"
+#include "..\headers\worker.h"
 
 Worker::Worker():
 	name(""),

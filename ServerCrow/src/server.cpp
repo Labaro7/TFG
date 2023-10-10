@@ -1,5 +1,5 @@
-#include "server.h"
-#include "crow_all.h"
+#include "..\headers\server.h"
+#include "..\headers\crow_all.h"
 #include <sstream>
 
 
