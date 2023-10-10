@@ -11,6 +11,8 @@
 // Other includes
 #include "worker.h"
 #include "product.h"
+#include "table.h"
+#include <sstream>
 
 // MySQL constants.
 const std::string SERVER = "tcp://127.0.0.1:3306";
@@ -52,8 +54,8 @@ public:
     // ------------------------------- MySQL methods ------------------------------- //
 
 
-    void saveTable(int n_table);
-    void saveWorker(Worker* worker);
+    void saveTable(int n_table); // It works
+    void saveWorker(Worker* worker); // It works
     void saveProduct(Product* product);
     void saveOrder();
     void saveAllergen();
@@ -65,6 +67,11 @@ public:
     void removeProduct();
     void removeAllergen();
     void removeIngredient();
+
+    std::vector<Table> getTables(); // It works
+    Table getTable(int n_table); // It works
+    std::vector<Worker> getWorkers();
+    Worker getWorker(Worker* worker);
 
 
 private:

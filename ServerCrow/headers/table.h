@@ -7,11 +7,12 @@
 
 class Table {
 public:
-	Table() {}
-	Table(unsigned n_table) : n_table(n_table) {}
-	~Table() {}
-
-	unsigned getNumber();
+	Table();
+	Table(int n_table);
+	~Table();
+	
+	int getTableNumber();
+	void setTableNumber(int n);
 
 
 private:
@@ -19,11 +20,8 @@ private:
 	//double totalPrice;
 	//unsigned clients;
 	//double discount;
-	unsigned n_table;
+	int n_table;
 };
 
-unsigned Table::getNumber() {
-	return n_table;
-}
 
 #endif

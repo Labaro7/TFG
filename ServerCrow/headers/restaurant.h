@@ -22,7 +22,7 @@ private:
 };
 
 
-void Restaurant::addTable(std::shared_ptr<Table> table) {
+/*void Restaurant::addTable(std::shared_ptr<Table> table) {
 	tables.push_back(table);
 }
 
@@ -31,9 +31,10 @@ void Restaurant::removeTable(int tableNumber) {
 }
 
 void Restaurant::printTables() {
+	std::vector<Table> tables = 
 	for (auto t : tables) {
-		std::cout << t->getNumber() << " ";
+		std::cout << t->getTableNumber() << " ";
 	}
-}
+}*/
 
 #endif

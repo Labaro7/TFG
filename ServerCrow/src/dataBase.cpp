@@ -26,11 +26,11 @@ DataBase::~DataBase() {
 }
 
 
-
 void DataBase::saveTable(int n_table) {
     pstmt = con->prepareStatement("INSERT INTO tables(n_table) VALUES(?)");
     pstmt->setInt(1, n_table);
     pstmt->execute();
+
     std::cout << "Table " << n_table << " inserted into tables." << std::endl;
 }
 
@@ -47,7 +47,45 @@ void DataBase::saveWorker(Worker* worker) {
     pstmt->setString(3, start);
     pstmt->setString(4, finish);
     pstmt->execute();
+
     std::cout << "Worker " << name << " with rank " << rank << " starting at " << start << " inserted into workers." << std::endl;
+}
+
+void DataBase::saveProduct(Product* product) {
+
+}
+
+std::vector<Table> DataBase::getTables() {
+    std::vector<Table> tables;
+    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables");
+    Table table;
+
+    while (res->next()) {
+        int id = res->getInt("id_tables");
+        int n_table = res->getInt("n_table");
+
+        table.setTableNumber(n_table);
+
+        std::cout << "Id: " << id << ", Table Number: " << n_table << std::endl;
+        tables.push_back(table);
+    } 
+
+    return tables;
+}
+
+Table DataBase::getTable(int n_table) {
+    Table t;
+    std::stringstream query;
+    query << "SELECT * FROM tables WHERE n_table = " << n_table;
+    sql::ResultSet* res = stmt->executeQuery(query.str());
+
+    while (res->next()) {
+        int n = res->getInt("n_table");
+        t.setTableNumber(n);
+    }
+
+    return t;
+
 }
 
 // Getters.

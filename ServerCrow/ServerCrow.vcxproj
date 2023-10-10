@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="src\dataBase.cpp" />
     <ClCompile Include="src\server.cpp" />
+    <ClCompile Include="src\table.cpp" />
     <ClCompile Include="src\worker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

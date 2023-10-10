@@ -28,6 +28,13 @@ int main(){
         server.saveTable(stoi(n_table));
         Worker w("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveWorker(&w);
+        std::vector<Table> tables = server.getTables();
+        std::cout << "TABLES: " << std::endl;
+        for (auto t : tables) {
+            std::cout << t.getTableNumber() << std::endl;
+        }
+
+        std::cout << server.getTable(68).getTableNumber() << std::endl;
         return page;
         });
 
@@ -162,4 +169,12 @@ void Server::saveTable(int n_table) {
 
 void Server::saveWorker(Worker* worker) {
     dataBase->saveWorker(worker);
+}
+
+std::vector<Table> Server::getTables() {
+    return dataBase->getTables();
+}
+
+Table Server::getTable(int n_table) {
+    return dataBase->getTable(n_table);
 }

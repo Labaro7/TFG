@@ -9,6 +9,7 @@
 #include "restaurant.h"
 #include "dataBase.h"
 #include "server.h"
+#include "table.h"
 
 // Other includes
 #include <sstream>
@@ -26,11 +27,14 @@ public:
     // Destructor.
     ~Server() { }
 
-    void saveTable(int n_table);
-    void saveWorker(Worker* worker);
+    void saveTable(int n_table); // It works
+    void saveWorker(Worker* worker); // It works
     void saveOrder();
     void removeTable();
     void removeOrder();
+
+    std::vector<Table> getTables(); // It works
+    Table getTable(int n_table); // It works
 
     std::unique_ptr<DataBase> dataBase;
     std::unique_ptr<Restaurant> restaurant;

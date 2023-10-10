@@ -19,7 +19,7 @@ private:
 	std::string name;
 	int rank;
 	std::string start; // Make a Date type?
-	std::string finish;
+	std::string finish; // Make a Date type?
 };
 
 #endif
