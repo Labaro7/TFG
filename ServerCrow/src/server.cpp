@@ -23,18 +23,20 @@ int main(){
 
     CROW_ROUTE(app, "/table")([&server](const crow::request& req) {
         auto page = crow::mustache::load_text("table.html");
+
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
-        //std::cout << n_table << std::endl;
         server.saveTable(stoi(n_table));
+
         Worker w("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveWorker(&w);
-        std::vector<Table> tables = server.getTables();
-        std::cout << "TABLES: " << std::endl;
-        for (auto t : tables) {
-            std::cout << t.getTableNumber() << std::endl;
-        }
 
-        std::cout << server.getTable(68).getTableNumber() << std::endl;
+        std::vector<Worker> workers = server.getWorkers();
+        std::cout << "WORKERS: " << std::endl;
+        for (auto w : workers) {
+            std::cout << w.getName() << std::endl;
+        }
+        std::cout << server.getWorkerByName("adrian").getName() << std::endl;
+
         return page;
         });
 
@@ -175,6 +177,14 @@ std::vector<Table> Server::getTables() {
     return database->getTables();
 }
 
-Table Server::getTable(int n_table) {
-    return database->getTable(n_table);
+Table Server::getTableByNumber(int n_table) {
+    return database->getTableByNumber(n_table);
+}
+
+std::vector<Worker> Server::getWorkers() {
+    return database->getWorkers();
+}
+
+Worker Server::getWorkerByName(std::string name) {
+    return database->getWorkerByName(name);
 }

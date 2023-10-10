@@ -140,7 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\crow_all.h" />
-    <ClInclude Include="headers\dataBase.h" />
+    <ClInclude Include="headers\database.h" />
     <ClInclude Include="headers\product.h" />
     <ClInclude Include="headers\restaurant.h" />
     <ClInclude Include="headers\server.h" />
@@ -148,7 +148,7 @@
     <ClInclude Include="headers\worker.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\dataBase.cpp" />
+    <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
     <ClCompile Include="src\worker.cpp" />

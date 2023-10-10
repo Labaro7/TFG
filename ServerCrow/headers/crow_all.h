@@ -241,8 +241,6 @@ namespace sha1
 
 #pragma once
 // settings for crow
-// TODO(ipkn) replace with runtime config. libucl?
-
 /* #ifdef - enables debug mode */
 //#define CROW_ENABLE_DEBUG
 
@@ -323,7 +321,6 @@ namespace sha1
 
 
 
-// TODO(EDev): Adding C++20's [[likely]] and [[unlikely]] attributes might be useful
 #if defined(__GNUG__) || defined(__clang__)
 #define CROW_LIKELY(X) __builtin_expect(!!(X), 1)
 #define CROW_UNLIKELY(X) __builtin_expect(!!(X), 0)
@@ -1293,7 +1290,7 @@ int qs_decode(char * qs);
  *  destinaton string and length.  */
 char * qs_scanvalue(const char * key, const char * qs, char * val, size_t val_len);
 
-// TODO: implement sorting of the qs_kv array; for now ensure it's not compiled
+
 #undef _qsSORTING
 
 // isxdigit _is_ available in <ctype.h>, but let's avoid another header instead
@@ -1385,7 +1382,7 @@ inline int qs_parse(char * qs, char * qs_kv[], int qs_kv_size)
     }
 
 #ifdef _qsSORTING
-// TODO: qsort qs_kv, using qs_strncmp() for the comparison
+
 #endif
 
     return i;
@@ -1429,7 +1426,7 @@ inline char * qs_k2v(const char * key, char * const * qs_kv, int qs_kv_size, int
     key_len = strlen(key);
 
 #ifdef _qsSORTING
-// TODO: binary search for key in the sorted qs_kv
+
 #else  // _qsSORTING
     for(i=0; i<qs_kv_size; i++)
     {
@@ -1459,7 +1456,7 @@ inline boost::optional<std::pair<std::string, std::string>> qs_dict_name2kv(cons
     name_len = strlen(dict_name);
 
 #ifdef _qsSORTING
-// TODO: binary search for key in the sorted qs_kv
+
 #else  // _qsSORTING
     for(i=0; i<qs_kv_size; i++)
     {
@@ -3328,7 +3325,6 @@ namespace crow
                             break;
                         }
 
-                        // TODO(ipkn) caching key to speed up (flyweight?)
                         // I have no idea how flyweight could apply here, but maybe some speedup can happen if we stopped checking type since decode_string returns a string anyway
                         auto key = t.s();
 
@@ -6678,7 +6674,7 @@ reexecute:
               if ('c' == c) {
                 h_state = h_matching_transfer_encoding_chunked;
               } else if (CROW_TOKEN(c)) {
-                /* TODO(indutny): similar code below does this, but why?
+                /* 
                  * At the very least it seems to be inconsistent given that
                  * h_matching_transfer_encoding_token does not check for
                  * `STRICT_TOKEN`
@@ -7060,7 +7056,7 @@ reexecute:
       case s_chunk_parameters:
       {
         assert(parser->flags & F_CHUNKED);
-        /* just ignore this shit. TODO check for overflow */
+        /* just ignore this shit. */
         if (ch == cr) {
           parser->state = s_chunk_size_almost_done;
           break;
@@ -8403,7 +8399,6 @@ namespace crow
 
                 std::string delimiter = dd + boundary;
 
-                // TODO(EDev): Exit on error
                 while (body != (crlf))
                 {
                     size_t found = body.find(delimiter);
@@ -10668,7 +10663,6 @@ namespace crow
             }
         }
 
-        // TODO maybe add actual_method
         template<typename Adaptor>
         void handle_upgrade(const request& req, response& res, Adaptor&& adaptor)
         {
@@ -10706,7 +10700,6 @@ namespace crow
                 CROW_LOG_INFO << "Redirecting to a url with trailing slash: " << req.url;
                 res = response(301);
 
-                // TODO(ipkn) absolute url building
                 if (req.get_header_value("Host").empty())
                 {
                     res.add_header("Location", req.url + "/");
@@ -10906,7 +10899,6 @@ namespace crow
                 CROW_LOG_INFO << "Redirecting to a url with trailing slash: " << req.url;
                 res = response(301);
 
-                // TODO(ipkn) absolute url building
                 if (req.get_header_value("Host").empty())
                 {
                     res.add_header("Location", req.url + "/");
@@ -11094,7 +11086,6 @@ namespace crow
         }
 
         bool ignore_ = false;
-        // TODO: support multiple origins that are dynamically selected
         std::string origin_ = "*";
         std::string methods_ = "*";
         std::string headers_ = "*";
@@ -11147,7 +11138,6 @@ namespace crow
     private:
         CORSRules& find_rule(const std::string& path)
         {
-            // TODO: use a trie in case of many rules
             for (auto& rule : rules)
             {
                 // Check if path starts with a rules prefix
@@ -11328,7 +11318,6 @@ namespace crow
                     // h2 or h2c headers
                     if (req.get_header_value("upgrade").substr(0, 2) == "h2")
                     {
-                        // TODO(ipkn): HTTP/2
                         // currently, ignore upgrade header
                     }
                     else
@@ -11461,7 +11450,6 @@ namespace crow
                 //delete this;
                 return;
             }
-            // TODO(EDev): HTTP version in status codes should be dynamic
             // Keep in sync with common.h/status
             static std::unordered_map<int, std::string> statusCodes = {
               {status::CONTINUE, "HTTP/1.1 100 Continue\r\n"},
@@ -12011,7 +11999,6 @@ namespace crow
         {
             uint16_t min_queue_idx = 0;
 
-            // TODO improve load balancing
             for (uint16_t i = 1; i < task_queue_length_pool_.size() && task_queue_length_pool_[min_queue_idx] > 0; i++)
             // No need to check other io_services if the current one has no tasks
             {

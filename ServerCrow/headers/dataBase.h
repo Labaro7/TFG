@@ -20,10 +20,10 @@ const std::string USERNAME = "user";
 const std::string PASSWORD = "user";
 const std::string DATABASE_NAME = "example_db";
 
-class DataBase {
+class Database {
 public:
-    DataBase();
-    ~DataBase();
+    Database();
+    ~Database();
 
     sql::Driver* getDriver();
     sql::Connection* getCon();
@@ -53,26 +53,27 @@ public:
     //
     // ------------------------------- MySQL methods ------------------------------- //
 
-
-    void saveTable(int n_table); // It works
+    // Save
+    void saveTable(int n_table); // It works. //TODO: Change parameter to Table table
     void saveWorker(Worker* worker); // It works
     void saveProduct(Product* product);
     void saveOrder();
     void saveAllergen();
     void saveIngredient();
 
+    // Get
+    std::vector<Table> getTables(); // It works
+    Table getTableByNumber(int n_table); // It works
+    std::vector<Worker> getWorkers(); // It works
+    Worker getWorkerByName(std::string name); // It works
+
+    // Remove
     void removeTable(int n_table);
     void removeOrder(Worker* worker);
     void removeWorker(Product* product);
     void removeProduct();
     void removeAllergen();
     void removeIngredient();
-
-    std::vector<Table> getTables(); // It works
-    Table getTable(int n_table); // It works
-    std::vector<Worker> getWorkers();
-    Worker getWorker(Worker* worker);
-
 
 private:
 	std::string server = SERVER;

@@ -41,7 +41,7 @@
     <ClInclude Include="headers\crow_all.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\dataBase.h">
+    <ClInclude Include="headers\database.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="headers\product.h">
@@ -61,7 +61,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\dataBase.cpp">
+    <ClCompile Include="src\database.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\server.cpp">

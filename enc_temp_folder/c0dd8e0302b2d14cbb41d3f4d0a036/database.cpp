@@ -61,7 +61,7 @@ std::vector<Table> Database::getTables() {
 
         table.setTableNumber(n_table);
 
-        //std::cout << "Id: " << id << ". Table Number: " << n_table << std::endl;
+        std::cout << "Id: " << id << ", Table Number: " << n_table << std::endl;
         tables.push_back(table);
     } 
 
@@ -97,7 +97,7 @@ std::vector<Worker> Database::getWorkers() {
 
         worker.set(name, rank, start, finish);
 
-        //std::cout << "Id: " << id << ". Worker name: " << name << " with rank " << rank << " and start time " << start << std::endl;
+        std::cout << "Id: " << id << ", Worker name: " << name << " with rank " << rank << " and start time " << start << std::endl;
         workers.push_back(worker);
     }
 

@@ -7,7 +7,7 @@
 
 // Custom includes
 #include "restaurant.h"
-#include "dataBase.h"
+#include "database.h"
 #include "server.h"
 #include "table.h"
 
@@ -20,23 +20,30 @@ class Server {
 public:
     // Default constructor.
     Server() {
-        database = std::make_unique<DataBase>();
+        database = std::make_unique<Database>();
         restaurant = std::make_unique<Restaurant>();
     }
 
     // Destructor.
     ~Server() { }
 
+    // Save
     void saveTable(int n_table); // It works
     void saveWorker(Worker* worker); // It works
     void saveOrder();
+
+    // Get
+    std::vector<Table> getTables(); // It works
+    Table getTableByNumber(int n_table); // It works
+    std::vector<Worker> getWorkers(); // It works
+    Worker getWorkerByName(std::string name); // It works
+
+    // Remove
     void removeTable();
     void removeOrder();
 
-    std::vector<Table> getTables(); // It works
-    Table getTable(int n_table); // It works
 
-    std::unique_ptr<DataBase> database;
+    std::unique_ptr<Database> database;
     std::unique_ptr<Restaurant> restaurant;
 
 }; // class Server

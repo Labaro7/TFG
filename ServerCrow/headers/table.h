@@ -13,6 +13,7 @@ public:
 	
 	int getTableNumber();
 	void setTableNumber(int n);
+	// TODO: Method to set all attributes at once like in worker class
 
 
 private:
