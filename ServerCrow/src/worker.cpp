@@ -13,9 +13,7 @@ Worker::Worker(std::string name, int rank, std::string start, std::string finish
 	start(start),
 	finish(finish){}
 
-Worker::~Worker() {
-
-}
+Worker::~Worker() {}
 
 std::string Worker::getName() { return name; }
 int Worker::getRank() { return rank; }

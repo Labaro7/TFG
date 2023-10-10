@@ -40,7 +40,9 @@ void DataBase::saveWorker(Worker* worker) {
     std::string start = worker->getStart();
     std::string finish = worker->getFinish();
 
-    pstmt = con->prepareStatement("INSERT INTO workers(name, `rank`, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
+    std::cout << "a" << std::endl;
+    pstmt = con->prepareStatement("INSERT INTO workers(name, `rank`, start, finish) VALUES(?,?,?,?)"); // Error here
+    std::cout << "b" << std::endl;
 
     pstmt->setString(1, name);
     pstmt->setInt(2, rank);
