@@ -14,6 +14,7 @@ public:
 	int getRank();
 	std::string getStart();
 	std::string getFinish();
+	
 
 private:
 	std::string name;
