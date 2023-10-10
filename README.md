@@ -6,7 +6,7 @@ The repository contains a Microsoft Visual Studio solution of a system to handle
 
 ## Technologies used
 - Crow C++ framework to create the web server.
-- MySQL and Connect/C++ to handle the business database (not done yet)
+- MySQL, MySQL Workbench and Connect/C++ to handle the business database.
 - GoogleTest for the testing (not done yet)
 - SSL for security (not done yet)
 
