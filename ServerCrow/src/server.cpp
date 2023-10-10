@@ -164,17 +164,17 @@ int main(){
 
 
 void Server::saveTable(int n_table) {
-    dataBase->saveTable(n_table);
+    database->saveTable(n_table);
 }
 
 void Server::saveWorker(Worker* worker) {
-    dataBase->saveWorker(worker);
+    database->saveWorker(worker);
 }
 
 std::vector<Table> Server::getTables() {
-    return dataBase->getTables();
+    return database->getTables();
 }
 
 Table Server::getTable(int n_table) {
-    return dataBase->getTable(n_table);
+    return database->getTable(n_table);
 }

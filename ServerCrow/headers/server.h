@@ -20,7 +20,7 @@ class Server {
 public:
     // Default constructor.
     Server() {
-        dataBase = std::make_unique<DataBase>();
+        database = std::make_unique<DataBase>();
         restaurant = std::make_unique<Restaurant>();
     }
 
@@ -36,7 +36,7 @@ public:
     std::vector<Table> getTables(); // It works
     Table getTable(int n_table); // It works
 
-    std::unique_ptr<DataBase> dataBase;
+    std::unique_ptr<DataBase> database;
     std::unique_ptr<Restaurant> restaurant;
 
 }; // class Server
