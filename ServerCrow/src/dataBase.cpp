@@ -80,11 +80,11 @@ void Database::MySqlInsertRowIntoTable(std::string name, std::string values){
     stmt->execute("INSERT INTO " + name + " VALUES (" + values + ")");
 }
 
-void Database::MySqlSelectAllFromTable(std::string name) { // TODO: aa
+void Database::MySqlSelectAllFromTable(std::string name) { // TODO: a
 
 }
 
-void Database::MySqlSelectRowFromTable(std::string name) { // TODO: bb
+void Database::MySqlSelectRowFromTable(std::string name) { // TODO: b
 
 }
 
