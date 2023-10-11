@@ -7,17 +7,20 @@
 
 class Product {
 public:
-	Product() {}
-	~Product() {}
+	Product();
+	~Product();
+
+	std::string getName();
+	double getPrice();
 
 private:
 	std::string name;
 	double price;
-	std::vector<std::string> ingredients;
-	std::vector<std::string> extras;
-	std::vector<std::string> allergens;
-	std::string messageToKitchen;
-	unsigned n_order;
-};
+	//std::vector<std::string> ingredients;
+	//std::vector<std::string> extras;
+	//std::vector<std::string> allergens;
+	//std::string messageToKitchen;
+	//unsigned n_order;
 
+}; // class Product
 #endif

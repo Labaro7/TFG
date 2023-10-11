@@ -25,7 +25,7 @@ int main(){
         auto page = crow::mustache::load_text("table.html");
 
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
-        server.saveTable(stoi(n_table));
+        server.saveTable((new Table(stoi(n_table))));
 
         Worker w("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveWorker(&w);
@@ -165,8 +165,8 @@ int main(){
 }
 
 
-void Server::saveTable(int n_table) {
-    database->saveTable(n_table);
+void Server::saveTable(Table* table) {
+    database->saveTable(table);
 }
 
 void Server::saveWorker(Worker* worker) {

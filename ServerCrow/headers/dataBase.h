@@ -25,36 +25,37 @@ public:
     Database();
     ~Database();
 
+    // Get attributes
     sql::Driver* getDriver();
     sql::Connection* getCon();
     sql::Statement* getStmt();
     sql::PreparedStatement* getPstmt();
 
     // ------------------------------- MySQL methods ------------------------------- //
-    // 
+     
     // Database
-    void MySqlCreateDatabase(); // CREATE DATABASE
-    void MySqlDropDatabase(); // DROP DATABASE
-    void MySqlUseDatabase(); // USE
+    void MySqlCreateDatabase(std::string name); // CREATE DATABASE
+    void MySqlDropDatabase(std::string name); // DROP DATABASE
+    void MySqlUseDatabase(std::string name); // USE
     void MySqlSaveChangesToDataBase(); // COMMIT    
-    //
+    
     // Table
-    void MySqlCreateTable(); // CREATE TABLE
-    void MySqlDropTable(); // DROP TABLE IF EXISTS
-    void MySqlModifyTable(); // ALTER TABLE
-    void MySqlEmptyTable(); // DELETE FROM
-    //
+    void MySqlCreateTable(std::string name, std::string definition); // CREATE TABLE
+    void MySqlDropTable(std::string name); // DROP TABLE IF EXISTS
+    void MySqlModifyTable(std::string name, std::string modifications); // ALTER TABLE
+    void MySqlEmptyTable(std::string name); // DELETE FROM
+    
     // Row
-    void MySqlInsertRowIntoTable(); // INSERT INTO
-    void MySqlSelectAllFromTable(); // SELECT *
-    void MySqlSelectRowFromTable(); // SELECT
-    void MySqlUpdateRowFromTable(); // UPDATE
-    void MySqlDeleteAllRowsFromTable(); // TRUNCATE TABLE
-    //
-    // ------------------------------- MySQL methods ------------------------------- //
+    void MySqlInsertRowIntoTable(std::string name, std::string values); // INSERT INTO
+    void MySqlSelectAllFromTable(std::string name); // SELECT *
+    void MySqlSelectRowFromTable(std::string name); // SELECT
+    void MySqlUpdateRowFromTable(std::string name, std::string updates, std::string condition); // UPDATE
+    void MySqlDeleteAllRowsFromTable(std::string name); // TRUNCATE TABLE
+    
+    // ------------------------------- /MySQL methods ------------------------------- //
 
     // Save
-    void saveTable(int n_table); // It works. //TODO: Change parameter to Table table
+    void saveTable(Table* table);
     void saveWorker(Worker* worker); // It works
     void saveProduct(Product* product);
     void saveOrder();
@@ -66,6 +67,16 @@ public:
     Table getTableByNumber(int n_table); // It works
     std::vector<Worker> getWorkers(); // It works
     Worker getWorkerByName(std::string name); // It works
+
+    // Set
+    void setTable_NTable();
+    void setTable_NClients();
+    void setTable_Bill();
+    void setTable_Discount();
+    void setWorker_Name();
+    void setWorker_Rank();
+    void setWorker_Start();
+    void setWorker_Finish();
 
     // Remove
     void removeTable(int n_table);
@@ -86,5 +97,5 @@ private:
 	sql::Statement* stmt;
 	sql::PreparedStatement* pstmt;
 
-}; // class DataBase
+}; // class Database
 #endif

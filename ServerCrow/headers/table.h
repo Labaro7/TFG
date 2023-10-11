@@ -9,20 +9,27 @@ class Table {
 public:
 	Table();
 	Table(int n_table);
+	Table(int n_table, int n_clients);
 	~Table();
 	
-	int getTableNumber();
-	void setTableNumber(int n);
-	// TODO: Method to set all attributes at once like in worker class
+	// Get
+	int getNTable();
+	int getNClients();
+	double getBill();
+	double getDiscount();
 
+	// Set
+	void setNTable(int n_table);
+	void setNClients(int n_clients);
+	void setBill(double bill);
+	void setDiscount(double discount);
+	void set(Table* table);
 
 private:
-	//std::map<Product, int> products;
-	//double totalPrice;
-	//unsigned clients;
-	//double discount;
 	int n_table;
-};
+	int n_clients;
+	double bill;
+	double discount;
 
-
+}; // class Table
 #endif

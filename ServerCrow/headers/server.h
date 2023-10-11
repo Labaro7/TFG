@@ -28,12 +28,12 @@ public:
     ~Server() { }
 
     // Save
-    void saveTable(int n_table); // It works
+    void saveTable(Table* table); // It works
     void saveWorker(Worker* worker); // It works
     void saveOrder();
 
     // Get
-    std::vector<Table> getTables(); // It works
+    std::vector<Table> getTables(); // It works. //TODO: Change parameter to Table table
     Table getTableByNumber(int n_table); // It works
     std::vector<Worker> getWorkers(); // It works
     Worker getWorkerByName(std::string name); // It works
@@ -47,5 +47,4 @@ public:
     std::unique_ptr<Restaurant> restaurant;
 
 }; // class Server
-
 #endif

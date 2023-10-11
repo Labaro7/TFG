@@ -1,11 +1,36 @@
 #include "..\headers\table.h"
 
-Table::Table() : n_table(0) {}
+Table::Table() : n_table(0), n_clients(0), bill(0.0), discount(0.0) {}
 
-Table::Table(int n_table) : n_table(n_table){}
+Table::Table(int n_table) : n_table(n_table), n_clients(0), bill(0.0), discount(0.0) {}
+
+Table::Table(int n_table, int n_clients) : n_table(n_table), n_clients(n_clients), bill(0.0), discount(0.0) {}
 
 Table::~Table() {}
 
-int Table::getTableNumber() { return n_table; }
 
-void Table::setTableNumber(int n) { n_table = n; }
+// Get 
+int Table::getNTable() { return n_table; }
+
+int Table::getNClients() { return n_clients; }
+
+double Table::getBill() { return bill; }
+
+double Table::getDiscount() { return discount; }
+
+
+// Set
+void Table::setNTable(int n) { this->n_table = n_table; }
+
+void Table::setNClients(int n_clients) { this->n_clients = n_clients; }
+
+void Table::setBill(double bill) { this->bill = bill; }
+
+void Table::setDiscount(double discount) { this->discount = discount; }
+
+void Table::set(Table* table) {
+	setNTable(table->getNTable());
+	setNClients(table->getNClients());
+	setBill(table->getBill());
+	setDiscount(table->getDiscount());
+}
