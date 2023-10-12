@@ -24,6 +24,8 @@ int main(){
     CROW_ROUTE(app, "/table")([&server](const crow::request& req) {
         auto page = crow::mustache::load_text("table.html");
 
+        server.database->initialize();
+
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
         server.saveTable((new Table(stoi(n_table))));
 

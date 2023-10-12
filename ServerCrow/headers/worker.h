@@ -7,25 +7,25 @@
 class Worker {
 public:
 	Worker();
-	Worker(std::string name, int rank, std::string start, std::string finish);
+	Worker(std::string name, int level, std::string start, std::string finish);
 	~Worker();
 
 	// Getters
 	std::string getName();
-	int getRank();
+	int getLevel();
 	std::string getStart();
 	std::string getFinish();
 
 	// Setters
 	void setName(std::string name);
-	void setRank(int rank);
+	void setLevel(int level);
 	void setStart(std::string start);
 	void setFinish(std::string finish);
-	void set(std::string name, int rank, std::string start, std::string finish);
+	void set(std::string name, int level, std::string start, std::string finish);
 
 private:
 	std::string name;
-	int rank;
+	int level;
 	std::string start; // Make a Date type?
 	std::string finish; // Make a Date type?
 	//std::string id;

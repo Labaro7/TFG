@@ -56,6 +56,7 @@ void Database::MySqlSaveChangesToDataBase() {
 void Database::MySqlCreateTable(std::string name, std::string definition) {
     sql::Statement* stmt = con->createStatement();
     stmt->execute("CREATE TABLE " + name + " (" + definition + ")");
+    std::cout << "hey" << std::endl;
 }
 
 void Database::MySqlDropTable(std::string name) {
@@ -73,45 +74,20 @@ void Database::MySqlEmptyTable(std::string name) {
     stmt->execute("DELETE FROM " + name);
 }
 
-
-// Row
-/*void Database::MySqlInsertRowIntoTable(std::string name, std::string values) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("INSERT INTO " + name + " VALUES (" + values + ")");
-}
-
-sql::ResultSet* Database::MySqlSelectAllFromTable(std::string name) {
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables");
-
-    return res;
-}
-
-sql::ResultSet* Database::MySqlSelectRowsFromTableByName(std::string name) { // TODO: b
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables WHERE name = '" + name + "'");
-
-    return res;
-}
-
-sql::ResultSet* MySqlSelectRowsFromTableByNumber(int n) {
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables WHERE name = '" + n + "'");
-
-    return res;
-}
-
-void Database::MySqlUpdateRowFromTable(std::string name, std::string updates, std::string condition) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("UPDATE " + name + " SET " + updates + " WHERE " + condition);
-}
-
-void Database::MySqlDeleteAllRowsFromTable(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("TRUNCATE TABLE " + name);
-}
-*/
-
 // ------------------------------- /MySQL queries ------------------------------- //
 
+
 void Database::initialize() {
+    // TODO: Get tables names and columns from a file that specifies the format wanted
+    MySqlCreateTable("tables", "table_id INT PRIMARY KEY, n_table VARCHAR(45), bill DOUBLE, discount DOUBLE");
+    MySqlCreateTable("worker", "worker_id INT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
+    MySqlCreateTable("products", "product_id INT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("orders", "order_id INT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
+    MySqlCreateTable("ingredients", "ingredient_id INT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("allergens", "allergen_id INT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("restaurants", "restaurant_id INT PRIMARY KEY, name VARCHAR(45)");
+
+    // TODO: Create Junction tables
 
 }
 
@@ -140,24 +116,24 @@ void Database::saveTable(Table* table) {
 
 void Database::saveWorker(Worker* worker) {
     std::string name = worker->getName();
-    int rank = worker->getRank();
+    int level = worker->getLevel();
     std::string start = worker->getStart();
     std::string finish = worker->getFinish();
 
     std::ostringstream oss;
-    oss << name << "," << rank << "," << start << "," << finish;
+    oss << name << "," << level << "," << start << "," << finish;
     std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO workers(name, `rank`, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
+    pstmt = con->prepareStatement("INSERT INTO workers(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
 
     pstmt->setString(1, name);
-    pstmt->setInt(2, rank);
+    pstmt->setInt(2, level);
     pstmt->setString(3, start);
     pstmt->setString(4, finish);
     pstmt->execute();
 
     std::cout << "Worker " << name <<
-        " with rank " << rank <<
+        " with level " << level <<
         " starting at " << start <<
         " inserted into workers." << std::endl;
 }
@@ -283,13 +259,13 @@ std::vector<Worker> Database::getWorkers() {
     while (res->next()) {
         int id = res->getInt("id_workers");
         std::string name = res->getString("name");
-        int rank = res->getInt("rank");
+        int level = res->getInt("level");
         std::string start = res->getString("start");
         std::string finish = res->getString("finish");
 
-        worker.set(name, rank, start, finish);
+        worker.set(name, level, start, finish);
 
-        //std::cout << "Id: " << id << ". Worker name: " << name << " with rank " << rank << " and start time " << start << std::endl;
+        //std::cout << "Id: " << id << ". Worker name: " << name << " with level " << level << " and start time " << start << std::endl;
         workers.push_back(worker);
     }
 
@@ -304,11 +280,11 @@ Worker Database::getWorkerByName(std::string name) {
 
     if (res->next()) {
         std::string name_ = res->getString("name");
-        int rank = res->getInt("rank");
+        int level = res->getInt("level");
         std::string start = res->getString("start");
         std::string finish = res->getString("finish");
 
-        worker.set(name_, rank, start, finish);
+        worker.set(name_, level, start, finish);
     }
 
     return worker;
@@ -331,7 +307,7 @@ void Database::setTable_Discount() {
 void Database::setWorker_Name() {
 }
 
-void Database::setWorker_Rank() {
+void Database::setWorker_Level() {
 }
 
 void Database::setWorker_Start() {

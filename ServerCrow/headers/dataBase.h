@@ -50,8 +50,9 @@ public:
     void MySqlDropTable(std::string name); // DROP TABLE IF EXISTS
     void MySqlModifyTable(std::string name, std::string modifications); // ALTER TABLE
     void MySqlEmptyTable(std::string name); // DELETE FROM
-    
+
     // ------------------------------- /MySQL queries ------------------------------- //
+
 
     void initialize(); // Makes the corresponding database and tables with their corresponding columns.
 
@@ -76,7 +77,7 @@ public:
     void setTable_Bill();
     void setTable_Discount();
     void setWorker_Name();
-    void setWorker_Rank();
+    void setWorker_Level();
     void setWorker_Start();
     void setWorker_Finish();
 
