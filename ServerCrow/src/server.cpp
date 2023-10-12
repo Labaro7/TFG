@@ -37,7 +37,7 @@ int main(){
         for (auto e : employees) {
             std::cout << e.getName() << std::endl;
         }
-        std::cout << server.getEmployeeByName("adrian").getName() << std::endl;
+        //std::cout << server.getEmployeeByName("adrian").getName() << std::endl;
 
         return page;
         });

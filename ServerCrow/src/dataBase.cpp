@@ -79,13 +79,13 @@ void Database::MySqlEmptyTable(std::string name) {
 
 void Database::initialize() {
     // TODO: Get tables names and columns from a file that specifies the format wanted
-    MySqlCreateTable("tables", "table_id INT PRIMARY KEY, n_table VARCHAR(45), bill DOUBLE, discount DOUBLE");
-    MySqlCreateTable("employees", "employee_id INT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
-    MySqlCreateTable("products", "product_id INT PRIMARY KEY, name VARCHAR(45)");
-    MySqlCreateTable("orders", "order_id INT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
-    MySqlCreateTable("ingredients", "ingredient_id INT PRIMARY KEY, name VARCHAR(45)");
-    MySqlCreateTable("allergens", "allergen_id INT PRIMARY KEY, name VARCHAR(45)");
-    MySqlCreateTable("restaurants", "restaurant_id INT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
+    MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
+    MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
+    MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("allergens", "allergen_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("restaurants", "restaurant_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
 
     // TODO: Create Junction tables
 
@@ -102,7 +102,7 @@ void Database::saveTable(Table* table) {
     oss << n_table << "," << n_clients << "," << bill << "," << discount;
     std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO tables(n_table) VALUES(?,?,?,?)");
+    pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
     pstmt->setInt(1, n_table);
     pstmt->setInt(2, n_clients);
     pstmt->setDouble(3, bill);
@@ -216,7 +216,7 @@ std::vector<Table> Database::getTables() {
     while (res->next()) {
         Table table;
 
-        int id = res->getInt("id_tables");
+        int id = res->getInt("table_id");
         int n_table = res->getInt("n_table");
 
         table.setNTable(n_table);
@@ -257,7 +257,7 @@ std::vector<Employee> Database::getEmployees() {
     Employee employee;
 
     while (res->next()) {
-        int id = res->getInt("id_employee");
+        int id = res->getInt("employee_id");
         std::string name = res->getString("name");
         int level = res->getInt("level");
         std::string start = res->getString("start");
