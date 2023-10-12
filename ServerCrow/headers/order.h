@@ -1,5 +1,5 @@
-#ifndef __ORDER_HPP__
-#define __ORDER_HPP__
+#ifndef _ORDER_HPP_
+#define _ORDER_HPP_
 
 #include <string>
 

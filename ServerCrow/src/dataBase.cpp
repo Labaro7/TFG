@@ -80,7 +80,7 @@ void Database::MySqlEmptyTable(std::string name) {
 void Database::initialize() {
     // TODO: Get tables names and columns from a file that specifies the format wanted
     MySqlCreateTable("tables", "table_id INT PRIMARY KEY, n_table VARCHAR(45), bill DOUBLE, discount DOUBLE");
-    MySqlCreateTable("worker", "worker_id INT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
+    MySqlCreateTable("employees", "employee_id INT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
     MySqlCreateTable("products", "product_id INT PRIMARY KEY, name VARCHAR(45)");
     MySqlCreateTable("orders", "order_id INT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
     MySqlCreateTable("ingredients", "ingredient_id INT PRIMARY KEY, name VARCHAR(45)");
@@ -114,17 +114,17 @@ void Database::saveTable(Table* table) {
         " clients inserted into tables." << std::endl;
 }
 
-void Database::saveWorker(Worker* worker) {
-    std::string name = worker->getName();
-    int level = worker->getLevel();
-    std::string start = worker->getStart();
-    std::string finish = worker->getFinish();
+void Database::saveEmployee(Employee* employee) {
+    std::string name = employee->getName();
+    int level = employee->getLevel();
+    std::string start = employee->getStart();
+    std::string finish = employee->getFinish();
 
     std::ostringstream oss;
     oss << name << "," << level << "," << start << "," << finish;
     std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO workers(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
+    pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
 
     pstmt->setString(1, name);
     pstmt->setInt(2, level);
@@ -132,10 +132,10 @@ void Database::saveWorker(Worker* worker) {
     pstmt->setString(4, finish);
     pstmt->execute();
 
-    std::cout << "Worker " << name <<
+    std::cout << "Employee " << name <<
         " with level " << level <<
         " starting at " << start <<
-        " inserted into workers." << std::endl;
+        " inserted into employees." << std::endl;
 }
 
 void Database::saveProduct(Product* product) {
@@ -251,31 +251,31 @@ Table Database::getTableByNumber(int n_table) {
     return table;
 }
 
-std::vector<Worker> Database::getWorkers() {
-    std::vector<Worker> workers;
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM workers"); // TODO: change workers for a varible that corresponds to the table name
-    Worker worker;
+std::vector<Employee> Database::getEmployees() {
+    std::vector<Employee> employees;
+    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
+    Employee employee;
 
     while (res->next()) {
-        int id = res->getInt("id_workers");
+        int id = res->getInt("id_employee");
         std::string name = res->getString("name");
         int level = res->getInt("level");
         std::string start = res->getString("start");
         std::string finish = res->getString("finish");
 
-        worker.set(name, level, start, finish);
+        employee.set(name, level, start, finish);
 
-        //std::cout << "Id: " << id << ". Worker name: " << name << " with level " << level << " and start time " << start << std::endl;
-        workers.push_back(worker);
+        //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
+        employees.push_back(employee);
     }
 
-    return workers;
+    return employees;
 }
 
-Worker Database::getWorkerByName(std::string name) {
-    Worker worker;
+Employee Database::getEmployeeByName(std::string name) {
+    Employee employee;
     std::stringstream query;
-    query << "SELECT * FROM workers WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change workers for a varible that corresponds to the table name
+    query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
     sql::ResultSet* res = stmt->executeQuery(query.str());
 
     if (res->next()) {
@@ -284,10 +284,10 @@ Worker Database::getWorkerByName(std::string name) {
         std::string start = res->getString("start");
         std::string finish = res->getString("finish");
 
-        worker.set(name_, level, start, finish);
+        employee.set(name_, level, start, finish);
     }
 
-    return worker;
+    return employee;
 }
 
 
@@ -304,16 +304,16 @@ void Database::setTable_Bill() {
 void Database::setTable_Discount() {
 }
 
-void Database::setWorker_Name() {
+void Database::setEmployee_Name() {
 }
 
-void Database::setWorker_Level() {
+void Database::setEmployee_Level() {
 }
 
-void Database::setWorker_Start() {
+void Database::setEmployee_Start() {
 }
 
-void Database::setWorker_Finish() {
+void Database::setEmployee_Finish() {
 }
 
 
@@ -323,7 +323,7 @@ void Database::removeTable(Table* table) {
 
 }
 
-void Database::removeWorker(Worker* worker){
+void Database::removeEmployee(Employee* employee){
 }
 
 void Database::removeProduct(Product* product){

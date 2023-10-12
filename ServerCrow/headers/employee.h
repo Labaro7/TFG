@@ -1,14 +1,14 @@
 #pragma once
-#ifndef _WORKER_HPP_
-#define _WORKER_HPP_
+#ifndef _EMPLOYEE_HPP_
+#define _EMPLOYEE_HPP_
 
 #include <string>
 
-class Worker {
+class Employee {
 public:
-	Worker();
-	Worker(std::string name, int level, std::string start, std::string finish);
-	~Worker();
+	Employee();
+	Employee(std::string name, int level, std::string start, std::string finish);
+	~Employee();
 
 	// Getters
 	std::string getName();
@@ -30,5 +30,5 @@ private:
 	std::string finish; // Make a Date type?
 	//std::string id;
 
-}; // class Worker
+}; // class Employee
 #endif

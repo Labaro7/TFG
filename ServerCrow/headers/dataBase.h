@@ -9,7 +9,7 @@
 #include <cppconn/prepared_statement.h>
 
 // Other includes
-#include "worker.h"
+#include "employee.h"
 #include "product.h"
 #include "table.h"
 #include "order.h"
@@ -59,7 +59,7 @@ public:
     // Save
     // TODO: Check if the row is in the table for each save method
     void saveTable(Table* table);
-    void saveWorker(Worker* worker); // It works
+    void saveEmployee(Employee* employee); // It works
     void saveProduct(Product* product);
     void saveOrder(Order* order);
     void saveIngredient(Ingredient* ingredient);
@@ -68,22 +68,22 @@ public:
     // Get
     std::vector<Table> getTables(); // It works
     Table getTableByNumber(int n_table); // It works
-    std::vector<Worker> getWorkers(); // It works
-    Worker getWorkerByName(std::string name); // It works
+    std::vector<Employee> getEmployees(); // It works
+    Employee getEmployeeByName(std::string name); // It works
 
     // Set
     void setTable_NTable();
     void setTable_NClients();
     void setTable_Bill();
     void setTable_Discount();
-    void setWorker_Name();
-    void setWorker_Level();
-    void setWorker_Start();
-    void setWorker_Finish();
+    void setEmployee_Name();
+    void setEmployee_Level();
+    void setEmployee_Start();
+    void setEmployee_Finish();
 
     // Remove
     void removeTable(Table* table);
-    void removeWorker(Worker* worker);
+    void removeEmployee(Employee* employee);
     void removeProduct(Product* product);
     void removeOrder(Order* order);
     void removeIngredient(Ingredient* ingredient);

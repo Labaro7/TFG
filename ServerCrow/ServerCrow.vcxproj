@@ -148,7 +148,7 @@
     <ClInclude Include="headers\restaurant.h" />
     <ClInclude Include="headers\server.h" />
     <ClInclude Include="headers\table.h" />
-    <ClInclude Include="headers\worker.h" />
+    <ClInclude Include="headers\employee.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\allergen.cpp" />
@@ -158,7 +158,7 @@
     <ClCompile Include="src\product.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
-    <ClCompile Include="src\worker.cpp" />
+    <ClCompile Include="src\employee.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -56,7 +56,7 @@
     <ClInclude Include="headers\table.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\worker.h">
+    <ClInclude Include="headers\employee.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="headers\order.h">
@@ -76,7 +76,7 @@
     <ClCompile Include="src\server.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\worker.cpp">
+    <ClCompile Include="src\employee.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\table.cpp">

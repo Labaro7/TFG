@@ -29,15 +29,15 @@ int main(){
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
         server.saveTable((new Table(stoi(n_table))));
 
-        Worker w("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
-        server.saveWorker(&w);
+        Employee e("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
+        server.saveEmployee(&e);
 
-        std::vector<Worker> workers = server.getWorkers();
-        std::cout << "WORKERS: " << std::endl;
-        for (auto w : workers) {
-            std::cout << w.getName() << std::endl;
+        std::vector<Employee> employees = server.getEmployees();
+        std::cout << "EMPLOYEES: " << std::endl;
+        for (auto e : employees) {
+            std::cout << e.getName() << std::endl;
         }
-        std::cout << server.getWorkerByName("adrian").getName() << std::endl;
+        std::cout << server.getEmployeeByName("adrian").getName() << std::endl;
 
         return page;
         });
@@ -171,8 +171,8 @@ void Server::saveTable(Table* table) {
     database->saveTable(table);
 }
 
-void Server::saveWorker(Worker* worker) {
-    database->saveWorker(worker);
+void Server::saveEmployee(Employee* employee) {
+    database->saveEmployee(employee);
 }
 
 std::vector<Table> Server::getTables() {
@@ -183,10 +183,10 @@ Table Server::getTableByNumber(int n_table) {
     return database->getTableByNumber(n_table);
 }
 
-std::vector<Worker> Server::getWorkers() {
-    return database->getWorkers();
+std::vector<Employee> Server::getEmployees() {
+    return database->getEmployees();
 }
 
-Worker Server::getWorkerByName(std::string name) {
-    return database->getWorkerByName(name);
+Employee Server::getEmployeeByName(std::string name) {
+    return database->getEmployeeByName(name);
 }

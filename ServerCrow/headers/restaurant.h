@@ -2,7 +2,7 @@
 #ifndef _RESTAURANT_HPP_
 #define _RESTAURANT_HPP_
 
-#include "worker.h"
+#include "employee.h"
 #include "table.h"
 #include <vector>
 
@@ -16,7 +16,7 @@ public:
 
 
 private:
-	std::vector<Worker> workers;
+	std::vector<Employee> workers;
 	std::vector<std::shared_ptr<Table>> tables;
 	double totalMoney;
 
