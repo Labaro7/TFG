@@ -12,6 +12,9 @@
 #include "worker.h"
 #include "product.h"
 #include "table.h"
+#include "order.h"
+#include "ingredient.h"
+#include "allergen.h"
 #include <sstream>
 
 // MySQL constants.
@@ -25,14 +28,17 @@ public:
     Database();
     ~Database();
 
+
     // Get attributes
     sql::Driver* getDriver();
     sql::Connection* getCon();
     sql::Statement* getStmt();
     sql::PreparedStatement* getPstmt();
 
-    // ------------------------------- MySQL methods ------------------------------- //
-     
+
+    // ------------------------------- MySQL queries ------------------------------- //
+    // These are methods to create, update or remove databases and tables 
+
     // Database
     void MySqlCreateDatabase(std::string name); // CREATE DATABASE
     void MySqlDropDatabase(std::string name); // DROP DATABASE
@@ -45,22 +51,18 @@ public:
     void MySqlModifyTable(std::string name, std::string modifications); // ALTER TABLE
     void MySqlEmptyTable(std::string name); // DELETE FROM
     
-    // Row
-    void MySqlInsertRowIntoTable(std::string name, std::string values); // INSERT INTO
-    void MySqlSelectAllFromTable(std::string name); // SELECT *
-    void MySqlSelectRowFromTable(std::string name); // SELECT
-    void MySqlUpdateRowFromTable(std::string name, std::string updates, std::string condition); // UPDATE
-    void MySqlDeleteAllRowsFromTable(std::string name); // TRUNCATE TABLE
-    
-    // ------------------------------- /MySQL methods ------------------------------- //
+    // ------------------------------- /MySQL queries ------------------------------- //
+
+    void initialize(); // Makes the corresponding database and tables with their corresponding columns.
 
     // Save
+    // TODO: Check if the row is in the table for each save method
     void saveTable(Table* table);
     void saveWorker(Worker* worker); // It works
     void saveProduct(Product* product);
-    void saveOrder();
-    void saveAllergen();
-    void saveIngredient();
+    void saveOrder(Order* order);
+    void saveIngredient(Ingredient* ingredient);
+    void saveAllergen(Allergen* allergen);
 
     // Get
     std::vector<Table> getTables(); // It works
@@ -79,12 +81,12 @@ public:
     void setWorker_Finish();
 
     // Remove
-    void removeTable(int n_table);
-    void removeOrder(Worker* worker);
-    void removeWorker(Product* product);
-    void removeProduct();
-    void removeAllergen();
-    void removeIngredient();
+    void removeTable(Table* table);
+    void removeWorker(Worker* worker);
+    void removeProduct(Product* product);
+    void removeOrder(Order* order);
+    void removeIngredient(Ingredient* ingredient);
+    void removeAllergen(Allergen* allergen);
 
 private:
 	std::string server = SERVER;

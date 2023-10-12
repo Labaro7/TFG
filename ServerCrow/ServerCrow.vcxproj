@@ -139,8 +139,10 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\allergen.h" />
     <ClInclude Include="headers\crow_all.h" />
     <ClInclude Include="headers\database.h" />
+    <ClInclude Include="headers\ingredient.h" />
     <ClInclude Include="headers\order.h" />
     <ClInclude Include="headers\product.h" />
     <ClInclude Include="headers\restaurant.h" />
@@ -149,7 +151,9 @@
     <ClInclude Include="headers\worker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\allergen.cpp" />
     <ClCompile Include="src\database.cpp" />
+    <ClCompile Include="src\ingredient.cpp" />
     <ClCompile Include="src\order.cpp" />
     <ClCompile Include="src\product.cpp" />
     <ClCompile Include="src\server.cpp" />

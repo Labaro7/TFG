@@ -20,6 +20,6 @@ public:
 private:
 	std::string time;
 	std::string message;
-
+	// int n_table
 }; // class Order
 #endif
