@@ -1,6 +1,6 @@
 #include "..\headers\ingredient.h"
 
-Ingredient::Ingredient() : name(0) {}
+Ingredient::Ingredient() : name("") {}
 Ingredient::~Ingredient() {}
 
 std::string Ingredient::getName() { return name; }

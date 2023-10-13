@@ -13,6 +13,9 @@ public:
 	std::string getName();
 	double getPrice();
 
+	void setName(std::string name);
+	void setPrice(double price);
+
 private:
 	std::string name;
 	double price;

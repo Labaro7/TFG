@@ -30,7 +30,10 @@ public:
     // Save
     void saveTable(Table* table); // It works
     void saveEmployee(Employee* employee); // It works
-    void saveOrder();
+    void saveProduct(Product* product); // It works
+    void saveOrder(Order* order); // It works
+    void saveIngredient(Ingredient* ingredient); // It works
+    void saveAllergen(Allergen* allergen); // It works
 
     // Get
     std::vector<Table> getTables(); // It works. //TODO: Change parameter to Table table

@@ -154,6 +154,7 @@
     <ClCompile Include="src\allergen.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\ingredient.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\order.cpp" />
     <ClCompile Include="src\product.cpp" />
     <ClCompile Include="src\server.cpp" />

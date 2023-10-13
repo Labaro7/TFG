@@ -1,6 +1,6 @@
 #include "..\headers\order.h"
 
-Order::Order(): time(0), message(0) {} // TODO: time = currentTime
+Order::Order(): time(""), message("") {} // TODO: time = currentTime
 
 Order::~Order() {}
 

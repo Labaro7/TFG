@@ -60,10 +60,10 @@ public:
     // TODO: Check if the row is in the table for each save method
     void saveTable(Table* table); // It works
     void saveEmployee(Employee* employee); // It works
-    void saveProduct(Product* product);
-    void saveOrder(Order* order);
-    void saveIngredient(Ingredient* ingredient);
-    void saveAllergen(Allergen* allergen);
+    void saveProduct(Product* product); // It works
+    void saveOrder(Order* order); // It works
+    void saveIngredient(Ingredient* ingredient); // It works
+    void saveAllergen(Allergen* allergen); // It works
 
     // Get
     std::vector<Table> getTables(); // It works

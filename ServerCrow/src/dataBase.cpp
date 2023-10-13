@@ -81,7 +81,7 @@ void Database::initialize() {
     // TODO: Get tables names and columns from a file that specifies the format wanted
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
     MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
-    MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
+    MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE");
     MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
     MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
     MySqlCreateTable("allergens", "allergen_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -171,7 +171,7 @@ void Database::saveOrder(Order* order) {
     pstmt->setString(2, message);
     pstmt->execute();
 
-    std::cout << "Order with time" << time <<
+    std::cout << "Order with time " << time <<
         " and message " << message <<
         " inserted into orders." << std::endl;
 }
@@ -184,10 +184,10 @@ void Database::saveIngredient(Ingredient* ingredient) {
     std::string values = oss.str();
 
     pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
-
     pstmt->setString(1, name);
+    pstmt->execute();
 
-    std::cout << "Ingredient with name" << name << 
+    std::cout << "Ingredient with name " << name << 
         " inserted into ingredients." << std::endl;
 }
 
@@ -199,10 +199,10 @@ void Database::saveAllergen(Allergen* allergen) {
     std::string values = oss.str();
 
     pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
-
     pstmt->setString(1, name);
+    pstmt->execute();
 
-    std::cout << "Allergen with name" << name <<
+    std::cout << "Allergen with name " << name <<
         " inserted into allergens." << std::endl;
 }
 

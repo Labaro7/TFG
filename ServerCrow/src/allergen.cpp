@@ -1,6 +1,6 @@
 #include "..\headers\allergen.h"
 
-Allergen::Allergen() : name(0) {}
+Allergen::Allergen() : name("") {}
 Allergen::~Allergen() {}
 
 std::string Allergen::getName() { return name; }
