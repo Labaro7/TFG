@@ -40,14 +40,14 @@ public:
     // These are methods to create, update or remove databases and tables 
 
     // Database
-    void MySqlCreateDatabase(std::string name); // CREATE DATABASE
-    void MySqlDropDatabase(std::string name); // DROP DATABASE
+    void MySqlCreateDatabase(std::string name); // It works CREATE DATABASE
+    void MySqlDropDatabase(std::string name); // It works DROP DATABASE
     void MySqlUseDatabase(std::string name); // USE
     void MySqlSaveChangesToDataBase(); // COMMIT    
     
     // Table
-    void MySqlCreateTable(std::string name, std::string definition); // CREATE TABLE
-    void MySqlDropTable(std::string name); // DROP TABLE IF EXISTS
+    void MySqlCreateTable(std::string name, std::string definition); // It works CREATE TABLE
+    void MySqlDropTable(std::string name); // It works DROP TABLE IF EXISTS
     void MySqlModifyTable(std::string name, std::string modifications); // ALTER TABLE
     void MySqlEmptyTable(std::string name); // DELETE FROM
 

@@ -5,14 +5,12 @@ Database::Database() : stmt(0), pstmt(0) {
         driver = get_driver_instance();
         con = driver->connect(server, username, password);
         stmt = con->createStatement();
+        con->setSchema(dataBaseName);
     }
-    catch (sql::SQLException e){
-        std::cout << "Could not connect to server. Error message: " << e.what() << std::endl;
-        system("pause");
+    catch (sql::SQLException e) {
+        std::cerr << "Could not connect to server. Error message: " << e.what() << std::endl;
         exit(1);
     }
-
-    con->setSchema(dataBaseName);
 }
 
 Database::~Database() {
@@ -32,47 +30,87 @@ sql::PreparedStatement* Database::getPstmt() { return pstmt; }
 
 // Database
 void Database::MySqlCreateDatabase(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("CREATE DATABASE " + name);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("CREATE DATABASE " + name);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not create database. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlDropDatabase(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("DROP DATABASE " + name);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("DROP DATABASE " + name);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not drop database. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlUseDatabase(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("USE " + name);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("USE " + name);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not use database. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlSaveChangesToDataBase() {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("COMMIT");
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("COMMIT");
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save changes to the database. Error message: " << e.what() << std::endl;
+    }
 }
-
 
 // Table
 void Database::MySqlCreateTable(std::string name, std::string definition) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("CREATE TABLE " + name + " (" + definition + ")");
-    std::cout << "hey" << std::endl;
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("CREATE TABLE " + name + " (" + definition + ")");
+        std::cout << "Table created: " << name << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not create table. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlDropTable(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("DROP TABLE IF EXISTS " + name);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("DROP TABLE IF EXISTS " + name);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not drop table. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlModifyTable(std::string name, std::string modification) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("ALTER TABLE " + name + " " + modification);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("ALTER TABLE " + name + " " + modification);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not modify table. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::MySqlEmptyTable(std::string name) {
-    sql::Statement* stmt = con->createStatement();
-    stmt->execute("DELETE FROM " + name);
+    try {
+        sql::Statement* stmt = con->createStatement();
+        stmt->execute("DELETE FROM " + name);
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not empty table. Error message: " << e.what() << std::endl;
+    }
 }
+
 
 // ------------------------------- /MySQL queries ------------------------------- //
 
@@ -93,201 +131,255 @@ void Database::initialize() {
 
 // Save
 void Database::saveTable(Table* table) {
-    int n_table = table->getNTable();
-    int n_clients = table->getNClients();
-    double bill = table->getBill();
-    double discount = table->getDiscount();
+    try {
+        int n_table = table->getNTable();
+        int n_clients = table->getNClients();
+        double bill = table->getBill();
+        double discount = table->getDiscount();
 
-    std::ostringstream oss;
-    oss << n_table << "," << n_clients << "," << bill << "," << discount;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << n_table << "," << n_clients << "," << bill << "," << discount;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
-    pstmt->setInt(1, n_table);
-    pstmt->setInt(2, n_clients);
-    pstmt->setDouble(3, bill);
-    pstmt->setDouble(4, discount);
-    pstmt->execute();
+        pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
+        pstmt->setInt(1, n_table);
+        pstmt->setInt(2, n_clients);
+        pstmt->setDouble(3, bill);
+        pstmt->setDouble(4, discount);
+        pstmt->execute();
 
-    std::cout << "Table " << n_table <<
-        " with " << n_clients <<
-        " clients inserted into tables." << std::endl;
+        std::cout << "Table " << n_table <<
+            " with " << n_clients <<
+            " clients inserted into tables." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save table. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::saveEmployee(Employee* employee) {
-    std::string name = employee->getName();
-    int level = employee->getLevel();
-    std::string start = employee->getStart();
-    std::string finish = employee->getFinish();
+    try {
+        std::string name = employee->getName();
+        int level = employee->getLevel();
+        std::string start = employee->getStart();
+        std::string finish = employee->getFinish();
 
-    std::ostringstream oss;
-    oss << name << "," << level << "," << start << "," << finish;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << name << "," << level << "," << start << "," << finish;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
+        pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
 
-    pstmt->setString(1, name);
-    pstmt->setInt(2, level);
-    pstmt->setString(3, start);
-    pstmt->setString(4, finish);
-    pstmt->execute();
+        pstmt->setString(1, name);
+        pstmt->setInt(2, level);
+        pstmt->setString(3, start);
+        pstmt->setString(4, finish);
+        pstmt->execute();
 
-    std::cout << "Employee " << name <<
-        " with level " << level <<
-        " starting at " << start <<
-        " inserted into employees." << std::endl;
+        std::cout << "Employee " << name <<
+            " with level " << level <<
+            " starting at " << start <<
+            " inserted into employees." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save employee. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::saveProduct(Product* product) {
-    std::string name = product->getName();
-    double price = product->getPrice();
+    try {
+        std::string name = product->getName();
+        double price = product->getPrice();
 
-    std::ostringstream oss;
-    oss << name << "," << name << "," << price;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << name << "," << name << "," << price;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)"); 
+        pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
 
-    pstmt->setString(1, name);
-    pstmt->setDouble(2, price);
-    pstmt->execute();
+        pstmt->setString(1, name);
+        pstmt->setDouble(2, price);
+        pstmt->execute();
 
-    std::cout << "Product " << name <<
-        " with price " << price <<
-        " inserted into products." << std::endl;
+        std::cout << "Product " << name <<
+            " with price " << price <<
+            " inserted into products." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save product. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::saveOrder(Order* order) {
-    std::string time = order->getTime();
-    std::string message = order->getMessage();
+    try {
+        std::string time = order->getTime();
+        std::string message = order->getMessage();
 
-    std::ostringstream oss;
-    oss << time << "," << message;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << time << "," << message;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
+        pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
 
-    pstmt->setString(1, time);
-    pstmt->setString(2, message);
-    pstmt->execute();
+        pstmt->setString(1, time);
+        pstmt->setString(2, message);
+        pstmt->execute();
 
-    std::cout << "Order with time " << time <<
-        " and message " << message <<
-        " inserted into orders." << std::endl;
+        std::cout << "Order with time " << time <<
+            " and message " << message <<
+            " inserted into orders." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save order. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::saveIngredient(Ingredient* ingredient) {
-    std::string name = ingredient->getName();
+    try {
+        std::string name = ingredient->getName();
 
-    std::ostringstream oss;
-    oss << name;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << name;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
-    pstmt->setString(1, name);
-    pstmt->execute();
+        pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
+        pstmt->setString(1, name);
+        pstmt->execute();
 
-    std::cout << "Ingredient with name " << name << 
-        " inserted into ingredients." << std::endl;
+        std::cout << "Ingredient with name " << name <<
+            " inserted into ingredients." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save ingredient. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::saveAllergen(Allergen* allergen) {
-    std::string name = allergen->getName();
+    try {
+        std::string name = allergen->getName();
 
-    std::ostringstream oss;
-    oss << name;
-    std::string values = oss.str();
+        std::ostringstream oss;
+        oss << name;
+        std::string values = oss.str();
 
-    pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
-    pstmt->setString(1, name);
-    pstmt->execute();
+        pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
+        pstmt->setString(1, name);
+        pstmt->execute();
 
-    std::cout << "Allergen with name " << name <<
-        " inserted into allergens." << std::endl;
+        std::cout << "Allergen with name " << name <<
+            " inserted into allergens." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not save allergen. Error message: " << e.what() << std::endl;
+    }
 }
 
 
 //Get
 std::vector<Table> Database::getTables() {
-    std::vector<Table> tables;
+    try {
+        std::vector<Table> tables;
 
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
 
-    while (res->next()) {
-        Table table;
+        while (res->next()) {
+            Table table;
 
-        int id = res->getInt("table_id");
-        int n_table = res->getInt("n_table");
+            int id = res->getInt("table_id");
+            int n_table = res->getInt("n_table");
 
-        table.setNTable(n_table);
+            table.setNTable(n_table);
 
-        //std::cout << "Id: " << id << ". Table Number: " << n_table << std::endl;
-        tables.push_back(table);
-    } 
+            //std::cout << "Id: " << id << ". Table Number: " << n_table << std::endl;
+            tables.push_back(table);
+        }
 
-    return tables;
+        return tables;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get tables. Error message: " << e.what() << std::endl;
+        return std::vector<Table>();  // Return an empty vector on error
+    }
 }
 
 Table Database::getTableByNumber(int n_table) {
-    Table table;
-    std::stringstream query;
+    try {
+        Table table;
+        std::stringstream query;
 
-    query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
-    
-    sql::ResultSet* res = stmt->executeQuery(query.str());
+        query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
 
-    if (res->next()) {
-        int n_table = res->getInt("n_table");
-        int n_clients = res->getInt("n_clients");
-        double bill = res->getDouble("bill");
-        double discount = res->getDouble("discount");
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
-        table.setNTable(n_table);
-        table.setNClients(n_clients);
-        table.setBill(bill);
-        table.setDiscount(discount);
+        if (res->next()) {
+            int n_table = res->getInt("n_table");
+            int n_clients = res->getInt("n_clients");
+            double bill = res->getDouble("bill");
+            double discount = res->getDouble("discount");
+
+            table.setNTable(n_table);
+            table.setNClients(n_clients);
+            table.setBill(bill);
+            table.setDiscount(discount);
+        }
+
+        return table;
     }
-
-    return table;
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get table by number. Error message: " << e.what() << std::endl;
+        return Table();  // Return an empty Table object on error
+    }
 }
 
 std::vector<Employee> Database::getEmployees() {
-    std::vector<Employee> employees;
-    sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
-    Employee employee;
+    try {
+        std::vector<Employee> employees;
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
+        Employee employee;
 
-    while (res->next()) {
-        int id = res->getInt("employee_id");
-        std::string name = res->getString("name");
-        int level = res->getInt("level");
-        std::string start = res->getString("start");
-        std::string finish = res->getString("finish");
+        while (res->next()) {
+            int id = res->getInt("employee_id");
+            std::string name = res->getString("name");
+            int level = res->getInt("level");
+            std::string start = res->getString("start");
+            std::string finish = res->getString("finish");
 
-        employee.set(name, level, start, finish);
+            employee.set(name, level, start, finish);
 
-        //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
-        employees.push_back(employee);
+            //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
+            employees.push_back(employee);
+        }
+
+        return employees;
     }
-
-    return employees;
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get employees. Error message: " << e.what() << std::endl;
+        return std::vector<Employee>();  // Return an empty vector on error
+    }
 }
 
 Employee Database::getEmployeeByName(std::string name) {
-    Employee employee;
-    std::stringstream query;
-    query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
-    sql::ResultSet* res = stmt->executeQuery(query.str());
+    try {
+        Employee employee;
+        std::stringstream query;
+        query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
-    if (res->next()) {
-        std::string name_ = res->getString("name");
-        int level = res->getInt("level");
-        std::string start = res->getString("start");
-        std::string finish = res->getString("finish");
+        if (res->next()) {
+            std::string name_ = res->getString("name");
+            int level = res->getInt("level");
+            std::string start = res->getString("start");
+            std::string finish = res->getString("finish");
 
-        employee.set(name_, level, start, finish);
+            employee.set(name_, level, start, finish);
+        }
+
+        return employee;
     }
-
-    return employee;
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get employee by name. Error message: " << e.what() << std::endl;
+        return Employee();  // Return an empty Employee object on error
+    }
 }
 
 
