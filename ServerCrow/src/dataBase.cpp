@@ -14,7 +14,8 @@ Database::Database() : stmt(0), pstmt(0) {
 }
 
 Database::~Database() {
-    delete con; // They must be deleted when they are not going to be used anymore
+    // These must be deleted when they are not going to be used anymore
+    delete con; 
     delete stmt;
     delete pstmt;
 }
@@ -298,7 +299,7 @@ std::vector<Table> Database::getTables() {
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not get tables. Error message: " << e.what() << std::endl;
-        return std::vector<Table>();  // Return an empty vector on error
+        return std::vector<Table>();
     }
 }
 
@@ -327,7 +328,7 @@ Table Database::getTableByNumber(int n_table) {
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not get table by number. Error message: " << e.what() << std::endl;
-        return Table();  // Return an empty Table object on error
+        return Table();
     }
 }
 
@@ -354,7 +355,7 @@ std::vector<Employee> Database::getEmployees() {
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not get employees. Error message: " << e.what() << std::endl;
-        return std::vector<Employee>();  // Return an empty vector on error
+        return std::vector<Employee>();
     }
 }
 
@@ -378,7 +379,7 @@ Employee Database::getEmployeeByName(std::string name) {
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not get employee by name. Error message: " << e.what() << std::endl;
-        return Employee();  // Return an empty Employee object on error
+        return Employee();
     }
 }
 
@@ -412,20 +413,118 @@ void Database::setEmployee_Finish() {
 
 // Remove
 void Database::removeTable(Table* table) {
+    try {
+        int n_table = table->getNTable();
+        double bill = table->getBill();
+        double discount = table->getDiscount();
 
+        pstmt = con->prepareStatement("DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
+        pstmt->setInt(1, n_table);
+        pstmt->setDouble(2, bill);
+        pstmt->setDouble(3, discount);
+        pstmt->execute();
+
+        std::cout << "Table with n_table " << n_table <<
+            ", bill " << bill <<
+            " and discount " << discount << 
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove table. Error message: " << e.what() << std::endl;
+    }
 }
 
 void Database::removeEmployee(Employee* employee){
+    try {
+        std::string name = employee->getName();
+        int level = employee->getLevel();
+        std::string start = employee->getStart();
+        std::string finish = employee->getFinish();
+
+        pstmt = con->prepareStatement("DELETE FROM employees WHERE name = ? AND level = ? AND start = ? AND finish = ?");
+        pstmt->setString(1, name);
+        pstmt->setInt(2, level);
+        pstmt->setString(3, start);
+        pstmt->setString(4, finish);
+        pstmt->execute();
+
+        std::cout << "Employee with name " << name <<
+            ", level " << level <<
+            ", start " << start <<
+            ", and finish " << finish <<
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove employee. Error message: " << e.what() << std::endl;
+    }
 }
 
-void Database::removeProduct(Product* product){
+void Database::removeProduct(Product* product) {
+    try {
+        std::string name = product->getName();
+        double price = product->getPrice();
+
+        pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ?");
+        pstmt->setString(1, name);
+        pstmt->setDouble(2, price);
+        pstmt->execute();
+
+        std::cout << "Product with name " << name <<
+            " and price " << price <<
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove product. Error message: " << e.what() << std::endl;
+    }
 }
 
-void Database::removeOrder(Order* order){
+void Database::removeOrder(Order* order) {
+    try {
+        std::string time = order->getTime();
+        std::string message = order->getMessage();
+
+        pstmt = con->prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
+        pstmt->setString(1, time);
+        pstmt->setString(2, message);
+        pstmt->execute();
+
+        std::cout << "Order with time " << time <<
+            " and message " << message <<
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove order. Error message: " << e.what() << std::endl;
+    }
 }
 
-void Database::removeIngredient(Ingredient* ingredient){
+void Database::removeIngredient(Ingredient* ingredient) {
+    try {
+        std::string name = ingredient->getName();
+
+        pstmt = con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
+        pstmt->setString(1, name);
+        pstmt->execute();
+
+        std::cout << "Ingredient with name " << name <<
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove ingredient. Error message: " << e.what() << std::endl;
+    }
 }
 
-void Database::removeAllergen(Allergen* allergen){
+void Database::removeAllergen(Allergen* allergen) {
+    try {
+        std::string name = allergen->getName();
+
+        pstmt = con->prepareStatement("DELETE FROM allergens WHERE name = ?");
+        pstmt->setString(1, name);
+        pstmt->execute();
+
+        std::cout << "Allergen with name " << name <<
+            " has been deleted." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not remove allergen. Error message: " << e.what() << std::endl;
+    }
 }

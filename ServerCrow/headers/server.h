@@ -18,14 +18,11 @@
 
 class Server {
 public:
-    // Default constructor.
-    Server() {
-        database = std::make_unique<Database>();
-        restaurant = std::make_unique<Restaurant>();
-    }
+    Server();
+    ~Server();
 
-    // Destructor.
-    ~Server() { }
+    void initialize(); // Initializes the database to the model of the restaurant.
+
 
     // Save
     void saveTable(Table* table); // It works
@@ -36,16 +33,21 @@ public:
     void saveAllergen(Allergen* allergen); // It works
 
     // Get
-    std::vector<Table> getTables(); // It works. //TODO: Change parameter to Table table
-    Table getTableByNumber(int n_table); // It works
+    std::unique_ptr<Database>& getDatabase();
+    std::vector<Table> getTables(); // It works. 
+    Table getTableByNumber(int n_table); // It works //TODO: Change parameter to Table table
     std::vector<Employee> getEmployees(); // It works
     Employee getEmployeeByName(std::string name); // It works
 
     // Remove
-    void removeTable();
-    void removeOrder();
+    void removeTable(Table* table); // It works
+    void removeEmployee(Employee* employee); // It works
+    void removeProduct(Product* product); // It works
+    void removeOrder(Order* order); // It works
+    void removeIngredient(Ingredient* ingredient); // It works
+    void removeAllergen(Allergen* allergen); // It works
 
-
+private:
     std::unique_ptr<Database> database;
     std::unique_ptr<Restaurant> restaurant;
 

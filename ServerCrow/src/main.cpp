@@ -12,13 +12,15 @@ int main() {
     CROW_ROUTE(app, "/table")([&server](const crow::request& req) {
         auto page = crow::mustache::load_text("table.html");
 
-        server.database->initialize();
+        server.initialize();
 
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
         server.saveTable((new Table(stoi(n_table))));
 
-        Employee e("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
-        server.saveEmployee(&e);
+        Employee e1("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
+        Employee e2("pepe", 1, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
+        server.saveEmployee(&e1);
+        server.saveEmployee(&e2);
 
         Product p;
         p.setName("Carrot pie");
@@ -38,12 +40,23 @@ int main() {
         a.setName("Sulfite");
         server.saveAllergen(&a);
 
-        std::vector<Employee> employees = server.getEmployees();
+        {std::vector<Employee> employees = server.getEmployees();
         std::cout << "EMPLOYEES: " << std::endl;
         for (auto e : employees) {
             std::cout << e.getName() << std::endl;
         }
+        }
         //std::cout << server.getEmployeeByName("adrian").getName() << std::endl;
+
+        server.removeEmployee(&e2);
+
+        {std::vector<Employee> employees = server.getEmployees();
+        std::cout << "EMPLOYEES: " << std::endl;
+        for (auto e : employees) {
+            std::cout << e.getName() << std::endl;
+        }
+        }
+
 
         return page;
         });
