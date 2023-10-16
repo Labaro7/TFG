@@ -64,7 +64,6 @@ std::vector<Allergen> Server::getAllergens() const { return _database->getAllerg
 Allergen Server::getAllergenByName(std::string name) const { return _database->getAllergenByName(name); }
 
 
-
 // Print
 void Server::printTables() {
     std::vector<Table> tables = _database->getTables();

@@ -43,6 +43,10 @@ int main() {
         server.printEmployees();
 
         server.removeEmployee(&e2);
+        server.removeProduct(&p);
+        server.removeIngredient(&i);
+        server.removeAllergen(&a);
+        server.removeOrder(&o);
 
         server.printEmployees();
         server.printTables();

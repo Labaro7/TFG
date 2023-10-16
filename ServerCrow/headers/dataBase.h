@@ -57,6 +57,7 @@ public:
 
     void initialize(); // Makes the corresponding database and tables with their corresponding columns.
 
+
     // Save
     // TODO: Check if the row is in the table for each save method
     void saveTable(Table* table); // It works
@@ -66,6 +67,7 @@ public:
     void saveIngredient(Ingredient* ingredient); // It works
     void saveAllergen(Allergen* allergen); // It works
 
+
     // Get
     std::vector<Table> getTables() const; // It works
     Table getTableByNumber(int n_table) const; // It works
@@ -73,17 +75,18 @@ public:
     std::vector<Employee> getEmployees() const; // It works
     Employee getEmployeeByName(std::string name) const; // It works
 
-    std::vector<Product> getProducts() const;
-    Product getProductByName(std::string name) const;
+    std::vector<Product> getProducts() const; // It works
+    Product getProductByName(std::string name) const; // It works
 
-    std::vector<Order> getOrders() const;
-    Product getOrderByTime(std::string time) const;
+    std::vector<Order> getOrders() const; // It works
+    Product getOrderByTime(std::string time) const; // It works
 
-    std::vector<Ingredient> getIngredients() const;
-    Ingredient getIngredientByName(std::string name) const;
+    std::vector<Ingredient> getIngredients() const; // It works
+    Ingredient getIngredientByName(std::string name) const; // It works
 
-    std::vector<Allergen> getAllergens() const;
-    Allergen getAllergenByName(std::string name) const;
+    std::vector<Allergen> getAllergens() const; // It works
+    Allergen getAllergenByName(std::string name) const; // It works
+
 
     // Set
     void setTable_NTable();
@@ -95,13 +98,15 @@ public:
     void setEmployee_Start();
     void setEmployee_Finish();
 
+
     // Remove
     void removeTable(Table* table);
-    void removeEmployee(Employee* employee);
-    void removeProduct(Product* product);
-    void removeOrder(Order* order);
-    void removeIngredient(Ingredient* ingredient);
-    void removeAllergen(Allergen* allergen);
+    void removeEmployee(Employee* employee); // It works
+    void removeProduct(Product* product); // It works
+    void removeOrder(Order* order); // It works
+    void removeIngredient(Ingredient* ingredient); // It works
+    void removeAllergen(Allergen* allergen); // It works
+
 
 private:
 	std::string server = SERVER;

@@ -20,7 +20,7 @@ public:
 
 
     void initialize(); // Initializes the database to the model of the restaurant.
-    std::unique_ptr<Database>& database();
+    std::unique_ptr<Database>& database(); // Returns the database to operate with its methods
 
 
     // Save
@@ -30,6 +30,7 @@ public:
     void saveOrder(Order* order); // It works
     void saveIngredient(Ingredient* ingredient); // It works
     void saveAllergen(Allergen* allergen); // It works
+
 
     // Get
     std::vector<Table> getTables() const; // It works. 
@@ -49,7 +50,7 @@ public:
 
 
     // Print
-    void printTables();
+    void printTables(); // It works
     void printEmployees(); // It works
     void printProducts(); // It works
     void printOrders(); // It works
