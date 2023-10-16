@@ -34,3 +34,9 @@ void Table::set(Table* table) {
 	setBill(table->getBill());
 	setDiscount(table->getDiscount());
 }
+
+
+// Empty
+bool Table::isEmpty() {
+	return n_table == 0 && n_clients == 0 && bill == 0 && discount == 0;
+}

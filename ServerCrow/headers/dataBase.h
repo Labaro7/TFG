@@ -59,7 +59,6 @@ public:
 
 
     // Save
-    // TODO: Check if the row is in the table for each save method
     void saveTable(Table* table); // It works
     void saveEmployee(Employee* employee); // It works
     void saveProduct(Product* product); // It works

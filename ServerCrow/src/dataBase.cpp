@@ -138,20 +138,25 @@ void Database::saveTable(Table* table) {
         double bill = table->getBill();
         double discount = table->getDiscount();
 
-        std::ostringstream oss;
-        oss << n_table << "," << n_clients << "," << bill << "," << discount;
-        std::string values = oss.str();
+        if (!getTableByNumber(n_table).isEmpty()) {
+            std::ostringstream oss;
+            oss << n_table << "," << n_clients << "," << bill << "," << discount;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
-        pstmt->setInt(1, n_table);
-        pstmt->setInt(2, n_clients);
-        pstmt->setDouble(3, bill);
-        pstmt->setDouble(4, discount);
-        pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
+            pstmt->setInt(1, n_table);
+            pstmt->setInt(2, n_clients);
+            pstmt->setDouble(3, bill);
+            pstmt->setDouble(4, discount);
+            pstmt->execute();
 
-        std::cout << "Table " << n_table <<
-            " with " << n_clients <<
-            " clients inserted into tables." << std::endl;
+            std::cout << "Table " << n_table <<
+                " with " << n_clients <<
+                " clients inserted into tables." << std::endl;
+        }
+        else {
+            std::cout << "Table is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save table. Error message: " << e.what() << std::endl;
@@ -165,22 +170,26 @@ void Database::saveEmployee(Employee* employee) {
         std::string start = employee->getStart();
         std::string finish = employee->getFinish();
 
-        std::ostringstream oss;
-        oss << name << "," << level << "," << start << "," << finish;
-        std::string values = oss.str();
+        if (!getEmployeeByName(name).isEmpty()) {
+            std::ostringstream oss;
+            oss << name << "," << level << "," << start << "," << finish;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)"); // Error corrected: The word "rank" is reserved in MySQL, it has to be between ``.
+            pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)");
+            pstmt->setString(1, name);
+            pstmt->setInt(2, level);
+            pstmt->setString(3, start);
+            pstmt->setString(4, finish);
+            pstmt->execute();
 
-        pstmt->setString(1, name);
-        pstmt->setInt(2, level);
-        pstmt->setString(3, start);
-        pstmt->setString(4, finish);
-        pstmt->execute();
-
-        std::cout << "Employee " << name <<
-            " with level " << level <<
-            " starting at " << start <<
-            " inserted into employees." << std::endl;
+            std::cout << "Employee " << name <<
+                " with level " << level <<
+                " starting at " << start <<
+                " inserted into employees." << std::endl;
+        }
+        else {
+            std::cout << "Employee is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save employee. Error message: " << e.what() << std::endl;
@@ -192,19 +201,24 @@ void Database::saveProduct(Product* product) {
         std::string name = product->getName();
         double price = product->getPrice();
 
-        std::ostringstream oss;
-        oss << name << "," << name << "," << price;
-        std::string values = oss.str();
+        if (!getProductByName(name).isEmpty()) {
+            std::ostringstream oss;
+            oss << name << "," << name << "," << price;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
+            pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
 
-        pstmt->setString(1, name);
-        pstmt->setDouble(2, price);
-        pstmt->execute();
+            pstmt->setString(1, name);
+            pstmt->setDouble(2, price);
+            pstmt->execute();
 
-        std::cout << "Product " << name <<
-            " with price " << price <<
-            " inserted into products." << std::endl;
+            std::cout << "Product " << name <<
+                " with price " << price <<
+                " inserted into products." << std::endl;
+        }
+        else {
+            std::cout << "Product is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save product. Error message: " << e.what() << std::endl;
@@ -216,19 +230,24 @@ void Database::saveOrder(Order* order) {
         std::string time = order->getTime();
         std::string message = order->getMessage();
 
-        std::ostringstream oss;
-        oss << time << "," << message;
-        std::string values = oss.str();
+        if (!getOrderByTime(time).isEmpty()) {
+            std::ostringstream oss;
+            oss << time << "," << message;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
+            pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
 
-        pstmt->setString(1, time);
-        pstmt->setString(2, message);
-        pstmt->execute();
+            pstmt->setString(1, time);
+            pstmt->setString(2, message);
+            pstmt->execute();
 
-        std::cout << "Order with time " << time <<
-            " and message " << message <<
-            " inserted into orders." << std::endl;
+            std::cout << "Order with time " << time <<
+                " and message " << message <<
+                " inserted into orders." << std::endl;
+        }
+        else {
+            std::cout << "Order is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save order. Error message: " << e.what() << std::endl;
@@ -239,16 +258,21 @@ void Database::saveIngredient(Ingredient* ingredient) {
     try {
         std::string name = ingredient->getName();
 
-        std::ostringstream oss;
-        oss << name;
-        std::string values = oss.str();
+        if (!getIngredientByName(name).isEmpty()) {
+            std::ostringstream oss;
+            oss << name;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
-        pstmt->setString(1, name);
-        pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
+            pstmt->setString(1, name);
+            pstmt->execute();
 
-        std::cout << "Ingredient with name " << name <<
-            " inserted into ingredients." << std::endl;
+            std::cout << "Ingredient with name " << name <<
+                " inserted into ingredients." << std::endl;
+        }
+        else {
+            std::cout << "Ingredient is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save ingredient. Error message: " << e.what() << std::endl;
@@ -259,16 +283,21 @@ void Database::saveAllergen(Allergen* allergen) {
     try {
         std::string name = allergen->getName();
 
-        std::ostringstream oss;
-        oss << name;
-        std::string values = oss.str();
+        if (!getAllergenByName(name).isEmpty()) {
+            std::ostringstream oss;
+            oss << name;
+            std::string values = oss.str();
 
-        pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
-        pstmt->setString(1, name);
-        pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
+            pstmt->setString(1, name);
+            pstmt->execute();
 
-        std::cout << "Allergen with name " << name <<
-            " inserted into allergens." << std::endl;
+            std::cout << "Allergen with name " << name <<
+                " inserted into allergens." << std::endl;
+        }
+        else {
+            std::cout << "Allergen is already in the database." << std::endl;
+        }
     }
     catch (sql::SQLException& e) {
         std::cerr << "Could not save allergen. Error message: " << e.what() << std::endl;

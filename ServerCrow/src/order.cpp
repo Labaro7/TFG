@@ -15,3 +15,7 @@ std::string Order::getMessage() const { return message; }
 void Order::setTime(std::string time) { this->time = time; }
 
 void Order::setMessage(std::string message) { this->message = message; }
+
+
+// Empty
+bool Order::isEmpty() { return time == "" && message == ""; }

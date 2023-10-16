@@ -8,14 +8,20 @@ public:
 	Allergen();
 	~Allergen();
 
+
+	// Get
 	std::string getName() const;
 
+
+	// Set
 	void setName(std::string name);
 
 
-private:
-	std::string name;
+	// Empty
+	bool isEmpty();
 
+
+private:
 	/*
 	GLUTEN
 	CRUSTACEANS
@@ -32,5 +38,7 @@ private:
 	LUPIN
 	SULFITES
 	*/
+	std::string name;
+
 }; // class Allergen
 #endif

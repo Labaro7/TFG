@@ -23,6 +23,9 @@ public:
 	void setFinish(std::string finish);
 	void set(std::string name, int level, std::string start, std::string finish);
 
+	// Empty
+	bool isEmpty();
+
 private:
 	std::string name;
 	int level;

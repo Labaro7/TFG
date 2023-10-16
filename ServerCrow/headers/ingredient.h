@@ -8,9 +8,17 @@ public:
 	Ingredient();
 	~Ingredient();
 
+
+	// Get
 	std::string getName() const;
 
+
+	// Set
 	void setName(std::string name);
+
+
+	// Get
+	bool isEmpty();
 
 
 private:

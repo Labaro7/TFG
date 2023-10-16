@@ -8,14 +8,19 @@ public:
 	Order();
 	~Order();
 
+
 	// Get
 	std::string getTime() const;
 	std::string getMessage() const;
+
 
 	// Set
 	void setTime(std::string time);
 	void setMessage(std::string message);
 
+
+	// Empty
+	bool isEmpty();
 
 private:
 	std::string time;

@@ -25,6 +25,9 @@ public:
 	void setDiscount(double discount);
 	void set(Table* table);
 
+	// Empty
+	bool isEmpty();
+
 private:
 	int n_table;
 	int n_clients;

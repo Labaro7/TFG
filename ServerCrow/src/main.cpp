@@ -16,6 +16,7 @@ int main() {
 
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
         server.saveTable((new Table(stoi(n_table))));
+        
 
         Employee e1("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveEmployee(&e1);

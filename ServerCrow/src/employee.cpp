@@ -32,3 +32,9 @@ void Employee::set(std::string name, int level, std::string start, std::string f
 	setStart(start);
 	setFinish(finish);
 }
+
+
+// Empty
+bool Employee::isEmpty() {
+	return name == "" && level == 0 && start == "" && finish == "";
+}
