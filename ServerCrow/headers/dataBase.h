@@ -9,6 +9,7 @@
 #include <cppconn/prepared_statement.h>
 
 // Other includes
+#include "restaurant.h"
 #include "employee.h"
 #include "product.h"
 #include "table.h"
@@ -66,10 +67,23 @@ public:
     void saveAllergen(Allergen* allergen); // It works
 
     // Get
-    std::vector<Table> getTables(); // It works
-    Table getTableByNumber(int n_table); // It works
-    std::vector<Employee> getEmployees(); // It works
-    Employee getEmployeeByName(std::string name); // It works
+    std::vector<Table> getTables() const; // It works
+    Table getTableByNumber(int n_table) const; // It works
+
+    std::vector<Employee> getEmployees() const; // It works
+    Employee getEmployeeByName(std::string name) const; // It works
+
+    std::vector<Product> getProducts() const;
+    Product getProductByName(std::string name) const;
+
+    std::vector<Order> getOrders() const;
+    Product getOrderByTime(std::string time) const;
+
+    std::vector<Ingredient> getIngredients() const;
+    Ingredient getIngredientByName(std::string name) const;
+
+    std::vector<Allergen> getAllergens() const;
+    Allergen getAllergenByName(std::string name) const;
 
     // Set
     void setTable_NTable();

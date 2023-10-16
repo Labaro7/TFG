@@ -6,10 +6,7 @@
 #include "crow_all.h"
 
 // Custom includes
-#include "restaurant.h"
 #include "database.h"
-#include "server.h"
-#include "table.h"
 
 // Other includes
 #include <sstream>
@@ -21,7 +18,9 @@ public:
     Server();
     ~Server();
 
+
     void initialize(); // Initializes the database to the model of the restaurant.
+    std::unique_ptr<Database>& database();
 
 
     // Save
@@ -33,11 +32,30 @@ public:
     void saveAllergen(Allergen* allergen); // It works
 
     // Get
-    std::unique_ptr<Database>& getDatabase();
-    std::vector<Table> getTables(); // It works. 
-    Table getTableByNumber(int n_table); // It works //TODO: Change parameter to Table table
-    std::vector<Employee> getEmployees(); // It works
-    Employee getEmployeeByName(std::string name); // It works
+    std::vector<Table> getTables() const; // It works. 
+    Table getTableByNumber(int n_table) const; // It works 
+
+    std::vector<Employee> getEmployees() const; // It works
+    Employee getEmployeeByName(std::string name) const; // It works
+
+    std::vector<Product> getProducts() const; // It works
+    Product getProductByName(std::string name) const; // It works
+
+    std::vector<Ingredient> getIngredients() const; // It works
+    Ingredient getIngredientByName(std::string name) const;
+
+    std::vector<Allergen> getAllergens() const; // It works
+    Allergen getAllergenByName(std::string name) const; // It works
+
+
+    // Print
+    void printTables();
+    void printEmployees(); // It works
+    void printProducts(); // It works
+    void printOrders(); // It works
+    void printIngredients(); // It works
+    void printAllergens(); // It works
+
 
     // Remove
     void removeTable(Table* table); // It works
@@ -47,8 +65,9 @@ public:
     void removeIngredient(Ingredient* ingredient); // It works
     void removeAllergen(Allergen* allergen); // It works
 
+
 private:
-    std::unique_ptr<Database> database;
+    std::unique_ptr<Database> _database;
     std::unique_ptr<Restaurant> restaurant;
 
 }; // class Server

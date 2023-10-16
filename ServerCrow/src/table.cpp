@@ -10,13 +10,13 @@ Table::~Table() {}
 
 
 // Get 
-int Table::getNTable() { return n_table; }
+int Table::getNTable() const { return n_table; }
 
-int Table::getNClients() { return n_clients; }
+int Table::getNClients() const { return n_clients; }
 
-double Table::getBill() { return bill; }
+double Table::getBill() const { return bill; }
 
-double Table::getDiscount() { return discount; }
+double Table::getDiscount() const { return discount; }
 
 
 // Set

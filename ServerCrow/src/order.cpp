@@ -6,9 +6,9 @@ Order::~Order() {}
 
 
 // Get
-std::string Order::getTime() { return time; }
+std::string Order::getTime() const { return time; }
 
-std::string Order::getMessage() { return message; }
+std::string Order::getMessage() const { return message; }
 
 
 // Set

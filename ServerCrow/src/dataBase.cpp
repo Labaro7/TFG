@@ -277,7 +277,7 @@ void Database::saveAllergen(Allergen* allergen) {
 
 
 //Get
-std::vector<Table> Database::getTables() {
+std::vector<Table> Database::getTables() const {
     try {
         std::vector<Table> tables;
 
@@ -303,7 +303,7 @@ std::vector<Table> Database::getTables() {
     }
 }
 
-Table Database::getTableByNumber(int n_table) {
+Table Database::getTableByNumber(int n_table) const {
     try {
         Table table;
         std::stringstream query;
@@ -332,7 +332,7 @@ Table Database::getTableByNumber(int n_table) {
     }
 }
 
-std::vector<Employee> Database::getEmployees() {
+std::vector<Employee> Database::getEmployees() const {
     try {
         std::vector<Employee> employees;
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
@@ -359,7 +359,7 @@ std::vector<Employee> Database::getEmployees() {
     }
 }
 
-Employee Database::getEmployeeByName(std::string name) {
+Employee Database::getEmployeeByName(std::string name) const {
     try {
         Employee employee;
         std::stringstream query;
@@ -382,6 +382,182 @@ Employee Database::getEmployeeByName(std::string name) {
         return Employee();
     }
 }
+
+std::vector<Product> Database::getProducts() const {
+    try {
+        std::vector<Product> products;
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
+        Product product;
+
+        while (res->next()) {
+            //int id = res->getInt("product_id");
+            std::string name = res->getString("name");
+            double price = res->getDouble("price");
+
+            product.set(name, price);
+
+            //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
+            products.push_back(product);
+        }
+
+        return products;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get products. Error message: " << e.what() << std::endl;
+        return std::vector<Product>();
+    }
+}
+
+std::vector<Order> Database::getOrders() const {
+    std::vector<Order> orders;
+
+    try {
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM orders");
+        Order order;
+
+        while (res->next()) {
+            std::string time = res->getString("time");
+            std::string message = res->getString("message");
+
+            order.setTime(time);
+            order.setMessage(message);
+
+            orders.push_back(order);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get orders. Error message: " << e.what() << std::endl;
+    }
+
+    return orders;
+}
+
+Product Database::getOrderByTime(std::string time) const {
+    Product product; // Adjust this to return the correct type
+
+    try {
+        std::stringstream query;
+        query << "SELECT * FROM products WHERE time = '" << time << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            // Populate the product based on the result
+            // You'll need to adjust this part based on your database schema
+            std::string name = res->getString("name");
+            double price = res->getDouble("price");
+
+            product.setName(name);
+            product.setPrice(price);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get product by time. Error message: " << e.what() << std::endl;
+    }
+
+    return product;
+}
+
+Product Database::getProductByName(std::string name) const {
+    try {
+        Product product;
+        std::stringstream query;
+        query << "SELECT * FROM products WHERE name = '" << name << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            std::string product_name = res->getString("name");
+            double price = res->getDouble("price");
+            product.set(product_name, price);
+        }
+
+        return product;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get product by name. Error message: " << e.what() << std::endl;
+        return Product(); // Return an empty Product on error
+    }
+}
+
+std::vector<Ingredient> Database::getIngredients() const {
+    try {
+        std::vector<Ingredient> ingredients;
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM ingredients");
+        Ingredient ingredient;
+
+        while (res->next()) {
+            std::string name = res->getString("name");
+            ingredient.setName(name);
+            ingredients.push_back(ingredient);
+        }
+
+        return ingredients;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get ingredients. Error message: " << e.what() << std::endl;
+        return std::vector<Ingredient>();
+    }
+}
+
+Ingredient Database::getIngredientByName(std::string name) const {
+    try {
+        Ingredient ingredient;
+        std::stringstream query;
+        query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            std::string ingredient_name = res->getString("name");
+            ingredient.setName(ingredient_name);
+        }
+
+        return ingredient;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get ingredient by name. Error message: " << e.what() << std::endl;
+        return Ingredient(); // Return an empty Ingredient on error
+    }
+}
+
+std::vector<Allergen> Database::getAllergens() const {
+    try {
+        std::vector<Allergen> allergens;
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM allergens");
+        Allergen allergen;
+
+        while (res->next()) {
+            std::string name = res->getString("name");
+            allergen.setName(name);
+            allergens.push_back(allergen);
+        }
+
+        return allergens;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get allergens. Error message: " << e.what() << std::endl;
+        return std::vector<Allergen>();
+    }
+}
+
+Allergen Database::getAllergenByName(std::string name) const {
+    try {
+        Allergen allergen;
+        std::stringstream query;
+        query << "SELECT * FROM allergens WHERE name = '" << name << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            std::string allergen_name = res->getString("name");
+            allergen.setName(allergen_name);
+        }
+
+        return allergen;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "Could not get allergen by name. Error message: " << e.what() << std::endl;
+        return Allergen(); // Return an empty Allergen on error
+    }
+}
+
 
 
 // Set

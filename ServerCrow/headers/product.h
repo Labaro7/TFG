@@ -10,11 +10,12 @@ public:
 	Product();
 	~Product();
 
-	std::string getName();
-	double getPrice();
+	std::string getName() const;
+	double getPrice() const;
 
 	void setName(std::string name);
 	void setPrice(double price);
+	void set(std::string name, double price);
 
 private:
 	std::string name;

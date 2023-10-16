@@ -13,10 +13,10 @@ public:
 	~Table();
 	
 	// Get
-	int getNTable();
-	int getNClients();
-	double getBill();
-	double getDiscount();
+	int getNTable() const;
+	int getNClients() const;
+	double getBill() const;
+	double getDiscount() const;
 
 	// Set
 	void setNTable(int n_table);

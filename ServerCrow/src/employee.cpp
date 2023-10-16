@@ -16,10 +16,10 @@ Employee::Employee(std::string name, int level, std::string start, std::string f
 Employee::~Employee() {}
 
 // Getters
-std::string Employee::getName() { return name; }
-int Employee::getLevel() { return level; }
-std::string Employee::getStart() { return start; }
-std::string Employee::getFinish() { return finish; }
+std::string Employee::getName() const { return name; }
+int Employee::getLevel() const { return level; }
+std::string Employee::getStart() const { return start; }
+std::string Employee::getFinish() const { return finish; }
 
 // Setters
 void Employee::setName(std::string name) { this->name = name; }

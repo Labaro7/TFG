@@ -9,8 +9,8 @@ public:
 	~Order();
 
 	// Get
-	std::string getTime();
-	std::string getMessage();
+	std::string getTime() const;
+	std::string getMessage() const;
 
 	// Set
 	void setTime(std::string time);

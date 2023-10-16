@@ -18,8 +18,8 @@ int main() {
         server.saveTable((new Table(stoi(n_table))));
 
         Employee e1("adrian", 2, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
-        Employee e2("pepe", 1, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveEmployee(&e1);
+        Employee e2("pepe", 1, "2023-10-04 15:30:45", "2023-10-04 15:30:45");
         server.saveEmployee(&e2);
 
         Product p;
@@ -40,22 +40,18 @@ int main() {
         a.setName("Sulfite");
         server.saveAllergen(&a);
 
-        {std::vector<Employee> employees = server.getEmployees();
-        std::cout << "EMPLOYEES: " << std::endl;
-        for (auto e : employees) {
-            std::cout << e.getName() << std::endl;
-        }
-        }
-        //std::cout << server.getEmployeeByName("adrian").getName() << std::endl;
+        server.printEmployees();
 
         server.removeEmployee(&e2);
 
-        {std::vector<Employee> employees = server.getEmployees();
-        std::cout << "EMPLOYEES: " << std::endl;
-        for (auto e : employees) {
-            std::cout << e.getName() << std::endl;
-        }
-        }
+        server.printEmployees();
+        server.printTables();
+        server.printProducts();
+        server.printIngredients();
+        server.printAllergens();
+        server.printOrders();
+
+        server.database()->setTable_NTable();
 
 
         return page;

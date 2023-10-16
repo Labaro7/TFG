@@ -11,10 +11,10 @@ public:
 	~Employee();
 
 	// Getters
-	std::string getName();
-	int getLevel();
-	std::string getStart();
-	std::string getFinish();
+	std::string getName() const;
+	int getLevel() const;
+	std::string getStart() const;
+	std::string getFinish() const;
 
 	// Setters
 	void setName(std::string name);
