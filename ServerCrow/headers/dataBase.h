@@ -78,13 +78,22 @@ public:
     Product getProductByName(std::string name) const; // It works
 
     std::vector<Order> getOrders() const; // It works
-    Product getOrderByTime(std::string time) const; // It works
+    Order getOrderByTime(std::string time) const; // It works
 
     std::vector<Ingredient> getIngredients() const; // It works
     Ingredient getIngredientByName(std::string name) const; // It works
 
     std::vector<Allergen> getAllergens() const; // It works
     Allergen getAllergenByName(std::string name) const; // It works
+
+
+    // Print
+    void printTables(); // It works
+    void printEmployees(); // It works
+    void printProducts(); // It works
+    void printOrders(); // It works
+    void printIngredients(); // It works
+    void printAllergens(); // It works
 
 
     // Set

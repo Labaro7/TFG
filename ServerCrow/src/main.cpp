@@ -41,7 +41,7 @@ int main() {
         a.setName("Sulfite");
         server.saveAllergen(&a);
 
-        server.printEmployees();
+        server.database()->printEmployees();
 
         server.removeEmployee(&e2);
         server.removeProduct(&p);
@@ -49,12 +49,12 @@ int main() {
         server.removeAllergen(&a);
         server.removeOrder(&o);
 
-        server.printEmployees();
-        server.printTables();
-        server.printProducts();
-        server.printIngredients();
-        server.printAllergens();
-        server.printOrders();
+        server.database()->printEmployees();
+        server.database()->printTables();
+        server.database()->printProducts();
+        server.database()->printIngredients();
+        server.database()->printAllergens();
+        server.database()->printOrders();
 
         server.database()->setTable_NTable();
 

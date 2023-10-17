@@ -20,7 +20,7 @@ double Table::getDiscount() const { return discount; }
 
 
 // Set
-void Table::setNTable(int n) { this->n_table = n_table; }
+void Table::setNTable(int n_table) { this->n_table = n_table; }
 
 void Table::setNClients(int n_clients) { this->n_clients = n_clients; }
 

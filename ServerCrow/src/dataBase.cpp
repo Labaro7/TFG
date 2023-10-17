@@ -1,4 +1,5 @@
-#include "..\headers\dataBase.h"
+#include "../headers/dataBase.h"
+#include "../headers/crow_all.h"
 
 Database::Database() : stmt(0), pstmt(0) {
     try{
@@ -36,7 +37,7 @@ void Database::MySqlCreateDatabase(std::string name) {
         stmt->execute("CREATE DATABASE " + name);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not create database. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not create database. Error message: " << e.what();
     }
 }
 
@@ -46,7 +47,7 @@ void Database::MySqlDropDatabase(std::string name) {
         stmt->execute("DROP DATABASE " + name);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not drop database. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not drop database. Error message: " << e.what();
     }
 }
 
@@ -56,7 +57,7 @@ void Database::MySqlUseDatabase(std::string name) {
         stmt->execute("USE " + name);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not use database. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not use database. Error message: " << e.what();
     }
 }
 
@@ -66,7 +67,7 @@ void Database::MySqlSaveChangesToDataBase() {
         stmt->execute("COMMIT");
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save changes to the database. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save changes to the database. Error message: " << e.what();
     }
 }
 
@@ -75,10 +76,10 @@ void Database::MySqlCreateTable(std::string name, std::string definition) {
     try {
         sql::Statement* stmt = con->createStatement();
         stmt->execute("CREATE TABLE " + name + " (" + definition + ")");
-        std::cout << "Table created: " << name << std::endl;
+        CROW_LOG_INFO << "MySQL table created: " << name;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not create table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not create table. Error message: " << e.what();
     }
 }
 
@@ -88,7 +89,7 @@ void Database::MySqlDropTable(std::string name) {
         stmt->execute("DROP TABLE IF EXISTS " + name);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not drop table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not drop table. Error message: " << e.what();
     }
 }
 
@@ -98,7 +99,7 @@ void Database::MySqlModifyTable(std::string name, std::string modification) {
         stmt->execute("ALTER TABLE " + name + " " + modification);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not modify table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not modify table. Error message: " << e.what();
     }
 }
 
@@ -108,7 +109,7 @@ void Database::MySqlEmptyTable(std::string name) {
         stmt->execute("DELETE FROM " + name);
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not empty table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not empty table. Error message: " << e.what();
     }
 }
 
@@ -138,7 +139,8 @@ void Database::saveTable(Table* table) {
         double bill = table->getBill();
         double discount = table->getDiscount();
 
-        if (!getTableByNumber(n_table).isEmpty()) {
+        Table t = getTableByNumber(n_table);
+        if (t.isEmpty()) {
             std::ostringstream oss;
             oss << n_table << "," << n_clients << "," << bill << "," << discount;
             std::string values = oss.str();
@@ -150,16 +152,16 @@ void Database::saveTable(Table* table) {
             pstmt->setDouble(4, discount);
             pstmt->execute();
 
-            std::cout << "Table " << n_table <<
+            CROW_LOG_INFO << "[ADDED] Table " << n_table <<
                 " with " << n_clients <<
-                " clients inserted into tables." << std::endl;
+                " clients inserted into tables.";
         }
         else {
-            std::cout << "Table is already in the database." << std::endl;
+            std::cout << "[EXCEPTION] Table is already in the database." << std::endl;
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save table. Error message: " << e.what();
     }
 }
 
@@ -170,7 +172,7 @@ void Database::saveEmployee(Employee* employee) {
         std::string start = employee->getStart();
         std::string finish = employee->getFinish();
 
-        if (!getEmployeeByName(name).isEmpty()) {
+        if (getEmployeeByName(name).isEmpty()) {
             std::ostringstream oss;
             oss << name << "," << level << "," << start << "," << finish;
             std::string values = oss.str();
@@ -182,17 +184,17 @@ void Database::saveEmployee(Employee* employee) {
             pstmt->setString(4, finish);
             pstmt->execute();
 
-            std::cout << "Employee " << name <<
+            CROW_LOG_INFO << "[ADDED] Employee " << name <<
                 " with level " << level <<
                 " starting at " << start <<
-                " inserted into employees." << std::endl;
+                " inserted into employees.";
         }
         else {
-            std::cout << "Employee is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Employee is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save employee. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save employee. Error message: " << e.what();
     }
 }
 
@@ -201,7 +203,7 @@ void Database::saveProduct(Product* product) {
         std::string name = product->getName();
         double price = product->getPrice();
 
-        if (!getProductByName(name).isEmpty()) {
+        if (getProductByName(name).isEmpty()) {
             std::ostringstream oss;
             oss << name << "," << name << "," << price;
             std::string values = oss.str();
@@ -212,16 +214,16 @@ void Database::saveProduct(Product* product) {
             pstmt->setDouble(2, price);
             pstmt->execute();
 
-            std::cout << "Product " << name <<
+            CROW_LOG_INFO << "[ADDED] Product " << name <<
                 " with price " << price <<
-                " inserted into products." << std::endl;
+                " inserted into products.";
         }
         else {
-            std::cout << "Product is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Product is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save product. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save product. Error message: " << e.what();
     }
 }
 
@@ -230,7 +232,7 @@ void Database::saveOrder(Order* order) {
         std::string time = order->getTime();
         std::string message = order->getMessage();
 
-        if (!getOrderByTime(time).isEmpty()) {
+        if (getOrderByTime(time).isEmpty()) {
             std::ostringstream oss;
             oss << time << "," << message;
             std::string values = oss.str();
@@ -241,16 +243,16 @@ void Database::saveOrder(Order* order) {
             pstmt->setString(2, message);
             pstmt->execute();
 
-            std::cout << "Order with time " << time <<
+            CROW_LOG_INFO << "[ADDED] Order with time " << time <<
                 " and message " << message <<
-                " inserted into orders." << std::endl;
+                " inserted into orders.";
         }
         else {
-            std::cout << "Order is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Order is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save order. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save order. Error message: " << e.what();
     }
 }
 
@@ -258,7 +260,7 @@ void Database::saveIngredient(Ingredient* ingredient) {
     try {
         std::string name = ingredient->getName();
 
-        if (!getIngredientByName(name).isEmpty()) {
+        if (getIngredientByName(name).isEmpty()) {
             std::ostringstream oss;
             oss << name;
             std::string values = oss.str();
@@ -267,15 +269,15 @@ void Database::saveIngredient(Ingredient* ingredient) {
             pstmt->setString(1, name);
             pstmt->execute();
 
-            std::cout << "Ingredient with name " << name <<
-                " inserted into ingredients." << std::endl;
+            CROW_LOG_INFO << "[ADDED] Ingredient with name " << name <<
+                " inserted into ingredients.";
         }
         else {
-            std::cout << "Ingredient is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Ingredient is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save ingredient. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save ingredient. Error message: " << e.what();
     }
 }
 
@@ -283,7 +285,7 @@ void Database::saveAllergen(Allergen* allergen) {
     try {
         std::string name = allergen->getName();
 
-        if (!getAllergenByName(name).isEmpty()) {
+        if (getAllergenByName(name).isEmpty()) {
             std::ostringstream oss;
             oss << name;
             std::string values = oss.str();
@@ -292,24 +294,24 @@ void Database::saveAllergen(Allergen* allergen) {
             pstmt->setString(1, name);
             pstmt->execute();
 
-            std::cout << "Allergen with name " << name <<
-                " inserted into allergens." << std::endl;
+            CROW_LOG_INFO << "[ADDED] Allergen with name " << name <<
+                " inserted into allergens.";
         }
         else {
-            std::cout << "Allergen is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Allergen is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not save allergen. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save allergen. Error message: " << e.what();
     }
 }
 
 
 //Get
 std::vector<Table> Database::getTables() const {
-    try {
-        std::vector<Table> tables;
+    std::vector<Table> tables;
 
+    try {
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
 
         while (res->next()) {
@@ -327,27 +329,27 @@ std::vector<Table> Database::getTables() const {
         return tables;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get tables. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get tables. Error message: " << e.what();
         return std::vector<Table>();
     }
 }
 
 Table Database::getTableByNumber(int n_table) const {
+    Table table;
+
     try {
-        Table table;
         std::stringstream query;
 
         query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
-
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            int n_table = res->getInt("n_table");
+            int n = res->getInt("n_table");
             int n_clients = res->getInt("n_clients");
             double bill = res->getDouble("bill");
             double discount = res->getDouble("discount");
 
-            table.setNTable(n_table);
+            table.setNTable(n);
             table.setNClients(n_clients);
             table.setBill(bill);
             table.setDiscount(discount);
@@ -356,14 +358,15 @@ Table Database::getTableByNumber(int n_table) const {
         return table;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get table by number. Error message: " << e.what() << std::endl;
-        return Table();
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get table by number. Error message: " << e.what();
+        return table;
     }
 }
 
 std::vector<Employee> Database::getEmployees() const {
+    std::vector<Employee> employees;
+
     try {
-        std::vector<Employee> employees;
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
         Employee employee;
 
@@ -383,14 +386,15 @@ std::vector<Employee> Database::getEmployees() const {
         return employees;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get employees. Error message: " << e.what() << std::endl;
-        return std::vector<Employee>();
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get employees. Error message: " << e.what();
+        return employees;
     }
 }
 
 Employee Database::getEmployeeByName(std::string name) const {
+    Employee employee;
+
     try {
-        Employee employee;
         std::stringstream query;
         query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
         sql::ResultSet* res = stmt->executeQuery(query.str());
@@ -407,14 +411,15 @@ Employee Database::getEmployeeByName(std::string name) const {
         return employee;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get employee by name. Error message: " << e.what() << std::endl;
-        return Employee();
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get employee by name. Error message: " << e.what();
+        return employee;
     }
 }
 
 std::vector<Product> Database::getProducts() const {
+    std::vector<Product> products;
+
     try {
-        std::vector<Product> products;
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
         Product product;
 
@@ -432,8 +437,29 @@ std::vector<Product> Database::getProducts() const {
         return products;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get products. Error message: " << e.what() << std::endl;
-        return std::vector<Product>();
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get products. Error message: " << e.what();
+        return products;
+    }
+}
+
+Product Database::getProductByName(std::string name) const {
+    try {
+        Product product;
+        std::stringstream query;
+        query << "SELECT * FROM products WHERE name = '" << name << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            std::string product_name = res->getString("name");
+            double price = res->getDouble("price");
+            product.set(product_name, price);
+        }
+
+        return product;
+    }
+    catch (sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get product by name. Error message: " << e.what();
+        return Product(); // Return an empty Product on error
     }
 }
 
@@ -455,56 +481,33 @@ std::vector<Order> Database::getOrders() const {
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get orders. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get orders. Error message: " << e.what();
     }
 
     return orders;
 }
 
-Product Database::getOrderByTime(std::string time) const {
-    Product product; // Adjust this to return the correct type
+Order Database::getOrderByTime(std::string time) const {
+    Order order;
 
     try {
         std::stringstream query;
-        query << "SELECT * FROM products WHERE time = '" << time << "'";
+        query << "SELECT * FROM orders WHERE time = '" << time << "'";
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            // Populate the product based on the result
-            // You'll need to adjust this part based on your database schema
-            std::string name = res->getString("name");
-            double price = res->getDouble("price");
+            std::string time = res->getString("time");
+            std::string message = res->getString("message");
 
-            product.setName(name);
-            product.setPrice(price);
+            order.setTime(time);
+            order.setMessage(message);
         }
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get product by time. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get order by time. Error message: " << e.what();
     }
 
-    return product;
-}
-
-Product Database::getProductByName(std::string name) const {
-    try {
-        Product product;
-        std::stringstream query;
-        query << "SELECT * FROM products WHERE name = '" << name << "'";
-        sql::ResultSet* res = stmt->executeQuery(query.str());
-
-        if (res->next()) {
-            std::string product_name = res->getString("name");
-            double price = res->getDouble("price");
-            product.set(product_name, price);
-        }
-
-        return product;
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "Could not get product by name. Error message: " << e.what() << std::endl;
-        return Product(); // Return an empty Product on error
-    }
+    return order;
 }
 
 std::vector<Ingredient> Database::getIngredients() const {
@@ -522,7 +525,7 @@ std::vector<Ingredient> Database::getIngredients() const {
         return ingredients;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get ingredients. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredients. Error message: " << e.what();
         return std::vector<Ingredient>();
     }
 }
@@ -542,7 +545,7 @@ Ingredient Database::getIngredientByName(std::string name) const {
         return ingredient;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get ingredient by name. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredient by name. Error message: " << e.what();
         return Ingredient(); // Return an empty Ingredient on error
     }
 }
@@ -562,7 +565,7 @@ std::vector<Allergen> Database::getAllergens() const {
         return allergens;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get allergens. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get allergens. Error message: " << e.what();
         return std::vector<Allergen>();
     }
 }
@@ -582,11 +585,66 @@ Allergen Database::getAllergenByName(std::string name) const {
         return allergen;
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not get allergen by name. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get allergen by name. Error message: " << e.what();
         return Allergen(); // Return an empty Allergen on error
     }
 }
 
+
+// Print
+void Database::printTables() {
+    std::vector<Table> tables = getTables();
+
+    CROW_LOG_INFO << "[LIST] Tables: ";
+    for (const auto table : tables) {
+        std::cout << "\t- Table Number: " << table.getNTable() << ", Bill: " << table.getBill() << ", Discount: " << table.getDiscount() << std::endl;
+    }
+}
+
+void Database::printEmployees() {
+    std::vector<Employee> employees = getEmployees();
+
+    CROW_LOG_INFO << "[LIST] Employees: ";
+    for (const auto employee : employees) {
+        std::cout << "\t- Name: " << employee.getName() << ", Level: " << employee.getLevel() << ", Start: " << employee.getStart() << ", Finish: " << employee.getFinish() << std::endl;
+    }
+}
+
+void Database::printProducts() {
+    std::vector<Product> products = getProducts();
+
+    CROW_LOG_INFO << "[LIST] Products: ";
+    for (const auto product : products) {
+        std::cout << "\t- Name: " << product.getName() << ", Price: " << product.getPrice() << std::endl;
+    }
+}
+
+void Database::printOrders() {
+    std::vector<Order> orders = getOrders();
+
+    CROW_LOG_INFO << "[LIST] Orders: ";
+    for (const auto order : orders) {
+        std::cout << "\t- Time: " << order.getTime() << ", Message: " << order.getMessage() << std::endl;
+    }
+}
+
+void Database::printIngredients() {
+    std::vector<Ingredient> ingredients = getIngredients();
+
+    CROW_LOG_INFO << "[LIST] Ingredients: ";
+    for (const auto ingredient : ingredients) {
+        std::cout << "\t- Name: " << ingredient.getName() << std::endl;
+    }
+}
+
+void Database::printAllergens() {
+    std::vector<Allergen> allergens = getAllergens();
+
+    CROW_LOG_INFO << "[LIST] Allergens: ";
+    for (const auto allergen : allergens) {
+        std::cout << "\t- Name: " << allergen.getName() << std::endl;
+    }
+}
 
 
 // Set
@@ -629,13 +687,13 @@ void Database::removeTable(Table* table) {
         pstmt->setDouble(3, discount);
         pstmt->execute();
 
-        std::cout << "Table with n_table " << n_table <<
+        CROW_LOG_INFO << "[REMOVED] Table with n_table " << n_table <<
             ", bill " << bill <<
             " and discount " << discount << 
-            " has been deleted." << std::endl;
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove table. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove table. Error message: " << e.what();
     }
 }
 
@@ -653,14 +711,14 @@ void Database::removeEmployee(Employee* employee){
         pstmt->setString(4, finish);
         pstmt->execute();
 
-        std::cout << "Employee with name " << name <<
+        CROW_LOG_INFO << "[REMOVED] Employee with name " << name <<
             ", level " << level <<
             ", start " << start <<
             ", and finish " << finish <<
-            " has been deleted." << std::endl;
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove employee. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove employee. Error message: " << e.what();
     }
 }
 
@@ -674,12 +732,12 @@ void Database::removeProduct(Product* product) {
         pstmt->setDouble(2, price);
         pstmt->execute();
 
-        std::cout << "Product with name " << name <<
+        CROW_LOG_INFO << "[REMOVED] Product with name " << name <<
             " and price " << price <<
-            " has been deleted." << std::endl;
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove product. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove product. Error message: " << e.what();
     }
 }
 
@@ -693,12 +751,12 @@ void Database::removeOrder(Order* order) {
         pstmt->setString(2, message);
         pstmt->execute();
 
-        std::cout << "Order with time " << time <<
+        CROW_LOG_INFO << "[REMOVED] Order with time " << time <<
             " and message " << message <<
-            " has been deleted." << std::endl;
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove order. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove order. Error message: " << e.what();
     }
 }
 
@@ -710,11 +768,11 @@ void Database::removeIngredient(Ingredient* ingredient) {
         pstmt->setString(1, name);
         pstmt->execute();
 
-        std::cout << "Ingredient with name " << name <<
-            " has been deleted." << std::endl;
+        CROW_LOG_INFO << "[REMOVED] Ingredient with name " << name <<
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove ingredient. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove ingredient. Error message: " << e.what();
     }
 }
 
@@ -726,10 +784,10 @@ void Database::removeAllergen(Allergen* allergen) {
         pstmt->setString(1, name);
         pstmt->execute();
 
-        std::cout << "Allergen with name " << name <<
-            " has been deleted." << std::endl;
+        CROW_LOG_INFO << "[REMOVED] Allergen with name " << name <<
+            " has been deleted.";
     }
     catch (sql::SQLException& e) {
-        std::cerr << "Could not remove allergen. Error message: " << e.what() << std::endl;
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove allergen. Error message: " << e.what();
     }
 }

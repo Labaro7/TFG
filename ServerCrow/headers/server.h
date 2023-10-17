@@ -13,7 +13,8 @@
 #include <string>
 #include <memory>
 
-class Server {
+
+class Server {  
 public:
     Server();
     ~Server();
@@ -47,15 +48,6 @@ public:
 
     std::vector<Allergen> getAllergens() const; // It works
     Allergen getAllergenByName(std::string name) const; // It works
-
-
-    // Print
-    void printTables(); // It works
-    void printEmployees(); // It works
-    void printProducts(); // It works
-    void printOrders(); // It works
-    void printIngredients(); // It works
-    void printAllergens(); // It works
 
 
     // Remove

@@ -19,14 +19,6 @@ void Server::initialize() {
     database()->initialize();
 }
 
-class ExampleLogHandler : public crow::ILogHandler{
-public:
-    void log(std::string /*message*/, crow::LogLevel /*level*/) override
-    {
-        // cerr << "ExampleLogHandler -> " << message;
-    }
-};
-
 
 // Save
 void Server::saveTable(Table* table) { _database->saveTable(table); }
@@ -62,62 +54,6 @@ Ingredient Server::getIngredientByName(std::string name) const { return _databas
 std::vector<Allergen> Server::getAllergens() const { return _database->getAllergens(); }
 
 Allergen Server::getAllergenByName(std::string name) const { return _database->getAllergenByName(name); }
-
-
-// Print
-void Server::printTables() {
-    std::vector<Table> tables = _database->getTables();
-
-    std::cout << "Tables: " << std::endl;
-    for (const auto table : tables) {
-        std::cout << "\tTable Number: " << table.getNTable() << ", Bill: " << table.getBill() << ", Discount: " << table.getDiscount() << "\n";
-    }
-}
-
-void Server::printEmployees() {
-    std::vector<Employee> employees = _database->getEmployees();
-
-    std::cout << "Employees: " << std::endl;
-    for (const auto employee : employees) {
-        std::cout << "\tName: " << employee.getName() << ", Level: " << employee.getLevel() << ", Start: " << employee.getStart() << ", Finish: " << employee.getFinish() << std::endl;
-    }
-}
-
-void Server::printProducts() {
-    std::vector<Product> products = _database->getProducts();
-
-    std::cout << "Products: " << std::endl;
-    for (const auto product : products) {
-        std::cout << "\tName: " << product.getName() << ", Price: " << product.getPrice() << std::endl;
-    }
-}
-
-void Server::printOrders() {
-    std::vector<Order> orders = _database->getOrders();
-
-    std::cout << "Orders: " << std::endl;
-    for (const auto order : orders) {
-        std::cout << "\tTime: " << order.getTime() << ", Message: " << order.getMessage() << std::endl;
-    }
-}
-
-void Server::printIngredients() {
-    std::vector<Ingredient> ingredients = _database->getIngredients();
-
-    std::cout << "Ingredients:\n";
-    for (const auto ingredient : ingredients) {
-        std::cout << "\tName: " << ingredient.getName() << std::endl;
-    }
-}
-
-void Server::printAllergens() {
-    std::vector<Allergen> allergens = _database->getAllergens();
-
-    std::cout << "Allergens:\n";
-    for (const auto allergen : allergens) {
-        std::cout << "\tName: " << allergen.getName() << std::endl;
-    }
-}
 
 
 // Remove
