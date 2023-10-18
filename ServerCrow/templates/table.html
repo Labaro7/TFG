@@ -7,51 +7,48 @@
 </head>
 <body>
     <div class="tab">
-        <div class="tab-button" onclick="showPage('Box')"><b>Box</b></div>
-        <div class="tab-button" onclick="showPage('Ticket')"><b>Ticket</b></div>
+        <div class="tab-button" onclick="changeToProductsTab()">
+            <div class="products"><b>Products</b></div>
+            <div id="tab-buttonProducts"></div>
+        </div>
+        <div class="tab-button" onclick="changeToTicketTab()">
+            <div class="ticket"><b>Ticket</b></div>
+            <div id="tab-buttonTicket"></div>
+        </div>
     </div>
 
-    <div>
+    <div class="menu">
         <div class="firstRow">
-            <input class="numClients" type="text" maxlength="3" placeholder="N. of clients">
-            <div class="numTable">Table: 1</div>
+            <input class="numClients" type="text" maxlength="5  " placeholder="Nº">
+            <div class="numTable">Table: 110</div>
         </div>
 
         <div class="secondRow">
-            <input type="checkbox">
-            <div>Last Order</div>
+            <div class="lastOrder">x2 Chicken hamburguer</div>
         </div>
 
         <div class="thirdRow">
             <div class="thirdRowButton">-</div>
             <div class="thirdRowButton">N ord.</div>
             <div class="thirdRowButton">Save</div>
-            <div class="thirdRowButton">Change Table</div>
+            <div class="thirdRowButton">Move</div>
+        </div>
+
+        <div class="fourthRow">
+            <div class="fourthRowButton">1</div>
+            <div class="fourthRowButton">2</div>
+            <div class="fourthRowButton">3</div>
+            <div class="fourthRowButton">4</div>
+            <div class="fourthRowButton">5</div>
+        </div>
+
+        <div class="fifthRow">
+            <div class="content">
+                prueba
+            </div>
         </div>
     </div>
 
-    <div class="fourthRow">
-        <div class="fourthRowButton">1</div>
-        <div class="fourthRowButton">2</div>
-        <div class="fourthRowButton">3</div>
-        <div class="fourthRowButton">4</div>
-        <div class="fourthRowButton">5</div>
-    </div>
-
-    <div class="fifthRow">
-        <div class="content">
-            prueba
-        </div>
-    </div>
-
-    <script>
-        function showPage(page) {
-            console.log('Showing page: ' + page);
-        }
-
-        function goBack() {
-            console.log('Going back');
-        }
-    </script>
+    <script src="..\static\table.js"></script>
 </body>
 </html>

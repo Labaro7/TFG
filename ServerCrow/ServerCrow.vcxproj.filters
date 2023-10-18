@@ -13,60 +13,78 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de encabezado\domain">
+      <UniqueIdentifier>{a9fe68bc-bbd5-4aac-9063-96d636ee7f33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\crow">
+      <UniqueIdentifier>{b9bde777-2c19-4254-97f5-8485ca3ecf68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\domain">
+      <UniqueIdentifier>{0c1d04e0-c73e-47f9-85a7-0737fc7fda79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\html">
+      <UniqueIdentifier>{e3feac24-2cf6-44cc-905f-008ae5e8ec7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\css">
+      <UniqueIdentifier>{bfbd6a39-b1b6-4132-9fbc-da00d8376f1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\js">
+      <UniqueIdentifier>{3db70fe8-384c-4399-8320-bc1742ab5f96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
       <Filter>Archivos de recursos</Filter>
     </None>
     <None Include="templates\index.html">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\html</Filter>
     </None>
     <None Include="templates\table.html">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\html</Filter>
     </None>
     <None Include="static\index.css">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\css</Filter>
     </None>
     <None Include="static\table.css">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\css</Filter>
     </None>
     <None Include="static\index.js">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\js</Filter>
     </None>
     <None Include="static\table.js">
-      <Filter>Archivos de recursos</Filter>
+      <Filter>Archivos de recursos\js</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\crow_all.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="headers\database.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\product.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\restaurant.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="headers\server.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\table.h">
-      <Filter>Archivos de encabezado</Filter>
+    <ClInclude Include="headers\allergen.h">
+      <Filter>Archivos de encabezado\domain</Filter>
     </ClInclude>
     <ClInclude Include="headers\employee.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\order.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\allergen.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\domain</Filter>
     </ClInclude>
     <ClInclude Include="headers\ingredient.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\domain</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\order.h">
+      <Filter>Archivos de encabezado\domain</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\product.h">
+      <Filter>Archivos de encabezado\domain</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\restaurant.h">
+      <Filter>Archivos de encabezado\domain</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\table.h">
+      <Filter>Archivos de encabezado\domain</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\crow_all.h">
+      <Filter>Archivos de encabezado\crow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -76,26 +94,26 @@
     <ClCompile Include="src\server.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\employee.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="src\table.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="src\product.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="src\order.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\allergen.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>Archivos de origen\domain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\employee.cpp">
+      <Filter>Archivos de origen\domain</Filter>
     </ClCompile>
     <ClCompile Include="src\ingredient.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>Archivos de origen\domain</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Archivos de origen</Filter>
+    <ClCompile Include="src\order.cpp">
+      <Filter>Archivos de origen\domain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\product.cpp">
+      <Filter>Archivos de origen\domain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table.cpp">
+      <Filter>Archivos de origen\domain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

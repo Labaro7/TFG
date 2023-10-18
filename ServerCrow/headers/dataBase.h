@@ -108,7 +108,7 @@ public:
 
 
     // Remove
-    void removeTable(Table* table);
+    void removeTable(Table* table); // It works
     void removeEmployee(Employee* employee); // It works
     void removeProduct(Product* product); // It works
     void removeOrder(Order* order); // It works

@@ -1,3 +1,18 @@
+const selectTableTab = document.getElementById("tab-buttonSelectTable");
+const currentTablesTab = document.getElementById("tab-buttonCurrentTables");
+
+function changeToSelectTableTab() {
+    selectTableTab.style.visibility = 'visible';
+    currentTablesTab.style.visibility = 'hidden';
+    showPage('selectTable');
+}
+
+function changeToCurrentTablesTab() {
+    selectTableTab.style.visibility = 'hidden';
+    currentTablesTab.style.visibility = 'visible';
+    showPage('currentTables');
+}
+
 // Function to show the specified page
 function showPage(pageId) {
     // Hide all pages
@@ -30,6 +45,7 @@ function clearDisplay() {
     const display = document.getElementById('tableInput');
     display.value = '';
 }
+
 
 // Function to send the number to the server (modify as needed)
 /*function sendNumber() {

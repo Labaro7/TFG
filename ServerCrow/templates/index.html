@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
 <head>
     <title>Number Selector</title>
     <link rel="stylesheet" type="text/css" href="..\static\index.css">
 </head>
 <body>
     <div class="tabs">
-        <div class="tab-button" onclick="showPage('select-table')">Select Table</div>
-        <div class="tab-button" onclick="showPage('current-tables')">Current Tables</div>
+        <div class="tab-button" onclick="showPage('select-table')">
+            <div class="selectTable" onclick="changeToSelectTableTab()"><b>Select Table</b></div>
+            <div id="tab-buttonSelectTable"></div>
+        </div>
+        <div class="tab-button" onclick="changeToCurrentTablesTab()">
+            <div class="currentTables"><b>Current Tables</b></div>
+            <div id="tab-buttonCurrentTables"></div>
+        </div>
     </div>
 
     <div id="select-table-page" class="page">
@@ -34,14 +40,9 @@
             </div>
 
             <div class="actions">
-                <button type="reset" class="cancel-button">Cancel</button>
                 <button type="submit" class="accept-button">Accept</button>
             </div>
         </form>
-    </div>
-
-    <div id="current-tables-page" class="page">
-
     </div>
 
     <script src="..\static\index.js"></script>

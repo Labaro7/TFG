@@ -10,14 +10,9 @@ Server::Server() {
 Server::~Server(){}
 
 
-std::unique_ptr<Database>& Server::database()
-{
-    return _database;
-}
+std::unique_ptr<Database>& Server::database(){ return _database; }
 
-void Server::initialize() {
-    database()->initialize();
-}
+void Server::initialize() { database()->initialize(); }
 
 
 // Save
