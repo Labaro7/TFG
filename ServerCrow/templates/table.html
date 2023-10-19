@@ -8,7 +8,7 @@
 <body>
     <div class="tab">
         <div class="tab-button" onclick="changeToProductsTab()">
-            <div class="products"><b>Products</b></div>
+            <div class="products" onclick="changeToProductsTab()"><b>Products</b></div>
             <div id="tab-buttonProducts"></div>
         </div>
         <div class="tab-button" onclick="changeToTicketTab()">
@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <div class="menu">
+    <div id="productsMenu">
         <div class="firstRow">
             <input class="numClients" type="text" maxlength="5  " placeholder="Nº">
             <div class="numTable">Table: 110</div>
@@ -28,24 +28,133 @@
         </div>
 
         <div class="thirdRow">
-            <div class="thirdRowButton">-</div>
-            <div class="thirdRowButton">N ord.</div>
-            <div class="thirdRowButton">Save</div>
-            <div class="thirdRowButton">Move</div>
+            <div class="thirdRowButton" id="deleteButton">
+                <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 12H8M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="rgb(12, 9, 34)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="thirdRowButton" id="nOrderButton"><b>N. ord</b></div>
+            <div class="thirdRowButton" id="saveButton">
+                <svg width="35px" height="35px" fill="rgb(12, 9, 34)" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
+                <g>
+                <g>
+                <path d="M250.435,46.748v99.061h89.043V46.748H250.435z M306.087,112.417h-22.261V80.139h22.261V112.417z" />
+	                    </g>
+                    </g>
+                <g>
+                <g>
+                <rect x="180.714" y="342.072" width="150.573" height="33.391" />
+	                    </g>
+                    </g>
+                <g>
+                <g>
+                <rect x="180.714" y="410.346" width="150.573" height="33.391" />
+	                    </g>
+                    </g>
+                <g>
+                <g>
+                <path d="M438.776,0H0v512h512V73.224L438.776,0z M155.826,33.391h200.348v125.774H155.826V33.391z M388.452,478.609H123.548V307.2h264.904V478.609z M478.609,478.609h-56.765v-204.8H90.157v204.8H33.391V33.391h89.044v159.165h267.13V33.391h35.38l53.663,53.663V478.609z" />
+	                    </g>
+                    </g>
+                </svg>
+            </div>
+            <div class="thirdRowButton" id="moveButton">
+                <svg width="40px" height="40px" fill="rgb(12, 9, 34)" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3V21M12 3L9 6M12 3L15 6M12 21L15 18M12 21L9 18M3 12H21M3 12L6 15M3 12L6 9M21 12L18 9M21 12L18 15" stroke="rgb(12, 9, 34)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
         </div>
 
         <div class="fourthRow">
-            <div class="fourthRowButton">1</div>
-            <div class="fourthRowButton">2</div>
-            <div class="fourthRowButton">3</div>
-            <div class="fourthRowButton">4</div>
-            <div class="fourthRowButton">5</div>
+            <div class="fourthRowButton" id="fourthRowButton1" data-number="1" onclick="displayMenu(this)">1</div>
+            <div class="fourthRowButton" id="fourthRowButton2" data-number="2" onclick="displayMenu(this)">2</div>
+            <div class="fourthRowButton" id="fourthRowButton3" data-number="3" onclick="displayMenu(this)">3</div>
+            <div class="fourthRowButton" id="fourthRowButton4" data-number="4" onclick="displayMenu(this)">4</div>
+            <div class="fourthRowButton" id="fourthRowButton5" data-number="5" onclick="displayMenu(this)">5</div>
         </div>
 
         <div class="fifthRow">
             <div class="content">
-                prueba
+                <ul id="grid1">
+                    <!-- LIST OF PRODUCTS 1 -->
+                    <li class="grid-product">DRINKS1</li>
+                    <li class="grid-product">BEERS1</li>
+                    <li class="grid-product">CAFETERIA1</li>
+                    <li class="grid-product">WHITE WINES1</li>
+                    <li class="grid-product">RED WINES1</li>
+                    <li class="grid-product">ROSSE WINES1</li>
+                    <li class="grid-product">SPARKLING WINES1</li>
+                    <li class="grid-product">GIN1</li>
+                    <li class="grid-product">VODKA1</li>
+                    <li class="grid-product">RUM1</li>
+                    <li class="grid-product">WHISKEY1</li>
+                    <li class="grid-product">WHISKY1</li>
+                    <li class="grid-product">LICOR1</li>
+                    <li class="grid-product">COCKTAILS1</li>
+                </ul>
+
+                <ul id="grid2">
+                    <!-- LIST OF PRODUCTS 2 -->
+                    <li class="grid-product">DRINKS2</li>
+                    <li class="grid-product">BEERS2</li>
+                    <li class="grid-product">CAFETERIA2</li>
+                    <li class="grid-product">WHITE WINES2</li>
+                    <li class="grid-product">RED WINES2</li>
+                    <li class="grid-product">ROSSE WINES2</li>
+                    <li class="grid-product">SPARKLING WINES2</li>
+                    <li class="grid-product">GIN2</li>
+                    <li class="grid-product">VODKA2</li>
+                    <li class="grid-product">RUM2</li>
+                </ul>
+
+                <ul id="grid3">
+                    <!-- LIST OF PRODUCTS 3 -->
+                    <li class="grid-product">DRINKS3</li>
+                    <li class="grid-product">BEERS3</li>
+                    <li class="grid-product">CAFETERIA3</li>
+                    <li class="grid-product">WHITE WINES3</li>
+                </ul>
+
+                <ul id="grid4">
+                    <!-- LIST OF PRODUCTS 4 -->
+                </ul>
+
+                <ul id="grid5">
+                    <!-- LIST OF PRODUCTS 5 -->
+                </ul>
             </div>
+        </div>
+    </div>
+
+    <div id="ticketMenu">
+        <ul id="ticketList">
+            <li class="ticketProduct">x2 Chicken hamburguer</li>
+            <li class="ticketProduct">x1 Chicken nuggets</li>
+            <li class="ticketProduct">x1 Spaguetti</li>
+            <li class="ticketProduct">x1 Salad</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">1</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+            <li class="ticketProduct">2</li>
+        </ul>
+        <div id="bill">
+            $22.74
         </div>
     </div>
 

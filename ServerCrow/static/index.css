@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background-color: black;
     overflow: hidden;
 }
@@ -31,6 +31,7 @@ body {
     flex-direction: column;
     box-sizing: border-box;
     border: 0px solid red;
+    color: #0a3677;
 }
 
 .selectTable, .currentTables {
@@ -44,12 +45,17 @@ body {
     height: 5px;
     position: relative;
     bottom: 0;
-    background-color: rgb(48, 127, 216);
+    background-color: #0a3677;
     border: 0px solid yellow;
+}
+
+.currentTables {
+    background-color: #aaccff;
 }
 
 #tab-buttonCurrentTables {
     visibility: hidden;
+    background-color: #0a3677;
 }
 
 .page {
@@ -59,7 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 611px;
+    height: 100%;
 }
 
 .tableInput {
@@ -77,11 +83,12 @@ body {
     margin-top: auto;
     margin-bottom: auto;
     width: 50%;
+    color: #0a3677;
 }
 
 #tableInput {
     position: relative;
-    background-color: rgb(29, 137, 226);
+    background-color: #0a3677;
     border: none;
     height: 50px;
     text-align: center;

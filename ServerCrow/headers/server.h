@@ -22,7 +22,7 @@ public:
 
     void initialize(); // Initializes the database to the model of the restaurant.
     std::unique_ptr<Database>& database(); // Returns the database to operate with its methods
-
+    void dropAllTables();
 
     // Save
     void saveTable(Table* table); // It works

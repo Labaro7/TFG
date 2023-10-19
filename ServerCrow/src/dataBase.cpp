@@ -117,8 +117,69 @@ void Database::MySqlEmptyTable(std::string name) {
 // ------------------------------- /MySQL queries ------------------------------- //
 
 
+void Database::initializeEmployeesTable() {
+    std::vector<std::string> names = {"Adrian", "Pepe", "Ana", "Nati", "Fermin", "Pablo", "Cristian"};
+    std::vector<int> levels = {3, 2, 2, 4, 4, 2, 1};
+    std::vector<std::string> starts = { "2023 - 10 - 04 15:30 : 45" };
+    std::vector<std::string> finishes = { "2023-10-04 15:30:45" };
+
+    Employee e;
+
+    for (int i = 0; i < names.size(); i++) {
+        e.set(names[i], levels[i], starts[0], finishes[0]);
+        saveEmployee(&e);
+    }
+}
+
+void Database::initializeProductsTable() {
+    std::vector<std::string> productNames = { "Hamburguer", "Spaguetti", "Sandwhich" };
+    std::vector<double> prices = { 10.99, 15.99, 8.50 };
+
+    Product product;
+
+    for (size_t i = 0; i < productNames.size(); i++) {
+        product.set(productNames[i], prices[i]);
+        saveProduct(&product);
+    }
+}
+
+void Database::initializeOrdersTable() {
+    std::vector<std::string> times = { "2023-10-04 15:45:00", "2023-10-05 12:30:00", "2023-10-06 18:15:00" };
+    std::vector<std::string> messages = { "Order 1", "Order 2", "Order 3" };
+
+    Order order;
+
+    for (size_t i = 0; i < times.size(); i++) {
+        order.setTime(times[i]);
+        order.setMessage(messages[i]);
+        saveOrder(&order);
+    }
+}
+
+void Database::initializeIngredientsTable() {
+    std::vector<std::string> ingredientNames = { "Salt", "Pepper", "Sugar" };
+
+    Ingredient ingredient;
+
+    for (const auto& name : ingredientNames) {
+        ingredient.setName(name);
+        saveIngredient(&ingredient);
+    }
+}
+
+void Database::initializeAllergensTable() {
+    std::vector<std::string> allergenNames = { "Gluten", "Peanuts", "Dairy" };
+
+    Allergen allergen;
+
+    for (const auto& name : allergenNames) {
+        allergen.setName(name);
+        saveAllergen(&allergen);
+    }
+}
+
 void Database::initialize() {
-    // TODO: Get tables names and columns from a file that specifies the format wanted
+    // Create the tables to define the domain
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
     MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
     MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE");
@@ -128,8 +189,38 @@ void Database::initialize() {
     MySqlCreateTable("restaurants", "restaurant_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
 
     // TODO: Create Junction tables
-
+    // Create the junction tables to the ManyToMany relationships
+    MySqlCreateTable("tableProduct", "table_id INT, product_id INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
+    MySqlCreateTable("productOrder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
+    MySqlCreateTable("productIngredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+    MySqlCreateTable("productOrder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
+    MySqlCreateDatabase("ingredientAllergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+    
+    // Populate the tables
+    initializeEmployeesTable();
+    initializeProductsTable();
+    initializeIngredientsTable();
+    initializeAllergensTable();
+    initializeOrdersTable();
 }
+
+void Database::dropAllTables() {
+    try {
+        stmt->execute("DROP TABLE IF EXISTS orders;");
+        stmt->execute("DROP TABLE IF EXISTS ingredients;");
+        stmt->execute("DROP TABLE IF EXISTS allergens;");
+        stmt->execute("DROP TABLE IF EXISTS employees;");
+        stmt->execute("DROP TABLE IF EXISTS products;");
+        stmt->execute("DROP TABLE IF EXISTS tables;");
+        stmt->execute("DROP TABLE IF EXISTS restaurants;");
+
+        std::cout << "All tables dropped." << std::endl;
+    }
+    catch (sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not drop tables. Error message: " << e.what();
+    }
+}
+
 
 // Save
 void Database::saveTable(Table* table) {

@@ -55,8 +55,13 @@ public:
     // ------------------------------- /MySQL queries ------------------------------- //
 
 
+    void initializeEmployeesTable();
+    void initializeProductsTable();
+    void initializeIngredientsTable();
+    void initializeAllergensTable();
+    void initializeOrdersTable();
     void initialize(); // Makes the corresponding database and tables with their corresponding columns.
-
+    void dropAllTables();
 
     // Save
     void saveTable(Table* table); // It works

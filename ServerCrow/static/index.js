@@ -1,16 +1,18 @@
 const selectTableTab = document.getElementById("tab-buttonSelectTable");
 const currentTablesTab = document.getElementById("tab-buttonCurrentTables");
+const selectTablePage = document.getElementById("select-table-page");
+const currentTablesPage = document.getElementById("current-tables-page");
 
 function changeToSelectTableTab() {
     selectTableTab.style.visibility = 'visible';
     currentTablesTab.style.visibility = 'hidden';
-    showPage('selectTable');
+    showPage('select-table-page');
 }
 
 function changeToCurrentTablesTab() {
     selectTableTab.style.visibility = 'hidden';
     currentTablesTab.style.visibility = 'visible';
-    showPage('currentTables');
+    showPage('current-tables-page');
 }
 
 // Function to show the specified page
@@ -22,7 +24,7 @@ function showPage(pageId) {
     });
 
     // Show the selected page
-    const selectedPage = document.getElementById(`${pageId}-page`);
+    const selectedPage = document.getElementById(pageId);
     if (selectedPage) {
         selectedPage.style.display = 'block';
     }
@@ -47,37 +49,5 @@ function clearDisplay() {
 }
 
 
-// Function to send the number to the server (modify as needed)
-/*function sendNumber() {
-    const display = document.getElementById('display');
-    const number = display.value;
-
-    // You can modify this part to send the number to the server
-    console.log('Number to send:', number);
-
-    data = document.getElementById('display').value;
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
-
-    fetch("/", requestOptions)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => console.log('POST request successful:', data))
-        .catch(error => console.error('POST request failed:', error));
-
-    clearDisplay();
-
-    window.location.href = 'templates/table.html';
-
-}*/
 
 

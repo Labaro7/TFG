@@ -14,6 +14,8 @@ std::unique_ptr<Database>& Server::database(){ return _database; }
 
 void Server::initialize() { database()->initialize(); }
 
+void Server::dropAllTables() { database()->dropAllTables(); }
+
 
 // Save
 void Server::saveTable(Table* table) { _database->saveTable(table); }
