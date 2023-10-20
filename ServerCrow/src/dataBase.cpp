@@ -132,8 +132,15 @@ void Database::initializeEmployeesTable() {
 }
 
 void Database::initializeProductsTable() {
-    std::vector<std::string> productNames = { "Hamburguer", "Spaguetti", "Sandwhich" };
-    std::vector<double> prices = { 10.99, 15.99, 8.50 };
+    std::vector<std::string> productNames = { "DRINKS", "BEERS", "CAFETERIA",
+    "WHITE WINES", "RED WINES", "ROSSE WINES",
+    "SPARKLING WINES", "COCKTAILS", "RUM",
+    "GIN", "WHISKY", "VODKA" };
+
+    std::vector<double> prices = { 10.99, 15.99, 8.50,
+    10.99, 15.99, 8.50,
+    10.99, 15.99, 8.50,
+    10.99, 15.99, 8.50 };
 
     Product product;
 

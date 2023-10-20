@@ -170,10 +170,15 @@ body {
     font-size: 18px;
     word-break: break-word;
     text-align: center;
+    flex-direction: column;
 }
 
 #grid2, #grid3, #grid4, #grid5 {
     display: none;
+}
+
+.prices {
+    font-size: 12px;
 }
 
 
