@@ -31,6 +31,9 @@
     <Filter Include="Archivos de recursos\js">
       <UniqueIdentifier>{3db70fe8-384c-4399-8320-bc1742ab5f96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ssl">
+      <UniqueIdentifier>{9b03f0a2-71f3-4eb9-a9a1-faaad426ef22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
