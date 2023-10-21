@@ -57,6 +57,15 @@
     <None Include="static\table.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
+    <None Include="ssl\server.crt">
+      <Filter>ssl</Filter>
+    </None>
+    <None Include="ssl\server.csr">
+      <Filter>ssl</Filter>
+    </None>
+    <None Include="ssl\server.key">
+      <Filter>ssl</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.h">

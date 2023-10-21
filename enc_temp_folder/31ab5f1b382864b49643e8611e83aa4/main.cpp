@@ -69,7 +69,7 @@ int main() {
     // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
     crow::logger::setLogLevel(crow::LogLevel::Debug);
 
-    // App methods chain
+
     app.bindaddr("192.168.1.66")
         .port(18080)
         .server_name("CrowCpp")
