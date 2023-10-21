@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ServerCrow/ssl/server.crt
+/ServerCrow/ssl/server.csr
+/ServerCrow/ssl/server.key
