@@ -1,6 +1,6 @@
 ## 📄 Description
 
-Microsoft Visual Studio solution of a web-based system to manage the logic of a hospitality business (restaurant, bar, pub, etc).
+Web-based system to manage the logic of a hospitality business (restaurant, bar, pub, etc).
 
 This is my Final Degree Project (TFG in Spanish).
 
