@@ -26,7 +26,7 @@ function showPage(pageId) {
     // Show the selected page
     const selectedPage = document.getElementById(pageId);
     if (selectedPage) {
-        selectedPage.style.display = 'block';
+        selectedPage.style.display = 'flex';
     }
 }
 

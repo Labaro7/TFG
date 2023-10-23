@@ -22,18 +22,19 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     // Important to clear here or the table number will be shown in the next html piece
     ss.str("");
 
-    // Insert previous HTML piece with the table number into HTML
+    // Insert previous HTML piece with table number into HTML
     size_t tableNumberPlaceholderPos = contentHTML.find(TABLE_NUMBER_PLACEHOLDER);
     if (tableNumberPlaceholderPos != std::string::npos) {
         contentHTML.replace(tableNumberPlaceholderPos, strlen(TABLE_NUMBER_PLACEHOLDER), tableNumberHTML);
     }
 
-    // Get the data of products currently added to the database
+    // Get the list of data of products currently added to the database
     std::vector<std::pair<std::string, float>> productsInfo;
 
     for (const auto p : products) {
         productsInfo.push_back({ p.getName(), p.getPrice() });
     }
+
 
     // Generate HTML piece with current tables
     std::string tableListHTML;
@@ -73,15 +74,14 @@ int main() {
         auto page = crow::mustache::load_text("table.html");
         std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
         Table t(stoi(n_table));
-        std::vector<Product> products = server.getProducts();
 
         server.saveTable(&t);
 
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
+        std::vector<Product> products = server.getProducts();
         std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), PRODUCT_LIST_1_PLACEHOLDER, products);
 
-        // TODO: Change error handling
         if (modifiedHTML == "") {
             res.code = 500; // Internal Server Error
             res.body = "Error reading HTML template", "text/plain";

@@ -19,7 +19,7 @@
 
     <div id="select-table-page" class="page">
         <form action="table" method="get">
-            <div class="tableInput">
+            <div class="tableInput" value="0">
                 <div class="numTable"><b>N. table</b></div>
                 <input type="text" id="tableInput" name="tableInput" readonly>
             </div>
@@ -45,8 +45,33 @@
         </form>
     </div>
 
-    <div id="current-tables-page">
-        asdasd
+    <div id="current-tables-page" class="page">
+        <ul id="currentTables">
+            <li class="table">
+                <div class="tableNumber">Table: 110</div>
+                <div class="tablePrice">28,00$</div>
+            </li>
+            <li class="table">
+                <div class="tableNumber">Table: 112</div>
+                <div class="tablePrice">89,00$</div>
+            </li>
+            <li class="table">
+                <div class="tableNumber">Table: 113</div>
+                <div class="tablePrice">130,00$</div>
+            </li>
+            <li class="table">
+                <div class="tableNumber">Table: 114</div>
+                <div class="tablePrice">7,50$</div>
+            </li>
+            <li class="table">
+                <div class="tableNumber">Table: 210</div>
+                <div class="tablePrice">13,00$</div>
+            </li>
+            <li class="table">
+                <div class="tableNumber">Table: 211</div>
+                <div class="tablePrice">21,00$</div>
+            </li>
+        </ul>
     </div>
 
     <script src="..\static\index.js"></script>
