@@ -9,13 +9,7 @@
 #include <cppconn/prepared_statement.h>
 
 // Other includes
-#include "restaurant.h"
-#include "employee.h"
-#include "product.h"
-#include "table.h"
-#include "order.h"
-#include "ingredient.h"
-#include "allergen.h"
+#include "domain.h"
 #include <sstream>
 
 // MySQL constants.
@@ -71,6 +65,10 @@ public:
     void saveIngredient(Ingredient* ingredient); // It works
     void saveAllergen(Allergen* allergen); // It works
 
+    void saveTableProduct(Table* table, Product* product);
+    void saveProductIngredient(Product* product, Ingredient* ingredient);
+    void saveProductOrder(Product* product, Order* order);
+
 
     // Get
     std::vector<Table> getTables() const; // It works
@@ -104,6 +102,7 @@ public:
     // Set
     void setTable_NTable();
     void setTable_NClients();
+    void setTable_Products(Table table, std::unordered_map<std::string, int> products);
     void setTable_Bill();
     void setTable_Discount();
     void setEmployee_Name();

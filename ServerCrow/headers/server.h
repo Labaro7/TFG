@@ -34,6 +34,9 @@ public:
 
 
     // Get
+    using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
+    productsMenus_t getDataFromPage(int n_page);
+
     std::vector<Table> getTables() const; // It works. 
     Table getTableByNumber(int n_table) const; // It works 
 
@@ -61,7 +64,7 @@ public:
 
 private:
     std::unique_ptr<Database> _database;
-    std::unique_ptr<Restaurant> restaurant;
+    std::unique_ptr<Restaurant> restaurant; // TODO: vector?
 
 }; // class Server
 #endif

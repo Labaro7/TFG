@@ -5,6 +5,33 @@ currentButton.style.backgroundColor = "#0a3677";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
 
+const n_table = document.getElementById("numTable");
+const li = document.getElementsByClassName("grid-product");
+let data = [];
+const ticketList = document.getElementById("ticketList");
+const ticketProducts = document.getElementsByClassName("ticketProduct");
+let ticket = [];
+const lastProduct = document.getElementById("lastOrder");
+
+for (let i = 0; i < ticketProducts.length; i++) ticket.push(ticketProducts[i]);
+if(ticket.length > 1) lastProduct.textContent = ticket[ticket.length - 1];
+
+function addProductToTicket(clickedProduct) {
+    // Add the product to the list of products of the table
+    ticket.push(clickedProduct.textContent);
+    console.log(ticket);
+    lastProduct.textContent = ticket[ticket.length - 1];
+
+    // Add the product in the ticket of the table
+    let child = document.createElement("li");
+    child.className = "ticketProduct";
+    child.textContent = ticket[ticket.length - 1];
+    ticketList.appendChild(child);
+}
+
+
+
+
 function changeToProductsTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");

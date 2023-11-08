@@ -63,6 +63,12 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
         }
     }
 
+    /*for (const auto p : productsInfo) {
+        std::string name_ = p.first;
+        double price_ = round(p.second * 100.0) / 100.0; // Round the price to two decimals
+        ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'>" << p.first << "<br>" << "<div class='prices'>" << price_ << "</div></li > " << std::endl; // We use this because std::to_string() eliminates the precision set
+    }*/
+
     tableListHTML = ss.str();
     ss.str("");
 

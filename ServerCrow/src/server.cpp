@@ -12,7 +12,24 @@ Server::~Server(){}
 
 std::unique_ptr<Database>& Server::database(){ return _database; }
 
-void Server::initialize() { database()->initialize(); }
+void Server::initialize() { 
+    database()->initialize(); 
+
+    // Make the restaurant instances that store different configs of products
+    using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
+    
+    std::vector<productsMenus_t> pages(5);
+    std::vector<std::pair<std::string, int>> vec;
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup1 = { "a", 1.0, vec };
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup2 = { "b", 2.0, vec };
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup3 = { "c", 3.0, vec };
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup4 = { "d", 4.0, vec };
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup5 = { "e", 5.0, vec };
+    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup6 = { "f", 6.0, vec };
+
+    pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6 };
+    restaurant->pages = pages;
+}
 
 void Server::dropAllTables() { database()->dropAllTables(); }
 
@@ -32,6 +49,11 @@ void Server::saveAllergen(Allergen* allergen) { _database->saveAllergen(allergen
 
 
 // Get
+using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
+productsMenus_t Server::getDataFromPage(int n_page) {
+    return restaurant->getDataFromPage(n_page);
+}
+
 std::vector<Table> Server::getTables() const { return _database->getTables(); }
 
 Table Server::getTableByNumber(int n_table) const { return _database->getTableByNumber(n_table); }

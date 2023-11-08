@@ -1,5 +1,6 @@
 #include "../headers/dataBase.h"
 #include "../headers/crow_all.h"
+#include "../headers/domain.h"
 
 Database::Database() : stmt(0), pstmt(0) {
     try{
@@ -123,10 +124,8 @@ void Database::initializeEmployeesTable() {
     std::vector<std::string> starts = { "2023 - 10 - 04 15:30 : 45" };
     std::vector<std::string> finishes = { "2023-10-04 15:30:45" };
 
-    Employee e;
-
     for (int i = 0; i < names.size(); i++) {
-        e.set(names[i], levels[i], starts[0], finishes[0]);
+        Employee e = { names[i], levels[i], starts[0], finishes[0] };
         saveEmployee(&e);
     }
 }
@@ -142,10 +141,8 @@ void Database::initializeProductsTable() {
     10.99, 15.99, 8.50,
     10.99, 15.99, 8.50 };
 
-    Product product;
-
     for (size_t i = 0; i < productNames.size(); i++) {
-        product.set(productNames[i], prices[i]);
+        Product product = { productNames[i], prices[i] };
         saveProduct(&product);
     }
 }
@@ -154,11 +151,9 @@ void Database::initializeOrdersTable() {
     std::vector<std::string> times = { "2023-10-04 15:45:00", "2023-10-05 12:30:00", "2023-10-06 18:15:00" };
     std::vector<std::string> messages = { "Order 1", "Order 2", "Order 3" };
 
-    Order order;
-
     for (size_t i = 0; i < times.size(); i++) {
-        order.setTime(times[i]);
-        order.setMessage(messages[i]);
+        Order order = { times[i], messages[0] };
+
         saveOrder(&order);
     }
 }
@@ -166,10 +161,8 @@ void Database::initializeOrdersTable() {
 void Database::initializeIngredientsTable() {
     std::vector<std::string> ingredientNames = { "Salt", "Pepper", "Sugar" };
 
-    Ingredient ingredient;
-
     for (const auto& name : ingredientNames) {
-        ingredient.setName(name);
+        Ingredient ingredient = { name };
         saveIngredient(&ingredient);
     }
 }
@@ -177,10 +170,8 @@ void Database::initializeIngredientsTable() {
 void Database::initializeAllergensTable() {
     std::vector<std::string> allergenNames = { "Gluten", "Peanuts", "Dairy" };
 
-    Allergen allergen;
-
     for (const auto& name : allergenNames) {
-        allergen.setName(name);
+        Allergen allergen = { name };
         saveAllergen(&allergen);
     }
 }
@@ -197,11 +188,10 @@ void Database::initialize() {
 
     // TODO: Create Junction tables
     // Create the junction tables to the ManyToMany relationships
-    MySqlCreateTable("tableProduct", "table_id INT, product_id INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
-    MySqlCreateTable("productOrder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
-    MySqlCreateTable("productIngredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
-    MySqlCreateTable("productOrder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
-    MySqlCreateDatabase("ingredientAllergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+    MySqlCreateTable("tableproduct", "table_id INT, product_id INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
+    MySqlCreateTable("productorder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
+    MySqlCreateTable("productingredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+    //MySqlCreateDatabase("ingredientallergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
     
     // Populate the tables
     initializeEmployeesTable();
@@ -209,10 +199,16 @@ void Database::initialize() {
     initializeIngredientsTable();
     initializeAllergensTable();
     initializeOrdersTable();
+
 }
 
 void Database::dropAllTables() {
     try {
+        // We must drop first the tables that have a reference to another
+        stmt->execute("DROP TABLE IF EXISTS tableproduct;");
+        stmt->execute("DROP TABLE IF EXISTS productingredient;");
+        stmt->execute("DROP TABLE IF EXISTS productorder;");
+
         stmt->execute("DROP TABLE IF EXISTS orders;");
         stmt->execute("DROP TABLE IF EXISTS ingredients;");
         stmt->execute("DROP TABLE IF EXISTS allergens;");
@@ -221,7 +217,7 @@ void Database::dropAllTables() {
         stmt->execute("DROP TABLE IF EXISTS tables;");
         stmt->execute("DROP TABLE IF EXISTS restaurants;");
 
-        std::cout << "All tables dropped." << std::endl;
+        CROW_LOG_INFO << "[REMOVED] All tables dropped.";
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not drop tables. Error message: " << e.what();
@@ -232,10 +228,10 @@ void Database::dropAllTables() {
 // Save
 void Database::saveTable(Table* table) {
     try {
-        int n_table = table->getNTable();
-        int n_clients = table->getNClients();
-        double bill = table->getBill();
-        double discount = table->getDiscount();
+        int n_table = table->n_table;
+        int n_clients = table->n_clients;
+        double bill = table->bill;
+        double discount = table->discount;
 
         Table t = getTableByNumber(n_table);
         if (t.isEmpty()) {
@@ -255,7 +251,7 @@ void Database::saveTable(Table* table) {
                 " clients inserted into tables.";
         }
         else {
-            std::cout << "[EXCEPTION] Table is already in the database." << std::endl;
+            CROW_LOG_WARNING << "[EXCEPTION] Table is already in the database.";
         }
     }
     catch (sql::SQLException& e) {
@@ -265,10 +261,10 @@ void Database::saveTable(Table* table) {
 
 void Database::saveEmployee(Employee* employee) {
     try {
-        std::string name = employee->getName();
-        int level = employee->getLevel();
-        std::string start = employee->getStart();
-        std::string finish = employee->getFinish();
+        std::string name = employee->name;
+        int level = employee->level;
+        std::string start = employee->start;
+        std::string finish = employee->finish;
 
         if (getEmployeeByName(name).isEmpty()) {
             std::ostringstream oss;
@@ -298,8 +294,8 @@ void Database::saveEmployee(Employee* employee) {
 
 void Database::saveProduct(Product* product) {
     try {
-        std::string name = product->getName();
-        double price = product->getPrice();
+        std::string name = product->name;
+        double price = product->price;
 
         if (getProductByName(name).isEmpty()) {
             std::ostringstream oss;
@@ -327,8 +323,9 @@ void Database::saveProduct(Product* product) {
 
 void Database::saveOrder(Order* order) {
     try {
-        std::string time = order->getTime();
-        std::string message = order->getMessage();
+        // TODO: Add products of the order to Table class and Table table
+        std::string time = order->time;
+        std::string message = order->message;
 
         if (getOrderByTime(time).isEmpty()) {
             std::ostringstream oss;
@@ -356,7 +353,7 @@ void Database::saveOrder(Order* order) {
 
 void Database::saveIngredient(Ingredient* ingredient) {
     try {
-        std::string name = ingredient->getName();
+        std::string name = ingredient->name;
 
         if (getIngredientByName(name).isEmpty()) {
             std::ostringstream oss;
@@ -381,7 +378,7 @@ void Database::saveIngredient(Ingredient* ingredient) {
 
 void Database::saveAllergen(Allergen* allergen) {
     try {
-        std::string name = allergen->getName();
+        std::string name = allergen->name;
 
         if (getAllergenByName(name).isEmpty()) {
             std::ostringstream oss;
@@ -404,6 +401,57 @@ void Database::saveAllergen(Allergen* allergen) {
     }
 }
 
+void Database::saveTableProduct(Table* table, Product* product) {
+    try {
+        int n_table = table->n_table;
+        std::string name = product->name;
+        int table_id;
+        int product_id;
+
+        std::stringstream query;
+
+        query << "SELECT table_id FROM tables WHERE n_table = '" << n_table << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+    
+        if (res->next()) {
+            table_id = res->getInt("table_id");
+        }
+
+        query.clear();
+        query << "SELECT product_id FROM products WHERE name = '" << name << "'";
+
+        if (res->next()) {
+            product_id = res->getInt("product_id");
+        }
+
+        pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id) VALUES(?,?)");
+        pstmt->setInt(1, table_id);
+        pstmt->setInt(2, product_id);
+        pstmt->execute();
+    }
+    catch(sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save table/product. Error message: " << e.what();
+    }
+}
+
+void Database::saveProductIngredient(Product* product, Ingredient* ingredient) {
+    try {
+
+    }
+    catch (sql::SQLException& e) {
+
+    }
+}
+
+void Database::saveProductOrder(Product* product, Order* order) {
+    try {
+
+    }
+    catch (sql::SQLException& e) {
+
+    }
+}
+
 
 //Get
 std::vector<Table> Database::getTables() const {
@@ -413,12 +461,10 @@ std::vector<Table> Database::getTables() const {
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
 
         while (res->next()) {
-            Table table;
-
             int id = res->getInt("table_id");
             int n_table = res->getInt("n_table");
 
-            table.setNTable(n_table);
+            Table table = { n_table };
 
             //std::cout << "Id: " << id << ". Table Number: " << n_table << std::endl;
             tables.push_back(table);
@@ -438,19 +484,34 @@ Table Database::getTableByNumber(int n_table) const {
     try {
         std::stringstream query;
 
-        query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
+        query << "SELECT * FROM tables WHERE n_table = '" << n_table << "'"; // TODO: change tables for a varible that corresponds to the table name
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             int n = res->getInt("n_table");
             int n_clients = res->getInt("n_clients");
+
             double bill = res->getDouble("bill");
             double discount = res->getDouble("discount");
 
-            table.setNTable(n);
-            table.setNClients(n_clients);
-            table.setBill(bill);
-            table.setDiscount(discount);
+
+            query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
+            res = stmt->executeQuery(query.str());
+
+            std::unordered_map<std::string, int> products;
+            while (res->next()) {
+                std::string product_name = res->getString("name");
+                double product_price = res->getDouble("price");
+
+                Product product = { product_name, product_price };
+                products[product.name] = 1; // TODO: Change 1
+            }
+
+            table.n_table = n;
+            table.n_clients = n_clients;
+            table.products = products;
+            table.bill = bill;
+            table.discount = discount;
         }
 
         return table;
@@ -466,7 +527,6 @@ std::vector<Employee> Database::getEmployees() const {
 
     try {
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
-        Employee employee;
 
         while (res->next()) {
             int id = res->getInt("employee_id");
@@ -475,7 +535,7 @@ std::vector<Employee> Database::getEmployees() const {
             std::string start = res->getString("start");
             std::string finish = res->getString("finish");
 
-            employee.set(name, level, start, finish);
+            Employee employee = { name, level, start, finish };
 
             //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
             employees.push_back(employee);
@@ -498,12 +558,15 @@ Employee Database::getEmployeeByName(std::string name) const {
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            std::string name_ = res->getString("name");
+            std::string name = res->getString("name");
             int level = res->getInt("level");
             std::string start = res->getString("start");
             std::string finish = res->getString("finish");
 
-            employee.set(name_, level, start, finish);
+            employee.name = name;
+            employee.level = level;
+            employee.start = start;
+            employee.finish = finish;
         }
 
         return employee;
@@ -519,14 +582,14 @@ std::vector<Product> Database::getProducts() const {
 
     try {
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
-        Product product;
+        
 
         while (res->next()) {
             //int id = res->getInt("product_id");
             std::string name = res->getString("name");
             double price = res->getDouble("price");
 
-            product.set(name, price);
+            Product product = { name, price };
 
             //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
             products.push_back(product);
@@ -541,23 +604,25 @@ std::vector<Product> Database::getProducts() const {
 }
 
 Product Database::getProductByName(std::string name) const {
+    Product product;
     try {
-        Product product;
+        
         std::stringstream query;
         query << "SELECT * FROM products WHERE name = '" << name << "'";
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            std::string product_name = res->getString("name");
+            std::string name = res->getString("name");
             double price = res->getDouble("price");
-            product.set(product_name, price);
+            product.name = name;
+            product.price = price;
         }
 
         return product;
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get product by name. Error message: " << e.what();
-        return Product(); // Return an empty Product on error
+        return product; // Return an empty Product on error
     }
 }
 
@@ -566,14 +631,13 @@ std::vector<Order> Database::getOrders() const {
 
     try {
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM orders");
-        Order order;
+        
 
         while (res->next()) {
             std::string time = res->getString("time");
             std::string message = res->getString("message");
 
-            order.setTime(time);
-            order.setMessage(message);
+            Order order = { time, message };
 
             orders.push_back(order);
         }
@@ -597,8 +661,8 @@ Order Database::getOrderByTime(std::string time) const {
             std::string time = res->getString("time");
             std::string message = res->getString("message");
 
-            order.setTime(time);
-            order.setMessage(message);
+            order.time = time;
+            order.message = message;
         }
     }
     catch (sql::SQLException& e) {
@@ -609,14 +673,14 @@ Order Database::getOrderByTime(std::string time) const {
 }
 
 std::vector<Ingredient> Database::getIngredients() const {
+    std::vector<Ingredient> ingredients;
+
     try {
-        std::vector<Ingredient> ingredients;
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM ingredients");
-        Ingredient ingredient;
 
         while (res->next()) {
             std::string name = res->getString("name");
-            ingredient.setName(name);
+            Ingredient ingredient = { name };
             ingredients.push_back(ingredient);
         }
 
@@ -624,39 +688,40 @@ std::vector<Ingredient> Database::getIngredients() const {
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredients. Error message: " << e.what();
-        return std::vector<Ingredient>();
+        return ingredients;
     }
 }
 
 Ingredient Database::getIngredientByName(std::string name) const {
+    Ingredient ingredient;
+
     try {
-        Ingredient ingredient;
         std::stringstream query;
         query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            std::string ingredient_name = res->getString("name");
-            ingredient.setName(ingredient_name);
+            std::string name = res->getString("name");
+            ingredient.name = name;
         }
 
         return ingredient;
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredient by name. Error message: " << e.what();
-        return Ingredient(); // Return an empty Ingredient on error
+        return ingredient; // Return an empty Ingredient on error
     }
 }
 
 std::vector<Allergen> Database::getAllergens() const {
+    std::vector<Allergen> allergens;
+
     try {
-        std::vector<Allergen> allergens;
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM allergens");
-        Allergen allergen;
 
         while (res->next()) {
             std::string name = res->getString("name");
-            allergen.setName(name);
+            Allergen allergen = { name };
             allergens.push_back(allergen);
         }
 
@@ -669,22 +734,23 @@ std::vector<Allergen> Database::getAllergens() const {
 }
 
 Allergen Database::getAllergenByName(std::string name) const {
+    Allergen allergen;
+
     try {
-        Allergen allergen;
         std::stringstream query;
         query << "SELECT * FROM allergens WHERE name = '" << name << "'";
         sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
-            std::string allergen_name = res->getString("name");
-            allergen.setName(allergen_name);
+            std::string name = res->getString("name");
+            allergen.name = name;
         }
 
         return allergen;
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get allergen by name. Error message: " << e.what();
-        return Allergen(); // Return an empty Allergen on error
+        return allergen; // Return an empty Allergen on error
     }
 }
 
@@ -695,7 +761,7 @@ void Database::printTables() {
 
     CROW_LOG_INFO << "[LIST] Tables: ";
     for (const auto table : tables) {
-        std::cout << "\t- Table Number: " << table.getNTable() << ", Bill: " << table.getBill() << ", Discount: " << table.getDiscount() << std::endl;
+        std::cout << "\t- Table Number: " << table.n_table << ", Bill: " << table.bill << ", Discount: " << table.discount << std::endl;
     }
 }
 
@@ -704,7 +770,7 @@ void Database::printEmployees() {
 
     CROW_LOG_INFO << "[LIST] Employees: ";
     for (const auto employee : employees) {
-        std::cout << "\t- Name: " << employee.getName() << ", Level: " << employee.getLevel() << ", Start: " << employee.getStart() << ", Finish: " << employee.getFinish() << std::endl;
+        std::cout << "\t- Name: " << employee.name << ", Level: " << employee.level << ", Start: " << employee.start << ", Finish: " << employee.finish << std::endl;
     }
 }
 
@@ -713,7 +779,7 @@ void Database::printProducts() {
 
     CROW_LOG_INFO << "[LIST] Products: ";
     for (const auto product : products) {
-        std::cout << "\t- Name: " << product.getName() << ", Price: " << product.getPrice() << std::endl;
+        std::cout << "\t- Name: " << product.name << ", Price: " << product.price << std::endl;
     }
 }
 
@@ -722,7 +788,7 @@ void Database::printOrders() {
 
     CROW_LOG_INFO << "[LIST] Orders: ";
     for (const auto order : orders) {
-        std::cout << "\t- Time: " << order.getTime() << ", Message: " << order.getMessage() << std::endl;
+        std::cout << "\t- Time: " << order.time << ", Message: " << order.message << std::endl;
     }
 }
 
@@ -731,7 +797,7 @@ void Database::printIngredients() {
 
     CROW_LOG_INFO << "[LIST] Ingredients: ";
     for (const auto ingredient : ingredients) {
-        std::cout << "\t- Name: " << ingredient.getName() << std::endl;
+        std::cout << "\t- Name: " << ingredient.name << std::endl;
     }
 }
 
@@ -740,7 +806,7 @@ void Database::printAllergens() {
 
     CROW_LOG_INFO << "[LIST] Allergens: ";
     for (const auto allergen : allergens) {
-        std::cout << "\t- Name: " << allergen.getName() << std::endl;
+        std::cout << "\t- Name: " << allergen.name << std::endl;
     }
 }
 
@@ -750,6 +816,13 @@ void Database::setTable_NTable() {
 }
 
 void Database::setTable_NClients() {
+}
+
+void Database::setTable_Products(Table table, std::unordered_map<std::string, int> products) {
+    int n_table = table.n_table;
+    std::stringstream query;
+    query << "SELECT * FROM tables WHERE n_table = '" << n_table << "'";
+    sql::ResultSet* res = stmt->executeQuery(query.str());
 }
 
 void Database::setTable_Bill() {
@@ -775,9 +848,9 @@ void Database::setEmployee_Finish() {
 // Remove
 void Database::removeTable(Table* table) {
     try {
-        int n_table = table->getNTable();
-        double bill = table->getBill();
-        double discount = table->getDiscount();
+        int n_table = table->n_table;
+        double bill = table->bill;
+        double discount = table->discount;
 
         pstmt = con->prepareStatement("DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
         pstmt->setInt(1, n_table);
@@ -797,10 +870,10 @@ void Database::removeTable(Table* table) {
 
 void Database::removeEmployee(Employee* employee){
     try {
-        std::string name = employee->getName();
-        int level = employee->getLevel();
-        std::string start = employee->getStart();
-        std::string finish = employee->getFinish();
+        std::string name = employee->name;
+        int level = employee->level;
+        std::string start = employee->start;
+        std::string finish = employee->finish;
 
         pstmt = con->prepareStatement("DELETE FROM employees WHERE name = ? AND level = ? AND start = ? AND finish = ?");
         pstmt->setString(1, name);
@@ -822,8 +895,8 @@ void Database::removeEmployee(Employee* employee){
 
 void Database::removeProduct(Product* product) {
     try {
-        std::string name = product->getName();
-        double price = product->getPrice();
+        std::string name = product->name;
+        double price = product->price;
 
         pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ?");
         pstmt->setString(1, name);
@@ -841,8 +914,8 @@ void Database::removeProduct(Product* product) {
 
 void Database::removeOrder(Order* order) {
     try {
-        std::string time = order->getTime();
-        std::string message = order->getMessage();
+        std::string time = order->time;
+        std::string message = order->message;
 
         pstmt = con->prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
         pstmt->setString(1, time);
@@ -860,7 +933,7 @@ void Database::removeOrder(Order* order) {
 
 void Database::removeIngredient(Ingredient* ingredient) {
     try {
-        std::string name = ingredient->getName();
+        std::string name = ingredient->name;
 
         pstmt = con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
         pstmt->setString(1, name);
@@ -876,7 +949,7 @@ void Database::removeIngredient(Ingredient* ingredient) {
 
 void Database::removeAllergen(Allergen* allergen) {
     try {
-        std::string name = allergen->getName();
+        std::string name = allergen->name;
 
         pstmt = con->prepareStatement("DELETE FROM allergens WHERE name = ?");
         pstmt->setString(1, name);
