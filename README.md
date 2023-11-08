@@ -14,7 +14,7 @@ The project manages the following aspects:
 ## 🖥️ Technologies used
 - Crow C++ framework to create the web server.
 - MySQL, MySQL Workbench and Connect/C++ for the database.
-- HTTPS (HTTPS over SSL/TLS) for security.
+- HTTPS (HTTP over SSL/TLS) for security.
 - Qt for the statistics visualization (not done yet).
 - GoogleTest for testing (not done yet)
 
