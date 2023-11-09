@@ -65,7 +65,7 @@ public:
     void saveIngredient(Ingredient* ingredient); // It works
     void saveAllergen(Allergen* allergen); // It works
 
-    void saveTableProduct(Table* table, Product* product);
+    void saveTableProduct(Table& table, Product& product);
     void saveProductIngredient(Product* product, Ingredient* ingredient);
     void saveProductOrder(Product* product, Order* order);
 

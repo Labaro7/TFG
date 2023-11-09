@@ -424,7 +424,10 @@ void Database::saveTableProduct(Table& table, Product& product) {
 
         if (res->next()) {
             product_id = res->getInt("product_id");
+            std::cout << "klk " << std::endl;
         }
+
+        std::cout << "aaaaaa " << product_id << std::endl;
 
         pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id) VALUES(?,?)");
         pstmt->setInt(1, table_id);

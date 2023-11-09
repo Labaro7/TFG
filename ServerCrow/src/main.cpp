@@ -113,19 +113,19 @@ int main() {
         p.price = 10;
         server.getTableByNumber(69).products[p.name] = 1;
         server.saveProduct(&p);
-        server.database()->saveTableProduct(&t, &p);
+        server.database()->saveTableProduct(t, p);
 
         p.name = "b";
         p.price = 20;
         server.getTableByNumber(69).products[p.name] = 2;
         server.saveProduct(&p);
-        server.database()->saveTableProduct(&t, &p);
+        server.database()->saveTableProduct(t, p);
 
         p.name = "c";
         p.price = 30;
         server.getTableByNumber(69).products[p.name] = 3;
         server.saveProduct(&p);
-        server.database()->saveTableProduct(&t, &p);
+        server.database()->saveTableProduct(t, p);
 
         return page;
         });
@@ -137,7 +137,7 @@ int main() {
         Table t(stoi(n_table));
         std::vector<Product> products = server.getProducts();
 
-        server.saveTable(&t);
+        //server.saveTable(&t); // duplicate
 
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
