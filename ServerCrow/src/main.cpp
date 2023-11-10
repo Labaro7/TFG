@@ -52,7 +52,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
         // Is product
         if (std::get<2>(p).empty()) {
-            std::cout << product_name << std::endl;
+            //std::cout << product_name << std::endl;
 
             ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'>" << product_name << "<br>" << "<div class='prices'>" << product_price << "</div></li > " << std::endl; // We use this because std::to_string() eliminates the precision set
         }
@@ -74,11 +74,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 
     // TICKET
-    const std::unordered_map<std::string, int> ticketProducts = server->getTableByNumber(69).products;
-    std::cout << "PRODUCTS" << std::endl;
+    const std::unordered_map<std::string, int> ticketProducts = server->getTableByNumber(n_table).products;
+    //std::cout << "PRODUCTS" << std::endl;
     for (const auto p : ticketProducts) {
-        std::cout << p.first << std::endl;
-        ss << "<li class='ticketProduct'>" << "x" << p.second << " " << p.first << "</li>" << std::endl;
+        ss << "<li class='ticketProduct'>" << "x1 " << p.second << " " << p.first << "</li>" << std::endl;
     }
     
     std::string ticketProductsHTML = ss.str();

@@ -499,24 +499,30 @@ Table Database::getTableByNumber(int n_table) const {
 
             query << "SELECT * FROM tableproduct WHERE table_id = " << table_id; // TODO: change tables for a varible that corresponds to the table name
             res = stmt->executeQuery(query.str());
-            query.str("");;
+            query.str("");
 
             std::unordered_map<std::string, int> products;
             while (res->next()) {
                 int product_id = res->getInt("product_id");
+
                 query << "SELECT * FROM products WHERE product_id = " << product_id; // TODO: change tables for a varible that corresponds to the table name
                 sql::ResultSet* res2 = stmt->executeQuery(query.str());
                 query.str("");
 
-                std::string product_name = res2->getString("name");
-                double product_price = res2->getDouble("price");
+                if (res2->next()) {
+                    std::string product_name = res2->getString("name");
+                    double product_price = res2->getDouble("price");
 
-                products[product_name] = product_price;
+                    products[product_name] = product_price;
+                }
             }
 
             table.n_table = n;
             table.n_clients = n_clients;
             table.products = products;
+            for (auto i : products) {
+                //std::cout << i.first << std::endl;
+            }
             table.bill = bill;
             table.discount = discount;
         }
