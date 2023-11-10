@@ -2,11 +2,41 @@
 #include "..\headers\domain.h"
 #include <tuple>
 
+const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";
 const char* TABLE_NUMBER_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE NUMBER -->"; // It is char* because of strlen()
 const char* PRODUCT_LIST_1_PLACEHOLDER = "<!-- PLACEHOLDER: LIST OF PRODUCTS -->"; // Same
 const char* TICKET_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: TICKET PRODUCTS -->";
 
-std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::string productListPlaceholder, const std::vector<Product> products, Server* server){
+
+std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server) {
+    std::stringstream ssHTML;
+    ssHTML << file->rdbuf();
+    file->close();
+    std::string contentHTML = ssHTML.str();
+
+    std::vector<Table> tables = server.database()->getTables();
+
+    // Make a HTML with the tables prices
+    std::ostringstream ss;
+
+    for (const auto& t : tables) {
+        ss << "<li class='table'><div class='tableNumber'>Table: " << t.n_table << "</div><div class='tablePrice'>$" << t.bill << "</div></li>" << std::endl;
+    }   
+
+    std::string tablesPricesHTML = ss.str();
+    ss.str(""); // Important to clear here
+
+    // Insert previous HTML piece with the table number into HTML
+    size_t tablesPricesPlaceholderPos = contentHTML.find(TABLES_PRICES_PLACEHOLDER);
+    if (tablesPricesPlaceholderPos != std::string::npos) {
+        contentHTML.replace(tablesPricesPlaceholderPos, strlen(TABLES_PRICES_PLACEHOLDER), tablesPricesHTML);
+    }
+
+    return contentHTML;
+}
+
+
+std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::string productListPlaceholder, const std::vector<Product> products, Server& server){
     if (!file->is_open()) {
         return "";
     }
@@ -21,9 +51,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     std::ostringstream ss;
     ss << "<div id='numTable'>Table: " << n_table << "</div>" << std::endl;
     std::string tableNumberHTML = ss.str();
-
-    // Important to clear here or the table number will be shown in the next html piece
-    ss.str("");
+    ss.str(""); // Important to clear here
 
     // Insert previous HTML piece with the table number into HTML
     size_t tableNumberPlaceholderPos = contentHTML.find(TABLE_NUMBER_PLACEHOLDER);
@@ -44,7 +72,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
     using product = std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>;
 
-    const productsMenus_t data = server->getDataFromPage(0);
+    const productsMenus_t data = server.getDataFromPage(0);
     for (const auto& p : data) {
         std::string product_name = std::get<0>(p);
         int product_price = round(std::get<1>(p) * 100.0) / 100.0;;
@@ -74,7 +102,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 
     // TICKET
-    const std::unordered_map<std::string, int> ticketProducts = server->getTableByNumber(n_table).products;
+    const std::unordered_map<std::string, int> ticketProducts = server.getTableByNumber(n_table).products;
     //std::cout << "PRODUCTS" << std::endl;
     for (const auto p : ticketProducts) {
         ss << "<li class='ticketProduct'>" << "x1 " << p.second << " " << p.first << "</li>" << std::endl;
@@ -97,7 +125,7 @@ int main() {
     Server server;
     
 
-    CROW_ROUTE(app, "/")([&server] {
+    CROW_ROUTE(app, "/")([&server](const crow::request& req, crow::response& res) {
         auto page = crow::mustache::load_text("index.html");
 
         server.dropAllTables();
@@ -106,27 +134,41 @@ int main() {
         Product p;
         std::unordered_map<std::string, int> ps;
         Table t(69, 1, ps, 10.0, 0.0);
-        server.saveTable(&t);
+        Table t2(12, 5, ps, 24.50, 10.0);
+        server.saveTable(t);
+        server.saveTable(t2);
 
         p.name = "a";
         p.price = 10;
         server.getTableByNumber(69).products[p.name] = 1;
-        server.saveProduct(&p);
+        server.saveProduct(p);
         server.database()->saveTableProduct(t, p);
 
         p.name = "b";
         p.price = 20;
         server.getTableByNumber(69).products[p.name] = 2;
-        server.saveProduct(&p);
+        server.saveProduct(p);
         server.database()->saveTableProduct(t, p);
 
         p.name = "c";
         p.price = 30;
         server.getTableByNumber(69).products[p.name] = 3;
-        server.saveProduct(&p);
+        server.saveProduct(p);
         server.database()->saveTableProduct(t, p);
 
-        return page;
+        // TODO: Put relative path
+        std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+        std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
+
+        // TODO: Change error handling
+        if (modifiedHTML == "") {
+            res.code = 500; // Internal Server Error
+            res.body = "Error reading HTML template", "text/plain";
+        }
+
+        res.set_header("Content-Type", "text/html");
+        res.write(modifiedHTML);
+        res.end();
         });
 
     // TODO: Fix the 505 error when not inputting table and accepting
@@ -136,11 +178,9 @@ int main() {
         Table t(stoi(n_table));
         std::vector<Product> products = server.getProducts();
 
-        //server.saveTable(&t); // duplicate
-
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
-        std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), PRODUCT_LIST_1_PLACEHOLDER, products, &server);
+        std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), PRODUCT_LIST_1_PLACEHOLDER, products, server);
 
         // TODO: Change error handling
         if (modifiedHTML == "") {

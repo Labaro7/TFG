@@ -25,41 +25,41 @@ public:
     void dropAllTables();
 
     // Save
-    void saveTable(Table* table); // It works
-    void saveEmployee(Employee* employee); // It works
-    void saveProduct(Product* product); // It works
-    void saveOrder(Order* order); // It works
-    void saveIngredient(Ingredient* ingredient); // It works
-    void saveAllergen(Allergen* allergen); // It works
+    void saveTable(const Table& table); // It works
+    void saveEmployee(const Employee& employee); // It works
+    void saveProduct(const Product& product); // It works
+    void saveOrder(const Order& order); // It works
+    void saveIngredient(const Ingredient& ingredient); // It works
+    void saveAllergen(const Allergen& allergen); // It works
 
 
     // Get
     using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
-    productsMenus_t getDataFromPage(int n_page);
+    productsMenus_t getDataFromPage(const int n_page);
 
     std::vector<Table> getTables() const; // It works. 
-    Table getTableByNumber(int n_table) const; // It works 
+    Table getTableByNumber(const int n_table) const; // It works 
 
     std::vector<Employee> getEmployees() const; // It works
-    Employee getEmployeeByName(std::string name) const; // It works
+    Employee getEmployeeByName(const std::string name) const; // It works
 
     std::vector<Product> getProducts() const; // It works
-    Product getProductByName(std::string name) const; // It works
+    Product getProductByName(const std::string name) const; // It works
 
     std::vector<Ingredient> getIngredients() const; // It works
-    Ingredient getIngredientByName(std::string name) const;
+    Ingredient getIngredientByName(const std::string name) const;
 
     std::vector<Allergen> getAllergens() const; // It works
-    Allergen getAllergenByName(std::string name) const; // It works
+    Allergen getAllergenByName(const std::string name) const; // It works
 
 
     // Remove
-    void removeTable(Table* table); // It works
-    void removeEmployee(Employee* employee); // It works
-    void removeProduct(Product* product); // It works
-    void removeOrder(Order* order); // It works
-    void removeIngredient(Ingredient* ingredient); // It works
-    void removeAllergen(Allergen* allergen); // It works
+    void removeTable(const Table& table); // It works
+    void removeEmployee(const Employee& employee); // It works
+    void removeProduct(const Product& product); // It works
+    void removeOrder(const Order& order); // It works
+    void removeIngredient(const Ingredient& ingredient); // It works
+    void removeAllergen(const Allergen& allergen); // It works
 
 
 private:

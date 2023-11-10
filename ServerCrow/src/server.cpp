@@ -35,17 +35,17 @@ void Server::dropAllTables() { database()->dropAllTables(); }
 
 
 // Save
-void Server::saveTable(Table* table) { _database->saveTable(table); }
+void Server::saveTable(const Table& table) { _database->saveTable(table); }
 
-void Server::saveEmployee(Employee* employee) { _database->saveEmployee(employee); }
+void Server::saveEmployee(const Employee& employee) { _database->saveEmployee(employee); }
 
-void Server::saveProduct(Product* product) { _database->saveProduct(product); }
+void Server::saveProduct(const Product& product) { _database->saveProduct(product); }
 
-void Server::saveOrder(Order* order) { _database->saveOrder(order); }
+void Server::saveOrder(const Order& order) { _database->saveOrder(order); }
 
-void Server::saveIngredient(Ingredient* ingredient) { _database->saveIngredient(ingredient); }
+void Server::saveIngredient(const Ingredient& ingredient) { _database->saveIngredient(ingredient); }
 
-void Server::saveAllergen(Allergen* allergen) { _database->saveAllergen(allergen); }
+void Server::saveAllergen(const Allergen& allergen) { _database->saveAllergen(allergen); }
 
 
 // Get
@@ -76,15 +76,15 @@ Allergen Server::getAllergenByName(std::string name) const { return _database->g
 
 
 // Remove
-void Server::removeTable(Table* table) { _database->removeTable(table); }
+void Server::removeTable(const Table& table) { _database->removeTable(table); }
 
-void Server::removeEmployee(Employee* employee) { _database->removeEmployee(employee); }
+void Server::removeEmployee(const Employee& employee) { _database->removeEmployee(employee); }
 
-void Server::removeProduct(Product* product) { _database->removeProduct(product); }
+void Server::removeProduct(const Product& product) { _database->removeProduct(product); }
 
-void Server::removeOrder(Order* order) { _database->removeOrder(order); }
+void Server::removeOrder(const Order& order) { _database->removeOrder(order); }
 
-void Server::removeIngredient(Ingredient* ingredient) { _database->removeIngredient(ingredient); }
+void Server::removeIngredient(const Ingredient& ingredient) { _database->removeIngredient(ingredient); }
 
-void Server::removeAllergen(Allergen* allergen) { _database->removeAllergen(allergen); }
+void Server::removeAllergen(const Allergen& allergen) { _database->removeAllergen(allergen); }
 
