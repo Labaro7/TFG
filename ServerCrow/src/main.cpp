@@ -109,6 +109,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     // 3. Get ticket products and ticket bill
     const std::unordered_map<std::string, int> ticketProducts = server.getTableByNumber(n_table).products;
     double bill = 0.0;
+    double discount = server.getTableByNumber(n_table).discount;
 
     for (const auto& p : ticketProducts) {
         ss << "<li class='ticketProduct'>" << "x1 " << p.second << " " << p.first << "</li>" << std::endl;
@@ -125,7 +126,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     }
 
     // 4. Generate HTML piece with the ticket bill
-    ss << "<div id='bill'>$" << bill << "</div>" << std::endl;
+    ss << "<div id='bill'>$" << bill * (1 - (discount/100)) << "</div>" << std::endl;
     std::string ticketBillHTML = ss.str();
     ss.str("");
     size_t ticketBillPlaceholderPos = contentHTML.find(TICKET_BILL_PLACEHOLDER);
