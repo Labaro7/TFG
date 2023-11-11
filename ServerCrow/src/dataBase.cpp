@@ -178,6 +178,7 @@ void Database::initializeAllergensTable() {
 
 void Database::initialize() {
     // Create the tables to define the domain
+    // TODO: Make n_table primary key so there are no duplicate tables
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
     MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
     MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE");
@@ -230,7 +231,7 @@ void Database::saveTable(const Table& table) {
     try {
         int n_table = table.n_table;
         int n_clients = table.n_clients;
-        double bill = table.bill;
+        double bill = 0; // The bill is updated by saveTableProduct
         double discount = table.discount;
 
         Table t = getTableByNumber(n_table);
@@ -404,18 +405,25 @@ void Database::saveAllergen(const Allergen& allergen) {
 void Database::saveTableProduct(const Table& table, const Product& product) {
     try {
         int n_table = table.n_table;
+        double discount = table.discount;
         std::string name = product.name;
-        int table_id;
-        int product_id;
+        int table_id = 0;
+        int product_id = 0;
 
         std::stringstream query;
 
-        query << "SELECT table_id FROM tables WHERE n_table = " << n_table;
+        query << "SELECT * FROM tables WHERE n_table = " << n_table;
         sql::ResultSet* res = stmt->executeQuery(query.str());
         query.str("");
     
         if (res->next()) {
             table_id = res->getInt("table_id");
+            double new_bill = res->getDouble("bill") + product.price;
+
+            pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+            pstmt->setInt(1, new_bill);
+            pstmt->setInt(2, table_id);
+            pstmt->execute();
         }
 
         query << "SELECT product_id FROM products WHERE name = '" << name << "'";
@@ -523,9 +531,9 @@ Table Database::getTableByNumber(const int n_table) const {
             table.n_table = n;
             table.n_clients = n_clients;
             table.products = products;
-            for (auto i : products) {
+            //for (auto i : products) {
                 //std::cout << i.first << std::endl;
-            }
+            //}
             table.bill = bill;
             table.discount = discount;
         }

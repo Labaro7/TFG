@@ -14,10 +14,11 @@ struct Table {
     std::unordered_map<std::string, int> products;
     double bill;
     double discount;
+    //double bill_with_discount;
 
     Table();
     Table(int n_table);
-    Table(int n_table, int n_clients, std::unordered_map<std::string, int> products, double bill, double discount);
+    Table(int n_table, int n_clients, std::unordered_map<std::string, int> products, double discount);
 
     bool isEmpty();
 };
