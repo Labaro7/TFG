@@ -479,10 +479,10 @@ std::vector<Table> Database::getTables() const {
             table.bill = res->getDouble("bill");
             table.discount = res->getDouble("discount");
 
+            //std::cout << "Id: " << id << ". Table Number: " << n_table << std::endl;
             tables.push_back(table);
         }
 
-        // Sort the tables in ascending order
         std::sort(tables.begin(), tables.end(), [](Table a, Table b) { return a.n_table < b.n_table;  });
 
         return tables;

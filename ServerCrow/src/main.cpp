@@ -9,6 +9,7 @@ const char* TICKET_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: TICKET PRODUCTS -->
 const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
 
 
+// index.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server) {
     std::stringstream ssHTML;
     ssHTML << file->rdbuf();
@@ -36,7 +37,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     return contentHTML;
 }
 
-
+// table.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::string productListPlaceholder, const std::vector<Product> products, Server& server){
     // Data to insert into HTML
     // 1. Table number

@@ -20,8 +20,8 @@ const lastProduct = document.getElementById("lastOrder");
 const price = document.getElementById("price");
 let price_val = parseFloat(price.textContent);
 
-for (let i = 0; i < ticketProducts.length; i++) ticket.push(ticketProducts[i]);
-if(ticket.length > 1) lastProduct.textContent = ticket[ticket.length - 1];
+for (let i = 0; i < ticketProducts.length; i++) ticket.push(ticketProducts[i].textContent);
+if (ticket.length > 0) lastProduct.textContent = ticket[ticket.length - 1];
 
 function deleteLastOrder() {
     // Remove the li item
