@@ -5,8 +5,13 @@ currentButton.style.backgroundColor = "#0a3677";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
 
+// First row
 const n_table = document.getElementById("numTable");
+
+// Fourth row
 const li = document.getElementsByClassName("grid-product");
+
+// Ticket
 let data = [];
 const ticketList = document.getElementById("ticketList");
 const ticketProducts = document.getElementsByClassName("ticketProduct");
@@ -36,8 +41,9 @@ function addProductToTicket(clickedProduct) {
 
     // Add the product in the ticket of the table
     let child = document.createElement("li");
-    child.className = "ticketProduct";
+    child.className = "addedTicketProduct";
     child.textContent = ticket[ticket.length - 1];
+    child.backgroundColor = "green";
     ticketList.appendChild(child);
 
     const price = document.getElementById("price");

@@ -112,7 +112,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     double discount = server.getTableByNumber(n_table).discount;
 
     for (const auto& p : ticketProducts) {
-        ss << "<li class='ticketProduct'>" << "x1 " << p.second << " " << p.first << "</li>" << std::endl;
+        ss << "<li class='ticketProduct'>" << "x1 " << p.first << " " << p.second << "</li>" << std::endl;
         bill += p.second;
     }
     

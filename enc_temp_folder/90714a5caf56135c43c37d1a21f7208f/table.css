@@ -208,8 +208,8 @@ numTable {
     flex: 1;
 }
 
-.addedTicketProduct {
-    background-color: #d7fcda;
+.ticketProduct {
+    background-color: #ccffcd;
 }
 
 #bill {
