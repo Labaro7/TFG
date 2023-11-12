@@ -187,6 +187,7 @@ body {
     flex: 1;
     background-color: #0a3677;
     color: white;
+    text-decoration: none;
 }
 
 .tablePrice {

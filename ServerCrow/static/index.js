@@ -48,6 +48,26 @@ function clearDisplay() {
     display.value = '';
 }
 
+function goToTable(clickedTable) {
+    const n_table = (clickedTable.children)[1].textContent.substring(1);
+    console.log(n_table);
 
+    let url = 'https://192.168.1.66:18080/table?tableInput=' + n_table;
+
+    fetchData(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            return response.text();
+        })
+        .then(data => {
+            console.log('Data received:', data);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
 
 
