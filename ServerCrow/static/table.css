@@ -209,8 +209,14 @@ numTable {
 }
 
 #bill {
-    font-size: 60px;
+    display: flex;
     position: relative;
     text-align: center;
+    justify-content: center;
     margin-bottom: 20px;
+    font-size: 60px;
+}
+
+#price, #currency {
+
 }

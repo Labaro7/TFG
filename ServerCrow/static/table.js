@@ -12,14 +12,26 @@ const ticketList = document.getElementById("ticketList");
 const ticketProducts = document.getElementsByClassName("ticketProduct");
 let ticket = [];
 const lastProduct = document.getElementById("lastOrder");
+const price = document.getElementById("price");
+let price_val = parseFloat(price.textContent);
 
 for (let i = 0; i < ticketProducts.length; i++) ticket.push(ticketProducts[i]);
 if(ticket.length > 1) lastProduct.textContent = ticket[ticket.length - 1];
 
+function deleteLastOrder() {
+    // Remove the li item
+    ticketList.removeChild(ticketList.lastElementChild);
+
+    // Remove from ticket array
+    ticket.pop();
+    lastProduct.textContent = ticket[ticket.length - 1];
+
+    price.textContent -= 1; // TODO: Change por removed product price
+}
+
 function addProductToTicket(clickedProduct) {
     // Add the product to the list of products of the table
     ticket.push(clickedProduct.textContent);
-    console.log(ticket);
     lastProduct.textContent = ticket[ticket.length - 1];
 
     // Add the product in the ticket of the table
@@ -27,9 +39,13 @@ function addProductToTicket(clickedProduct) {
     child.className = "ticketProduct";
     child.textContent = ticket[ticket.length - 1];
     ticketList.appendChild(child);
+
+    const price = document.getElementById("price");
+    const clicked_price = (clickedProduct.children)[1].textContent;
+
+    let clicked_price_val = parseFloat(clicked_price);
+    price.textContent = price_val + clicked_price_val;
 }
-
-
 
 
 function changeToProductsTab() {
@@ -99,8 +115,4 @@ function displayMenu(clickedButton) {
         currentGrid.style.display = 'flex';
         selectButton(currentGridNumber);
     }
-
-
-
-
 }

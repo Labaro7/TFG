@@ -88,7 +88,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
         // Is product
         if (std::get<2>(p).empty()) {
-            ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'>" << product_name << "<br>" << "<div class='prices'>" << product_price << "</div></li > " << std::endl; // We use this because std::to_string() eliminates the precision set
+            ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'>" << product_name << "<br>" << "<div class='prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
         }
 
         // Is desployable
@@ -126,7 +126,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     }
 
     // 4. Generate HTML piece with the ticket bill
-    ss << "<div id='bill'>$" << bill * (1 - (discount/100)) << "</div>" << std::endl;
+    ss << "<div id='bill'><div id='currency'>$</div><div id='price'>" << bill * (1 - (discount/100)) << "</div></div>" << std::endl;
     std::string ticketBillHTML = ss.str();
     ss.str("");
     size_t ticketBillPlaceholderPos = contentHTML.find(TICKET_BILL_PLACEHOLDER);
