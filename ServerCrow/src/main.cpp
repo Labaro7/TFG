@@ -148,31 +148,6 @@ int main() {
         server.dropAllTables();
         server.initialize();
 
-        Product p1("a", 10);
-        Product p2("b", 20);
-        Product p3("c", 30);
-        server.saveProduct(p1);
-        server.saveProduct(p2);
-        server.saveProduct(p3);
-
-        std::unordered_map<std::string, int> ps = { {p1.name, p1.price}, {p2.name, p2.price} };
-
-        Table t1(69, 1, ps, 0.0);
-        server.saveTable(t1);
-        for (auto const& p : ps) {
-            server.database()->saveTableProduct(t1, Product(p.first, p.second));
-        }
-
-        ps[p3.name] = p3.price;
-        Table t2(12, 5, ps, 10.0);
-        server.saveTable(t2);
-        for (auto const& p : ps) {
-            server.database()->saveTableProduct(t2, Product(p.first, p.second));
-        }
-
-        server.getTableByNumber(t1.n_table) = t1;
-        server.getTableByNumber(69) = t2;
-
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
         std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);

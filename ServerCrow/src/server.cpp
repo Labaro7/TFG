@@ -27,6 +27,28 @@ void Server::initialize() {
     std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup5 = { "e", 5.0, vec };
     std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup6 = { "f", 6.0, vec };
 
+    Product p1("a", 10);
+    Product p2("b", 20);
+    Product p3("c", 30);
+    saveProduct(p1);
+    saveProduct(p2);
+    saveProduct(p3);
+
+    std::unordered_map<std::string, int> ps = { {p1.name, p1.price}, {p2.name, p2.price} };
+
+    Table t1(69, 1, ps, 0.0);
+    saveTable(t1);
+    for (auto const& p : ps) {
+        database()->saveTableProduct(t1, Product(p.first, p.second));
+    }
+
+    ps[p3.name] = p3.price;
+    Table t2(12, 5, ps, 10.0);
+    saveTable(t2);
+    for (auto const& p : ps) {
+        database()->saveTableProduct(t2, Product(p.first, p.second));
+    }
+
     pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6 };
     restaurant->pages = pages;
 }
