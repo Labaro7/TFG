@@ -48,24 +48,17 @@ void Server::initialize() {
         saveTableProduct(t1, p.first);
     }
 
-    std::cout << "HOLA" << std::endl;
     Table t2(12, 5, ps, 10.0);
-    std::cout << "YEPA" << t2.bill << std::endl;
     saveTable(t2);
-    std::cout << "YEPA" << t2.bill << std::endl;
     for (auto const& p : ps) {
         saveTableProduct(t2, p.first);
-        std::cout << "YEPA" << t2.bill << std::endl;
     }
 
     pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6 };
     restaurant->pages = pages;
 
     saveTableProduct(t2, p2);
-    std::cout << "YEPA" << t2.bill << std::endl;
     saveTableProduct(t2, p2);
-    std::cout << "YEPA" << t2.bill << std::endl;
-
 }
 
 void Server::dropAllTables() { _database->dropAllTables(); }

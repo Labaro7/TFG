@@ -406,7 +406,6 @@ void Database::saveTableProduct(Table& table, const Product& product) {
         if (res->next()) {
             table_id = res->getInt("table_id");
             double new_bill = res->getDouble("bill") + product.price;
-            std::cout << "Presioo mesa" << table.n_table << ": " << new_bill - product.price << std::endl;
 
             pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
             pstmt->setInt(1, new_bill);

@@ -22,7 +22,6 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     std::ostringstream ss;
 
     for (const auto& t : tables) {
-        std::cout << t.bill << std::endl;
         ss << "<li class='table'><a class='tableNumber' href='https://192.168.1.66:18080/table?tableInput=" << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * (1 - (t.discount / 100)) << "</div></li>" << std::endl;
     }   
 
@@ -139,6 +138,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 int main() {
     crow::SimpleApp app;
     Server server;
+
+    // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
+    crow::logger::setLogLevel(crow::LogLevel::Warning);
     
     server.dropAllTables();
     server.initialize();
@@ -188,9 +190,6 @@ int main() {
         ([]() {
         return "Wrong Route";
             });
-
-    // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
-    crow::logger::setLogLevel(crow::LogLevel::Warning);
 
     // App methods chain
     app.bindaddr("192.168.1.66")
