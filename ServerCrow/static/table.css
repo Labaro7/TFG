@@ -215,7 +215,7 @@ numTable {
 #bill {
     display: flex;
     position: relative;
-    text-align: center;
+    align-content: center;
     justify-content: center;
     margin-bottom: 20px;
     font-size: 60px;
@@ -223,4 +223,14 @@ numTable {
 
 #price, #currency {
 
+}
+
+#discount {
+    display: flex;
+    font-size: 20px;
+}
+
+#minus, #discountValue, #percentage {
+    display: flex-column;
+    align-self: flex-end;
 }
