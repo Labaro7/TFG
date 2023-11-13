@@ -62,6 +62,7 @@ function addProductToTicket(clickedProduct) {
     ticketList.appendChild(child);
 
     const price = document.getElementById("price");
+    const clicked_price = (clickedProduct.children)[1].textContent;
 
     price.textContent = parseFloat(price.textContent) + parseFloat(last.price);
 }
