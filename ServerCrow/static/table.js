@@ -15,34 +15,39 @@ const li = document.getElementsByClassName("grid-product");
 let data = [];
 const ticketList = document.getElementById("ticketList");
 const ticketProducts = document.getElementsByClassName("ticketProduct");
-let ticket = [];
+let current_ticket = [];
+let added_ticket = [];
 const lastProduct = document.getElementById("lastOrder");
 const price = document.getElementById("price");
 let price_val = parseFloat(price.textContent);
 
-for (let i = 0; i < ticketProducts.length; i++) ticket.push(ticketProducts[i].textContent);
-if (ticket.length > 0) lastProduct.textContent = ticket[ticket.length - 1];
+for (let i = 0; i < ticketProducts.length; i++) current_ticket.push(ticketProducts[i].textContent);
+if (current_ticket.length > 0) lastProduct.textContent = current_ticket[added_ticket.length - 1];
+lastProduct.textContent = "-";
 
 function deleteLastOrder() {
     // Remove the li item
     ticketList.removeChild(ticketList.lastElementChild);
 
     // Remove from ticket array
-    ticket.pop();
-    lastProduct.textContent = ticket[ticket.length - 1];
+    added_ticket.pop();
+    lastProduct.textContent = added_ticket[added_ticket.length - 1];
 
     price.textContent -= 1; // TODO: Change por removed product price
 }
 
 function addProductToTicket(clickedProduct) {
     // Add the product to the list of products of the table
-    ticket.push(clickedProduct.textContent);
-    lastProduct.textContent = ticket[ticket.length - 1];
+    product = { name: (clickedProduct.children)[0].textContent, price: (clickedProduct.children)[1].textContent };
+    added_ticket.push(product);
+    console.log(added_ticket);
+    let last = added_ticket[added_ticket.length - 1];
+    lastProduct.textContent = last.name + " | " + last.price;
 
     // Add the product in the ticket of the table
     let child = document.createElement("li");
     child.className = "addedTicketProduct";
-    child.textContent = ticket[ticket.length - 1];
+    child.textContent = last.name + " | " + last.price;
     child.backgroundColor = "green";
     ticketList.appendChild(child);
 
@@ -108,6 +113,7 @@ function selectButton(number) {
     currentButton.style.border = "1px solid black";
 }
 
+// TODO: It cannot display 6 or more menus
 function displayMenu(clickedButton) {
     const number = clickedButton.getAttribute("data-number");
     currentGrid = document.getElementById("grid"+currentGridNumber);
