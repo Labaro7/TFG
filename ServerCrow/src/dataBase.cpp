@@ -189,7 +189,7 @@ void Database::initialize() {
 
     // TODO: Create Junction tables
     // Create the junction tables to the ManyToMany relationships
-    MySqlCreateTable("tableproduct", "table_id INT, product_id INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
+    MySqlCreateTable("tableproduct", "table_id INT, product_id INT, amount INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
     MySqlCreateTable("productorder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
     MySqlCreateTable("productingredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
     //MySqlCreateDatabase("ingredientallergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
@@ -229,31 +229,16 @@ void Database::dropAllTables() {
 // Save
 void Database::saveTable(const Table& table) {
     try {
-        int n_table = table.n_table;
-        int n_clients = table.n_clients;
-        double bill = 0; // The bill is updated by saveTableProduct
-        double discount = table.discount;
+        pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
+        pstmt->setInt(1, table.n_table);
+        pstmt->setInt(2, table.n_clients);
+        pstmt->setDouble(3, table.bill);
+        pstmt->setDouble(4, table.discount);
+        pstmt->execute();
 
-        Table t = getTableByNumber(n_table);
-        if (t.isEmpty()) {
-            std::ostringstream oss;
-            oss << n_table << "," << n_clients << "," << bill << "," << discount;
-            std::string values = oss.str();
-
-            pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
-            pstmt->setInt(1, n_table);
-            pstmt->setInt(2, n_clients);
-            pstmt->setDouble(3, bill);
-            pstmt->setDouble(4, discount);
-            pstmt->execute();
-
-            CROW_LOG_INFO << "[ADDED] Table " << n_table <<
-                " with " << n_clients <<
-                " clients inserted into tables.";
-        }
-        else {
-            CROW_LOG_WARNING << "[EXCEPTION] Table is already in the database.";
-        }
+        CROW_LOG_INFO << "[ADDED] Table " << table.n_table <<
+            " with " << table.n_clients <<
+            " clients inserted into tables.";
     }
     catch (sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not save table. Error message: " << e.what();
@@ -402,13 +387,15 @@ void Database::saveAllergen(const Allergen& allergen) {
     }
 }
 
-void Database::saveTableProduct(const Table& table, const Product& product) {
+
+void Database::saveTableProduct(Table& table, const Product& product) {
     try {
-        int n_table = table.n_table;
-        double discount = table.discount;
-        std::string name = product.name;
         int table_id = 0;
+        int n_table = table.n_table;
+        //double discount = table.discount;
+        
         int product_id = 0;
+        std::string name = product.name;
 
         std::stringstream query;
 
@@ -419,25 +406,51 @@ void Database::saveTableProduct(const Table& table, const Product& product) {
         if (res->next()) {
             table_id = res->getInt("table_id");
             double new_bill = res->getDouble("bill") + product.price;
+            std::cout << "Presioo mesa" << table.n_table << ": " << new_bill - product.price << std::endl;
 
             pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
             pstmt->setInt(1, new_bill);
             pstmt->setInt(2, table_id);
             pstmt->execute();
+
+            CROW_LOG_INFO << "[UPDATED] Table " << table.n_table <<
+                " updated bill is " << new_bill;
+
+            query << "SELECT product_id FROM products WHERE name = '" << name << "'";
+            res = stmt->executeQuery(query.str());
+            query.str("");
+
+            if (res->next()) {
+                product_id = res->getInt("product_id");
+
+                query << "SELECT amount FROM tableproduct WHERE table_id = " << table_id << " AND product_id = " << product_id;
+                res = stmt->executeQuery(query.str());
+                query.str("");
+
+                if (res->next()) {
+                    int new_amount = res->getInt("amount") + 1;
+
+                    pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+                    pstmt->setInt(1, new_amount);
+                    pstmt->setInt(2, table_id);
+                    pstmt->setInt(3, product_id);
+                    pstmt->execute();
+
+                    CROW_LOG_INFO << "[UPDATED] Tableproduct with table_id " << table_id <<
+                        " and product_id " << product_id << " to amount " << new_amount;
+                }
+                else {
+                    pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
+                    pstmt->setInt(1, table_id);
+                    pstmt->setInt(2, product_id);
+                    pstmt->setInt(3, 1);
+                    pstmt->execute();
+
+                    CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
+                        " and product_id " << product_id << " and amount 1 inserted into tableproduct.";
+                }
+            }
         }
-
-        query << "SELECT product_id FROM products WHERE name = '" << name << "'";
-        res = stmt->executeQuery(query.str());
-        query.str("");
-
-        if (res->next()) {
-            product_id = res->getInt("product_id");
-        }
-
-        pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id) VALUES(?,?)");
-        pstmt->setInt(1, table_id);
-        pstmt->setInt(2, product_id);
-        pstmt->execute();
     }
     catch(sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not save table/product. Error message: " << e.what();
@@ -514,19 +527,19 @@ Table Database::getTableByNumber(const int n_table) const {
             res = stmt->executeQuery(query.str());
             query.str("");
 
-            std::unordered_map<std::string, int> products;
+            product_unordered_map products;
             while (res->next()) {
                 int product_id = res->getInt("product_id");
+                int amount = res->getInt("amount");
 
                 query << "SELECT * FROM products WHERE product_id = " << product_id; // TODO: change tables for a varible that corresponds to the table name
                 sql::ResultSet* res2 = stmt->executeQuery(query.str());
                 query.str("");
 
                 if (res2->next()) {
-                    std::string product_name = res2->getString("name");
-                    double product_price = res2->getDouble("price");
+                    Product p(res2->getString("name"), res2->getDouble("price"));
 
-                    products[product_name] = product_price;
+                    products[p] = amount;
                 }
             }
 

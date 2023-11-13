@@ -13,52 +13,78 @@ Server::~Server(){}
 std::unique_ptr<Database>& Server::database(){ return _database; }
 
 void Server::initialize() { 
-    database()->initialize(); 
+    _database->initialize(); 
 
     // Make the restaurant instances that store different configs of products
-    using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
+    using productsMenus_t = std::vector<std::tuple<Product, std::vector<std::pair<std::string, int>>>>;
     
-    std::vector<productsMenus_t> pages(5);
-    std::vector<std::pair<std::string, int>> vec;
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup1 = { "a", 1.0, vec };
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup2 = { "b", 2.0, vec };
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup3 = { "c", 3.0, vec };
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup4 = { "d", 4.0, vec };
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup5 = { "e", 5.0, vec };
-    std::tuple<std::string, int, std::vector<std::pair<std::string, int>>> tup6 = { "f", 6.0, vec };
-
-    Product p1("a", 10);
-    Product p2("b", 20);
-    Product p3("c", 30);
+    Product p1("Bread", 1.0);
+    Product p2("Ham", 2.0);
+    Product p3("Salad", 3.0);
+    Product p4("Pasta", 4.0);
+    Product p5("Pizza", 5.0);
+    Product p6("Hamburguer", 6.0);
     saveProduct(p1);
     saveProduct(p2);
     saveProduct(p3);
+    saveProduct(p4);
+    saveProduct(p5);
+    saveProduct(p6);
 
-    std::unordered_map<std::string, int> ps = { {p1.name, p1.price}, {p2.name, p2.price} };
+    std::vector<productsMenus_t> pages(5);
+    std::vector<std::pair<std::string, int>> vec;
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup1 = { p1, vec };
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup2 = { p2, vec };
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup3 = { p3, vec };
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup4 = { p4, vec };
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup5 = { p5, vec };
+    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup6 = { p6, vec };
+
+    product_unordered_map ps = { {p1, 1}, {p2, 1} };
 
     Table t1(69, 1, ps, 0.0);
     saveTable(t1);
     for (auto const& p : ps) {
-        database()->saveTableProduct(t1, Product(p.first, p.second));
+        saveTableProduct(t1, p.first);
     }
 
-    ps[p3.name] = p3.price;
+    std::cout << "HOLA" << std::endl;
     Table t2(12, 5, ps, 10.0);
+    std::cout << "YEPA" << t2.bill << std::endl;
     saveTable(t2);
+    std::cout << "YEPA" << t2.bill << std::endl;
     for (auto const& p : ps) {
-        database()->saveTableProduct(t2, Product(p.first, p.second));
+        saveTableProduct(t2, p.first);
+        std::cout << "YEPA" << t2.bill << std::endl;
     }
 
     pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6 };
     restaurant->pages = pages;
+
+    saveTableProduct(t2, p2);
+    std::cout << "YEPA" << t2.bill << std::endl;
+    saveTableProduct(t2, p2);
+    std::cout << "YEPA" << t2.bill << std::endl;
+
 }
 
-void Server::dropAllTables() { database()->dropAllTables(); }
+void Server::dropAllTables() { _database->dropAllTables(); }
 
 
 // Save
-void Server::saveTable(const Table& table) { _database->saveTable(table); }
+void Server::saveTable(const Table& table) { 
+    Table t = getTableByNumber(table.n_table);
 
+    if (t.isEmpty()) { // If this table is not saved
+        restaurant->current_tables[table.n_table] = table; // We first store it in server instance
+        _database->saveTable(table); // And the in the database
+    }
+    else {
+        CROW_LOG_WARNING << "[EXCEPTION] Table is already in the database.";
+    }
+}
+
+// TODO: The same as in saveTable but for the rest
 void Server::saveEmployee(const Employee& employee) { _database->saveEmployee(employee); }
 
 void Server::saveProduct(const Product& product) { _database->saveProduct(product); }
@@ -69,9 +95,16 @@ void Server::saveIngredient(const Ingredient& ingredient) { _database->saveIngre
 
 void Server::saveAllergen(const Allergen& allergen) { _database->saveAllergen(allergen); }
 
+void Server::saveTableProduct(Table& table, const Product& product) {
+    table.products[product]++;
+    table.bill += product.price;
+    restaurant->current_tables[table.n_table] = table;
+
+    _database->saveTableProduct(table, product); 
+}
+
 
 // Get
-using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
 productsMenus_t Server::getDataFromPage(int n_page) {
     return restaurant->getDataFromPage(n_page);
 }

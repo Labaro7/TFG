@@ -65,7 +65,7 @@ public:
     void saveIngredient(const Ingredient& ingredient); // It works
     void saveAllergen(const Allergen& allergen); // It works
 
-    void saveTableProduct(const Table& table, const Product& product);
+    void saveTableProduct(Table& table, const Product& product);
     void saveProductIngredient(const Product& product, const Ingredient& ingredient);
     void saveProductOrder(const Product& product, const Order& order);
 

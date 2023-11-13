@@ -22,7 +22,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     std::ostringstream ss;
 
     for (const auto& t : tables) {
-        ss << "<li class='table'><a class='tableNumber' href='https://192.168.1.66:18080/table?tableInput=" << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * ((100 - t.discount)/100) << "</div></li>" << std::endl;
+        std::cout << t.bill << std::endl;
+        ss << "<li class='table'><a class='tableNumber' href='https://192.168.1.66:18080/table?tableInput=" << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * (1 - (t.discount / 100)) << "</div></li>" << std::endl;
     }   
 
     std::string tablesPricesHTML = ss.str();
@@ -78,17 +79,16 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     // 2. Generate HTML piece with the products of the restaurant
     std::string productListHTML;
 
-    using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
-    using product = std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>;
+    using product = std::tuple<Product, std::vector<std::pair<std::string, int>>>;
 
     const productsMenus_t data = server.getDataFromPage(0);
     for (const auto& p : data) {
-        std::string product_name = std::get<0>(p);
-        int product_price = round(std::get<1>(p) * 100.0) / 100.0;;
-        auto list = std::get<2>(p);
+        std::string product_name = std::get<0>(p).name;
+        int product_price = round(std::get<0>(p).price * 100.0) / 100.0;;
+        auto list = std::get<1>(p);
 
         // Is product
-        if (std::get<2>(p).empty()) {
+        if (std::get<1>(p).empty()) {
             ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'>" << product_name << "<br>" << "<div class='prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
         }
 
@@ -108,13 +108,12 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     }
 
     // 3. Get ticket products and ticket bill
-    const std::unordered_map<std::string, int> ticketProducts = server.getTableByNumber(n_table).products;
-    double bill = 0.0;
+    const product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
+    double bill = server.getTableByNumber(n_table).bill;
     double discount = server.getTableByNumber(n_table).discount;
 
     for (const auto& p : ticketProducts) {
-        ss << "<li class='ticketProduct'>" << "x1 " << p.first << " " << p.second << "</li>" << std::endl;
-        bill += p.second;
+        ss << "<li class='ticketProduct'>" << "x" << p.second << " " << p.first.name << " | " << p.first.price << "</li>" << std::endl;
     }
     
     std::string ticketProductsHTML = ss.str();
@@ -141,12 +140,11 @@ int main() {
     crow::SimpleApp app;
     Server server;
     
+    server.dropAllTables();
+    server.initialize();
 
     CROW_ROUTE(app, "/")([&server](const crow::request& req, crow::response& res) {
         auto page = crow::mustache::load_text("index.html");
-
-        server.dropAllTables();
-        server.initialize();
 
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");

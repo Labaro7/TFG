@@ -31,10 +31,10 @@ public:
     void saveOrder(const Order& order); // It works
     void saveIngredient(const Ingredient& ingredient); // It works
     void saveAllergen(const Allergen& allergen); // It works
+    void saveTableProduct(Table& table, const Product& product);
 
 
     // Get
-    using productsMenus_t = std::vector<std::tuple<std::string, int, std::vector<std::pair<std::string, int>>>>;
     productsMenus_t getDataFromPage(const int n_page);
 
     std::vector<Table> getTables() const; // It works. 
