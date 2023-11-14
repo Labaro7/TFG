@@ -27,7 +27,8 @@ lastProduct.textContent = "-";
 
 function deleteLastOrder() {
     let last = added_ticket[added_ticket.length - 1];
-    price.textContent = parseFloat(price.textContent) - parseFloat(last.price); // TODO: Change por removed product price
+    const discount = document.getElementById("discountValue").textContent;
+    price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
 
     if (added_ticket.length > 1) {
         // Remove the li item
@@ -62,8 +63,9 @@ function addProductToTicket(clickedProduct) {
     ticketList.appendChild(child);
 
     const price = document.getElementById("price");
+    const discount = document.getElementById("discountValue").textContent;
 
-    price.textContent = parseFloat(price.textContent) + parseFloat(last.price);
+    price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
 }
 
 
