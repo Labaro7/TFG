@@ -149,6 +149,7 @@ function displayMenu(clickedButton) {
 function saveOrder() {
     const order = current_ticket.concat(added_ticket);
     const url = 'https://192.168.1.66:18080/order';
+    console.log(JSON.stringify(order));
 
     fetch(url, {
         method: 'POST',
@@ -164,6 +165,8 @@ function saveOrder() {
         .catch(error => {
             console.error('Error:', error);
         });
+
+    console.log(order);
 
     window.location.href = "https://192.168.1.66:18080/"
 }

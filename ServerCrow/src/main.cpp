@@ -128,7 +128,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     double discount = server.getTableByNumber(n_table).discount;
 
     for (const auto& p : ticketProducts) {
-        ss << std::fixed << std::setprecision(2) << "<li class='ticketProduct'>" << "x" << p.second << " " << p.first.name << " | " << p.first.price << "</li>" << std::endl;
+        ss << std::fixed << std::setprecision(2) << 
+            "<li class='ticketProduct'>" << std::endl << "<div class='productTimes'>x" << p.second << "</div><div class='productNames'>" << p.first.name << "</div><div class='productPrices'>" << p.first.price << "</div></li>" << std::endl;
     }
     
     std::string ticketProductsHTML = ss.str();
@@ -164,8 +165,6 @@ int main() {
     server.initialize();
 
     CROW_ROUTE(app, "/")([&server](const crow::request& req, crow::response& res) {
-        auto page = crow::mustache::load_text("index.html");
-
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
         std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
@@ -203,6 +202,23 @@ int main() {
         res.end();
         });
 
+    CROW_ROUTE(app, "/order")
+        .methods("POST"_method)
+        ([](const crow::request& req, crow::response& res) {
+        // TODO: Put relative path
+        std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+        std::stringstream ss;
+        ss << file.rdbuf();
+        file.close();
+        std::string index = ss.str();
+
+        std::cout << "RECEIVED" << std::endl;
+        std::cout << req.body << std::endl;
+
+        res.set_header("Content-Type", "text/html");
+        res.write(index);
+        res.end();
+            });
 
     CROW_CATCHALL_ROUTE(app)
         ([]() {
