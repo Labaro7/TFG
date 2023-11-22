@@ -19,10 +19,6 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     std::vector<Table> tables = server.database()->getTables();
 
-    for (auto e : tables) {
-        std::cout << e.n_table << " - " << e.bill << std::endl;
-    }
-
     // Make a HTML with the tables prices
     std::ostringstream ss;
 
@@ -178,8 +174,6 @@ int main() {
             res.code = 500; // Internal Server Error
             res.body = "Error reading HTML template", "text/plain";
         }
-
-        std::cout << "keloke" << std::endl;
 
         res.set_header("Content-Type", "text/html");
         res.write(modifiedHTML);
