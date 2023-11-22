@@ -24,6 +24,7 @@ public:
     std::unique_ptr<Database>& database(); // Returns the database to operate with its methods
     void dropAllTables();
 
+
     // Save
     void saveTable(const Table& table); // It works
     void saveEmployee(const Employee& employee); // It works

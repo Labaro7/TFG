@@ -204,7 +204,7 @@ int main() {
 
     CROW_ROUTE(app, "/order")
         .methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
+        ([&server](const crow::request& req, crow::response& res) {
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
         std::stringstream ss;
@@ -212,9 +212,36 @@ int main() {
         file.close();
         std::string index = ss.str();
 
-        std::cout << "RECEIVED" << std::endl;
-        std::cout << req.body << std::endl;
+        //std::cout << "RECEIVED" << std::endl;
+        //std::cout << req.body << std::endl;
 
+        // TODO: Get the date from the JSON
+        auto json_data = crow::json::load(req.body);
+
+        int n_table = json_data["n_table"].i();
+        auto order = json_data["order"];
+        auto added = json_data["added"];
+        
+        Table t = server.getTableByNumber(n_table);
+        if (t.isEmpty()) {
+            t = { n_table, 3, product_unordered_map(), 0.0 };
+            server.saveTable(t);
+        }
+        
+        //std::cout << n_table << std::endl;
+
+        for (const auto& object : added) {
+            int times = object["times"].i();
+            Product p(object["name"].s(), object["price"].d());
+
+            server.saveTableProduct(t, p);
+
+            //std::cout << times << std::endl;
+            //std::cout << p.name << " " << p.price << std::endl << std::endl;
+        }
+
+
+        // TODO: Change the response to the client
         res.set_header("Content-Type", "text/html");
         res.write(index);
         res.end();
@@ -232,5 +259,4 @@ int main() {
         .multithreaded()
         .ssl_file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt", "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key") // TODO: Put relative path
         .run();
-
 }

@@ -11,24 +11,36 @@
 // Other includes
 #include "domain.h"
 #include <sstream>
+#include <mutex>
+#include <deque>
 
 // MySQL constants.
-const std::string SERVER = "tcp://127.0.0.1:3306";
+const std::string HOST = "127.0.0.1";
+const int PORT = 3306;
 const std::string USERNAME = "user";
 const std::string PASSWORD = "user";
 const std::string DATABASE_NAME = "example_db";
+
+const int POOL_SIZE = 10;
+
+class Database;
+
+struct Connection {
+    Database* database;
+    int con_id;
+    std::shared_ptr<sql::Connection> con;
+    sql::Statement* stmt;
+    sql::PreparedStatement* pstmt;
+
+    // TODO: const
+    Connection(Database* database, int con_id, std::shared_ptr<sql::Connection> con);
+    ~Connection();
+};
 
 class Database {
 public:
     Database();
     ~Database();
-
-
-    // Get attributes
-    sql::Driver* getDriver();
-    sql::Connection* getCon();
-    sql::Statement* getStmt();
-    sql::PreparedStatement* getPstmt();
 
 
     // ------------------------------- MySQL queries ------------------------------- //
@@ -71,8 +83,8 @@ public:
 
 
     // Get
-    std::vector<Table> getTables() const; // It works
-    Table getTableByNumber(const int n_table) const; // It works
+    std::vector<Table> getTables(); // It works
+    Table getTableByNumber(const int n_table); // It works
 
     std::vector<Employee> getEmployees() const; // It works
     Employee getEmployeeByName(const std::string name) const; // It works
@@ -119,17 +131,16 @@ public:
     void removeIngredient(const Ingredient& ingredient); // It works
     void removeAllergen(const Allergen& allergen); // It works
 
-
 private:
-	std::string server = SERVER;
-	std::string username = USERNAME;
-	std::string password = PASSWORD;
-    std::string dataBaseName = DATABASE_NAME;
-    
-	sql::Driver* driver;
-	sql::Connection* con;
-	sql::Statement* stmt;
-	sql::PreparedStatement* pstmt;
+    sql::ConnectOptionsMap connection_properties;
+    sql::Driver* driver;
+
+    std::shared_ptr<sql::Connection> main_con;
+    sql::Statement* main_stmt;
+    sql::PreparedStatement* main_pstmt;
+
+    std::mutex mutex; // It is supposed to be asynchronous so it is needed.
 
 }; // class Database
+
 #endif

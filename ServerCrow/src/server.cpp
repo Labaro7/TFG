@@ -12,10 +12,10 @@ Server::~Server(){}
 
 std::unique_ptr<Database>& Server::database(){ return _database; }
 
-void Server::initialize() { 
+void Server::initialize() {
     _database->initialize(); 
 
-    // Make the restaurant instances that store different configs of products
+    // Make the restaurant instances that store different cfigs of products
     using productsMenus_t = std::vector<std::tuple<Product, std::vector<std::pair<std::string, int>>>>;
     
     Product p1("Bread", 1.0);
@@ -64,8 +64,9 @@ void Server::initialize() {
 void Server::dropAllTables() { _database->dropAllTables(); }
 
 
+
 // Save
-void Server::saveTable(const Table& table) { 
+void Server::saveTable(const Table& table) {
     Table t = getTableByNumber(table.n_table);
 
     if (t.isEmpty()) { // If this table is not saved
@@ -98,9 +99,7 @@ void Server::saveTableProduct(Table& table, const Product& product) {
 
 
 // Get
-productsMenus_t Server::getDataFromPage(int n_page) {
-    return restaurant->getDataFromPage(n_page);
-}
+productsMenus_t Server::getDataFromPage(int n_page) { return restaurant->getDataFromPage(n_page); }
 
 std::vector<Table> Server::getTables() const { return _database->getTables(); }
 

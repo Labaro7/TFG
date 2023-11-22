@@ -22,9 +22,9 @@ const price = document.getElementById("price");
 let price_val = parseFloat(price.textContent);
 
 for (let i = 0; i < ticketProducts.length; i++) {
-    const t = ((ticketProducts[i].children)[0].textContent).substr(1);
+    const t = parseInt(((ticketProducts[i].children)[0].textContent).substr(1));
     const n = (ticketProducts[i].children)[1].textContent;
-    const p = (ticketProducts[i].children)[2].textContent;
+    const p = parseFloat((ticketProducts[i].children)[2].textContent);
 
     current_ticket.push({ times: t, name: n, price: p });
 }
@@ -56,7 +56,7 @@ function deleteLastOrder() {
 
 function addProductToTicket(clickedProduct) {
     // Add the product to the list of products of the table
-    product = { times: 1, name: (clickedProduct.children)[0].textContent, price: (clickedProduct.children)[1].textContent };
+    product = { times: 1, name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent) };
     added_ticket.push(product);
 
     let last = added_ticket[added_ticket.length - 1];
@@ -88,6 +88,7 @@ function changeToProductsTab() {
     ticketMenu.style.display = 'none';
 }
 
+
 function changeToTicketTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");
@@ -98,10 +99,6 @@ function changeToTicketTab() {
     const ticketMenu = document.getElementById("ticketMenu");
     productsMenu.style.display = 'none';
     ticketMenu.style.display = 'flex';
-}
-
-function toggleTab() {
-
 }
 
 
@@ -117,6 +114,7 @@ function showPage(pageId) {
     }
 }
 
+
 function selectButton(number) {
     let button = document.getElementById("fourthRowButton" + number);
     currentButton.style.backgroundColor = "white";
@@ -129,6 +127,7 @@ function selectButton(number) {
     button.style.color = "white";
     currentButton.style.border = "1px solid black";
 }
+
 
 // TODO: It cannot display 6 or more menus
 function displayMenu(clickedButton) {
@@ -146,8 +145,16 @@ function displayMenu(clickedButton) {
     }
 }
 
+
 function saveOrder() {
-    const order = current_ticket.concat(added_ticket);
+    const n_table = parseInt((document.getElementById("numTable").textContent).substr(7)); // Use substr(7) to eliminate "Table: "
+    const order = current_ticket;
+    const added = added_ticket;
+    const data = {
+        n_table: n_table,
+        order: order,
+        added: added
+    };
     const url = 'https://192.168.1.66:18080/order';
 
     fetch(url, {
@@ -155,7 +162,7 @@ function saveOrder() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(order),
+        body: JSON.stringify(data),
     })
         .then(response => response.text())
         .then(data => {
@@ -165,5 +172,5 @@ function saveOrder() {
             console.error('Error:', error);
         });
 
-    window.location.href = "https://192.168.1.66:18080/"
+    window.location.href = "https://192.168.1.66:18080"
 }
