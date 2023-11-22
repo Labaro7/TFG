@@ -172,5 +172,9 @@ function saveOrder() {
             console.error('Error:', error);
         });
 
-    window.location.href = "https://192.168.1.66:18080"
+    // If setTimeout is not used, when the index.html is received
+    // it doesn't have the tables prices updated because
+    // it didn't have enough time to retrieve the new information
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 0);
+    
 }
