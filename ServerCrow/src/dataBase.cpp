@@ -26,7 +26,7 @@ Connection::~Connection() {
     database->connection_pool.erase(database->connection_pool.begin() + pos);*/
 }
 
-Database::Database() : main_pstmt() {
+Database::Database() : pstmt() {
     try{
         connection_properties = {
             {"hostName", HOST},
@@ -38,8 +38,8 @@ Database::Database() : main_pstmt() {
         };
 
         driver = get_driver_instance();
-        main_con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
-        main_stmt = main_con->createStatement();
+        con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
+        stmt = con->createStatement();
     }
     catch (const sql::SQLException e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not construct database." << e.what();
@@ -48,11 +48,11 @@ Database::Database() : main_pstmt() {
 }
 
 Database::~Database() {
-    main_con->close();
+    con->close();
 
     // These have to be explicitly deleted. con is shared_ptr so it doesnt need to
-    delete main_stmt;
-    delete main_pstmt;
+    delete stmt;
+    delete pstmt;
 }
 
 
@@ -62,7 +62,7 @@ Database::~Database() {
 // Database
 void Database::MySqlCreateDatabase(std::string name) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("CREATE DATABASE " + name);
     }
     catch (const sql::SQLException& e) {
@@ -72,7 +72,7 @@ void Database::MySqlCreateDatabase(std::string name) {
 
 void Database::MySqlDropDatabase(std::string name) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("DROP DATABASE " + name);
     }
     catch (const sql::SQLException& e) {
@@ -82,7 +82,7 @@ void Database::MySqlDropDatabase(std::string name) {
 
 void Database::MySqlUseDatabase(std::string name) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("USE " + name);
     }
     catch (const sql::SQLException& e) {
@@ -92,7 +92,7 @@ void Database::MySqlUseDatabase(std::string name) {
 
 void Database::MySqlSaveChangesToDataBase() {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("COMMIT");
     }
     catch (const sql::SQLException& e) {
@@ -103,7 +103,7 @@ void Database::MySqlSaveChangesToDataBase() {
 // Table
 void Database::MySqlCreateTable(std::string name, std::string definition) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("CREATE TABLE " + name + " (" + definition + ")");
         CROW_LOG_INFO << "MySQL table created: " << name;
     }
@@ -114,7 +114,7 @@ void Database::MySqlCreateTable(std::string name, std::string definition) {
 
 void Database::MySqlDropTable(std::string name) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("DROP TABLE IF EXISTS " + name);
     }
     catch (const sql::SQLException& e) {
@@ -124,7 +124,7 @@ void Database::MySqlDropTable(std::string name) {
 
 void Database::MySqlModifyTable(std::string name, std::string modification) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("ALTER TABLE " + name + " " + modification);
     }
     catch (const sql::SQLException& e) {
@@ -134,7 +134,7 @@ void Database::MySqlModifyTable(std::string name, std::string modification) {
 
 void Database::MySqlEmptyTable(std::string name) {
     try {
-        sql::Statement* stmt = main_con->createStatement();
+        sql::Statement* stmt = con->createStatement();
         stmt->execute("DELETE FROM " + name);
     }
     catch (const sql::SQLException& e) {
@@ -234,17 +234,17 @@ void Database::initialize() {
 void Database::dropAllTables() {
     try {
         // We must drop first the tables that have a reference to another
-        main_stmt->execute("DROP TABLE IF EXISTS tableproduct;");
-        main_stmt->execute("DROP TABLE IF EXISTS productingredient;");
-        main_stmt->execute("DROP TABLE IF EXISTS productorder;");
+        stmt->execute("DROP TABLE IF EXISTS tableproduct;");
+        stmt->execute("DROP TABLE IF EXISTS productingredient;");
+        stmt->execute("DROP TABLE IF EXISTS productorder;");
         
-        main_stmt->execute("DROP TABLE IF EXISTS orders;");
-        main_stmt->execute("DROP TABLE IF EXISTS ingredients;");
-        main_stmt->execute("DROP TABLE IF EXISTS allergens;");
-        main_stmt->execute("DROP TABLE IF EXISTS employees;");
-        main_stmt->execute("DROP TABLE IF EXISTS products;");
-        main_stmt->execute("DROP TABLE IF EXISTS tables;");
-        main_stmt->execute("DROP TABLE IF EXISTS restaurants;");
+        stmt->execute("DROP TABLE IF EXISTS orders;");
+        stmt->execute("DROP TABLE IF EXISTS ingredients;");
+        stmt->execute("DROP TABLE IF EXISTS allergens;");
+        stmt->execute("DROP TABLE IF EXISTS employees;");
+        stmt->execute("DROP TABLE IF EXISTS products;");
+        stmt->execute("DROP TABLE IF EXISTS tables;");
+        stmt->execute("DROP TABLE IF EXISTS restaurants;");
 
         CROW_LOG_INFO << "[REMOVED] All tables dropped.";
     }
@@ -257,12 +257,12 @@ void Database::dropAllTables() {
 // Save
 void Database::saveTable(const Table& table) {
     try {
-        main_pstmt = main_con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
-        main_pstmt->setInt(1, table.n_table);
-        main_pstmt->setInt(2, table.n_clients);
-        main_pstmt->setDouble(3, table.bill);
-        main_pstmt->setDouble(4, table.discount);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
+        pstmt->setInt(1, table.n_table);
+        pstmt->setInt(2, table.n_clients);
+        pstmt->setDouble(3, table.bill);
+        pstmt->setDouble(4, table.discount);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[ADDED] Table " << table.n_table <<
             " with " << table.n_clients <<
@@ -285,12 +285,12 @@ void Database::saveEmployee(const Employee& employee) {
             oss << name << "," << level << "," << start << "," << finish;
             std::string values = oss.str();
 
-            main_pstmt = main_con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)");
-            main_pstmt->setString(1, name);
-            main_pstmt->setInt(2, level);
-            main_pstmt->setString(3, start);
-            main_pstmt->setString(4, finish);
-            main_pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)");
+            pstmt->setString(1, name);
+            pstmt->setInt(2, level);
+            pstmt->setString(3, start);
+            pstmt->setString(4, finish);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Employee " << name <<
                 " with level " << level <<
@@ -316,11 +316,11 @@ void Database::saveProduct(const Product& product) {
             oss << name << "," << name << "," << price;
             std::string values = oss.str();
 
-            main_pstmt = main_con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
+            pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
 
-            main_pstmt->setString(1, name);
-            main_pstmt->setDouble(2, price);
-            main_pstmt->execute();
+            pstmt->setString(1, name);
+            pstmt->setDouble(2, price);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Product " << name <<
                 " with price " << price <<
@@ -346,11 +346,11 @@ void Database::saveOrder(const Order& order) {
             oss << time << "," << message;
             std::string values = oss.str();
 
-            main_pstmt = main_con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
+            pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
 
-            main_pstmt->setString(1, time);
-            main_pstmt->setString(2, message);
-            main_pstmt->execute();
+            pstmt->setString(1, time);
+            pstmt->setString(2, message);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Order with time " << time <<
                 " and message " << message <<
@@ -374,9 +374,9 @@ void Database::saveIngredient(const Ingredient& ingredient) {
             oss << name;
             std::string values = oss.str();
 
-            main_pstmt = main_con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
-            main_pstmt->setString(1, name);
-            main_pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
+            pstmt->setString(1, name);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Ingredient with name " << name <<
                 " inserted into ingredients.";
@@ -399,9 +399,9 @@ void Database::saveAllergen(const Allergen& allergen) {
             oss << name;
             std::string values = oss.str();
 
-            main_pstmt = main_con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
-            main_pstmt->setString(1, name);
-            main_pstmt->execute();
+            pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
+            pstmt->setString(1, name);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Allergen with name " << name <<
                 " inserted into allergens.";
@@ -429,50 +429,50 @@ void Database::saveTableProduct(Table& table, const Product& product) {
         std::stringstream query;
 
         query << "SELECT * FROM tables WHERE n_table = " << n_table;
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
         query.str("");
     
         if (res->next()) {
             table_id = res->getInt("table_id");
             double new_bill = res->getDouble("bill") + product.price;
 
-            main_pstmt = main_con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
-            main_pstmt->setInt(1, new_bill);
-            main_pstmt->setInt(2, table_id);
-            main_pstmt->execute();
+            pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+            pstmt->setInt(1, new_bill);
+            pstmt->setInt(2, table_id);
+            pstmt->execute();
 
             CROW_LOG_INFO << "[UPDATED] Table " << table.n_table <<
                 " updated bill is " << new_bill;
 
             query << "SELECT product_id FROM products WHERE name = '" << name << "'";
-            res = main_stmt->executeQuery(query.str());
+            res = stmt->executeQuery(query.str());
             query.str("");
 
             if (res->next()) {
                 product_id = res->getInt("product_id");
 
                 query << "SELECT amount FROM tableproduct WHERE table_id = " << table_id << " AND product_id = " << product_id;
-                res = main_stmt->executeQuery(query.str());
+                res = stmt->executeQuery(query.str());
                 query.str("");
 
                 if (res->next()) {
                     int new_amount = res->getInt("amount") + 1;
 
-                    main_pstmt = main_con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
-                    main_pstmt->setInt(1, new_amount);
-                    main_pstmt->setInt(2, table_id);
-                    main_pstmt->setInt(3, product_id);
-                    main_pstmt->execute();
+                    pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+                    pstmt->setInt(1, new_amount);
+                    pstmt->setInt(2, table_id);
+                    pstmt->setInt(3, product_id);
+                    pstmt->execute();
 
                     CROW_LOG_INFO << "[UPDATED] Tableproduct with table_id " << table_id <<
                         " and product_id " << product_id << " to amount " << new_amount;
                 }
                 else {
-                    main_pstmt = main_con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
-                    main_pstmt->setInt(1, table_id);
-                    main_pstmt->setInt(2, product_id);
-                    main_pstmt->setInt(3, 1);
-                    main_pstmt->execute();
+                    pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
+                    pstmt->setInt(1, table_id);
+                    pstmt->setInt(2, product_id);
+                    pstmt->setInt(3, 1);
+                    pstmt->execute();
 
                     CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
                         " and product_id " << product_id << " and amount 1 inserted into tableproduct.";
@@ -510,7 +510,7 @@ std::vector<Table> Database::getTables() {
     std::vector<Table> tables;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
 
         while (res->next()) {
             Table table;
@@ -543,7 +543,7 @@ Table Database::getTableByNumber(const int n_table) {
         std::stringstream query;
 
         query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
         query.str("");
 
         if (res->next()) {
@@ -554,7 +554,7 @@ Table Database::getTableByNumber(const int n_table) {
             double discount = res->getDouble("discount");
 
             query << "SELECT * FROM tableproduct WHERE table_id = " << table_id; // TODO: change tables for a varible that corresponds to the table name
-            res = main_stmt->executeQuery(query.str());
+            res = stmt->executeQuery(query.str());
             query.str("");
 
             product_unordered_map products;
@@ -563,7 +563,7 @@ Table Database::getTableByNumber(const int n_table) {
                 int amount = res->getInt("amount");
 
                 query << "SELECT * FROM products WHERE product_id = " << product_id; // TODO: change tables for a varible that corresponds to the table name
-                sql::ResultSet* res2 = main_stmt->executeQuery(query.str());
+                sql::ResultSet* res2 = stmt->executeQuery(query.str());
                 query.str("");
 
                 if (res2->next()) {
@@ -595,7 +595,7 @@ std::vector<Employee> Database::getEmployees() const {
     std::vector<Employee> employees;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
 
         while (res->next()) {
             int id = res->getInt("employee_id");
@@ -624,7 +624,7 @@ Employee Database::getEmployeeByName(const std::string name) const {
     try {
         std::stringstream query;
         query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             std::string name = res->getString("name");
@@ -650,7 +650,7 @@ std::vector<Product> Database::getProducts() const {
     std::vector<Product> products;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
         
 
         while (res->next()) {
@@ -678,7 +678,7 @@ Product Database::getProductByName(const std::string name) const {
         
         std::stringstream query;
         query << "SELECT * FROM products WHERE name = '" << name << "'";
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             std::string name = res->getString("name");
@@ -699,7 +699,7 @@ std::vector<Order> Database::getOrders() const {
     std::vector<Order> orders;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM orders");
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM orders");
         
 
         while (res->next()) {
@@ -724,7 +724,7 @@ Order Database::getOrderByTime(const std::string time) const {
     try {
         std::stringstream query;
         query << "SELECT * FROM orders WHERE time = '" << time << "'";
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             std::string time = res->getString("time");
@@ -745,7 +745,7 @@ std::vector<Ingredient> Database::getIngredients() const {
     std::vector<Ingredient> ingredients;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM ingredients");
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM ingredients");
 
         while (res->next()) {
             std::string name = res->getString("name");
@@ -767,7 +767,7 @@ Ingredient Database::getIngredientByName(const std::string name) const {
     try {
         std::stringstream query;
         query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             std::string name = res->getString("name");
@@ -786,7 +786,7 @@ std::vector<Allergen> Database::getAllergens() const {
     std::vector<Allergen> allergens;
 
     try {
-        sql::ResultSet* res = main_stmt->executeQuery("SELECT * FROM allergens");
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM allergens");
 
         while (res->next()) {
             std::string name = res->getString("name");
@@ -808,7 +808,7 @@ Allergen Database::getAllergenByName(const std::string name) const {
     try {
         std::stringstream query;
         query << "SELECT * FROM allergens WHERE name = '" << name << "'";
-        sql::ResultSet* res = main_stmt->executeQuery(query.str());
+        sql::ResultSet* res = stmt->executeQuery(query.str());
 
         if (res->next()) {
             std::string name = res->getString("name");
@@ -891,7 +891,7 @@ void Database::setTable_Products(const Table table, const std::unordered_map<std
     int n_table = table.n_table;
     std::stringstream query;
     query << "SELECT * FROM tables WHERE n_table = '" << n_table << "'";
-    sql::ResultSet* res = main_stmt->executeQuery(query.str());
+    sql::ResultSet* res = stmt->executeQuery(query.str());
 }
 
 void Database::setTable_Bill() {
@@ -921,11 +921,11 @@ void Database::removeTable(const Table& table) {
         double bill = table.bill;
         double discount = table.discount;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
-        main_pstmt->setInt(1, n_table);
-        main_pstmt->setDouble(2, bill);
-        main_pstmt->setDouble(3, discount);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
+        pstmt->setInt(1, n_table);
+        pstmt->setDouble(2, bill);
+        pstmt->setDouble(3, discount);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Table with n_table " << n_table <<
             ", bill " << bill <<
@@ -944,12 +944,12 @@ void Database::removeEmployee(const Employee& employee) {
         std::string start = employee.start;
         std::string finish = employee.finish;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM employees WHERE name = ? AND level = ? AND start = ? AND finish = ?");
-        main_pstmt->setString(1, name);
-        main_pstmt->setInt(2, level);
-        main_pstmt->setString(3, start);
-        main_pstmt->setString(4, finish);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM employees WHERE name = ? AND level = ? AND start = ? AND finish = ?");
+        pstmt->setString(1, name);
+        pstmt->setInt(2, level);
+        pstmt->setString(3, start);
+        pstmt->setString(4, finish);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Employee with name " << name <<
             ", level " << level <<
@@ -967,10 +967,10 @@ void Database::removeProduct(const Product& product) {
         std::string name = product.name;
         double price = product.price;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ?");
-        main_pstmt->setString(1, name);
-        main_pstmt->setDouble(2, price);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ?");
+        pstmt->setString(1, name);
+        pstmt->setDouble(2, price);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Product with name " << name <<
             " and price " << price <<
@@ -986,10 +986,10 @@ void Database::removeOrder(const Order& order) {
         std::string time = order.time;
         std::string message = order.message;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
-        main_pstmt->setString(1, time);
-        main_pstmt->setString(2, message);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
+        pstmt->setString(1, time);
+        pstmt->setString(2, message);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Order with time " << time <<
             " and message " << message <<
@@ -1004,9 +1004,9 @@ void Database::removeIngredient(const Ingredient& ingredient) {
     try {
         std::string name = ingredient.name;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
-        main_pstmt->setString(1, name);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
+        pstmt->setString(1, name);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Ingredient with name " << name <<
             " has been deleted.";
@@ -1020,9 +1020,9 @@ void Database::removeAllergen(const Allergen& allergen) {
     try {
         std::string name = allergen.name;
 
-        main_pstmt = main_con->prepareStatement("DELETE FROM allergens WHERE name = ?");
-        main_pstmt->setString(1, name);
-        main_pstmt->execute();
+        pstmt = con->prepareStatement("DELETE FROM allergens WHERE name = ?");
+        pstmt->setString(1, name);
+        pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Allergen with name " << name <<
             " has been deleted.";

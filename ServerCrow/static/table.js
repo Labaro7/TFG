@@ -10,6 +10,7 @@ const n_table = document.getElementById("numTable");
 
 // Fourth row
 const li = document.getElementsByClassName("grid-product");
+let page_number = 1;
 
 // Ticket
 let data = [];
@@ -28,7 +29,7 @@ for (let i = 0; i < ticketProducts.length; i++) {
 
     current_ticket.push({ times: t, name: n, price: p });
 }
-console.log(current_ticket);
+
 //if (current_ticket.length > 0) lastProduct.textContent = current_ticket[added_ticket.length - 1];
 lastProduct.textContent = "-";
 
@@ -73,6 +74,40 @@ function addProductToTicket(clickedProduct) {
     const discount = document.getElementById("discountValue").textContent;
 
     price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+}
+
+function openDeployable(clickedDeployable) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => {
+        page.style.display = 'none';
+    });
+
+    const grid = "grid" + page_number;
+    const grid_products = document.getElementById(grid).querySelectorAll("li");
+    for (let i of grid_products) {
+        i.style.display = "none";
+    }
+
+    const deployable_products = document.getElementById(grid).querySelectorAll(".deployable-product");
+    console.log(deployable_products);
+    for (let i of deployable_products) {
+        i.style.display = "flex";
+    }
+
+    /*clickedDeployable.style.visibility = "hidden";
+    clickedDeployable.textContent = "";
+
+    const deployable_page = clickedDeployable.children;
+    console.log(deployable_page);
+
+    const grid_products = document.getElementsByClassName("grid-product");
+    for (let i of grid_products) {
+        i.style.display = "none";
+    }
+
+    for (let i of deployable_page) {
+        i.style.visibility = "visible";
+    }*/
 }
 
 
@@ -132,6 +167,7 @@ function selectButton(number) {
 // TODO: It cannot display 6 or more menus
 function displayMenu(clickedButton) {
     const number = clickedButton.getAttribute("data-number");
+    page_number = number;
     currentGrid = document.getElementById("grid"+currentGridNumber);
     
     if (currentGrid) {
@@ -175,6 +211,6 @@ function saveOrder() {
     // If setTimeout is not used, when the index.html is received
     // it doesn't have the tables prices updated because
     // it didn't have enough time to retrieve the new information
-    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 0);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
     
 }

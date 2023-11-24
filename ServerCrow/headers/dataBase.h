@@ -43,20 +43,21 @@ public:
     ~Database();
 
 
+
     // ------------------------------- MySQL queries ------------------------------- //
     // These are methods to create, update or remove databases and tables 
 
     // Database
-    void MySqlCreateDatabase(const std::string name); // It works CREATE DATABASE
-    void MySqlDropDatabase(const std::string name); // It works DROP DATABASE
-    void MySqlUseDatabase(const std::string name); // USE
+    void MySqlCreateDatabase(const std::string name);
+    void MySqlDropDatabase(const std::string name);
+    void MySqlUseDatabase(const std::string name);
     void MySqlSaveChangesToDataBase(); // COMMIT    
 
     // Table
-    void MySqlCreateTable(const std::string name, std::string definition); // It works CREATE TABLE
-    void MySqlDropTable(const std::string name); // It works DROP TABLE IF EXISTS
-    void MySqlModifyTable(const std::string name, std::string modifications); // ALTER TABLE
-    void MySqlEmptyTable(const std::string name); // DELETE FROM
+    void MySqlCreateTable(const std::string name, std::string definition);
+    void MySqlDropTable(const std::string name);
+    void MySqlModifyTable(const std::string name, std::string modifications);
+    void MySqlEmptyTable(const std::string name);
 
     // ------------------------------- /MySQL queries ------------------------------- //
 
@@ -69,13 +70,15 @@ public:
     void initialize(); // Makes the corresponding database and tables with their corresponding columns.
     void dropAllTables();
 
+
+    // ALL THE METHODS BELOW MUST USE THE MUTEX ATTRIBUTE
     // Save
-    void saveTable(const Table& table); // It works
-    void saveEmployee(const Employee& employee); // It works
-    void saveProduct(const Product& product); // It works
-    void saveOrder(const Order& order); // It works
-    void saveIngredient(const Ingredient& ingredient); // It works
-    void saveAllergen(const Allergen& allergen); // It works
+    void saveTable(const Table& table);
+    void saveEmployee(const Employee& employee);
+    void saveProduct(const Product& product);
+    void saveOrder(const Order& order);
+    void saveIngredient(const Ingredient& ingredient);
+    void saveAllergen(const Allergen& allergen);
 
     void saveTableProduct(Table& table, const Product& product);
     void saveProductIngredient(const Product& product, const Ingredient& ingredient);
@@ -83,32 +86,32 @@ public:
 
 
     // Get
-    std::vector<Table> getTables(); // It works
-    Table getTableByNumber(const int n_table); // It works
+    std::vector<Table> getTables();
+    Table getTableByNumber(const int n_table);
 
-    std::vector<Employee> getEmployees() const; // It works
-    Employee getEmployeeByName(const std::string name) const; // It works
+    std::vector<Employee> getEmployees() const;
+    Employee getEmployeeByName(const std::string name) const;
 
-    std::vector<Product> getProducts() const; // It works
-    Product getProductByName(const std::string name) const; // It works
+    std::vector<Product> getProducts() const;
+    Product getProductByName(const std::string name) const;
 
-    std::vector<Order> getOrders() const; // It works
-    Order getOrderByTime(const std::string time) const; // It works
+    std::vector<Order> getOrders() const;
+    Order getOrderByTime(const std::string time) const;
 
-    std::vector<Ingredient> getIngredients() const; // It works
-    Ingredient getIngredientByName(const std::string name) const; // It works
+    std::vector<Ingredient> getIngredients() const;
+    Ingredient getIngredientByName(const std::string name) const;
 
-    std::vector<Allergen> getAllergens() const; // It works
-    Allergen getAllergenByName(const std::string name) const; // It works
+    std::vector<Allergen> getAllergens() const;
+    Allergen getAllergenByName(const std::string name) const;
 
 
     // Print
-    void printTables(); // It works
-    void printEmployees(); // It works
-    void printProducts(); // It works
-    void printOrders(); // It works
-    void printIngredients(); // It works
-    void printAllergens(); // It works
+    void printTables();
+    void printEmployees();
+    void printProducts();
+    void printOrders();
+    void printIngredients();
+    void printAllergens();
 
 
     // Set
@@ -124,20 +127,20 @@ public:
 
 
     // Remove
-    void removeTable(const Table& table); // It works
-    void removeEmployee(const Employee& employee); // It works
-    void removeProduct(const Product& product); // It works
-    void removeOrder(const Order& order); // It works
-    void removeIngredient(const Ingredient& ingredient); // It works
-    void removeAllergen(const Allergen& allergen); // It works
+    void removeTable(const Table& table);
+    void removeEmployee(const Employee& employee);
+    void removeProduct(const Product& product);
+    void removeOrder(const Order& order);
+    void removeIngredient(const Ingredient& ingredient);
+    void removeAllergen(const Allergen& allergen);
 
 private:
     sql::ConnectOptionsMap connection_properties;
     sql::Driver* driver;
 
-    std::shared_ptr<sql::Connection> main_con;
-    sql::Statement* main_stmt;
-    sql::PreparedStatement* main_pstmt;
+    std::shared_ptr<sql::Connection> con;
+    sql::Statement* stmt;
+    sql::PreparedStatement* pstmt;
 
     std::mutex mutex; // It is supposed to be asynchronous so it is needed.
 

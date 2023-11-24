@@ -4,7 +4,6 @@
 
 const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";
 const char* TABLE_NUMBER_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE NUMBER -->"; // It is char* because of strlen()
-const char* PRODUCT_LIST_1_PLACEHOLDER = "<!-- PLACEHOLDER: LIST OF PRODUCTS -->"; // Same
 const char* TICKET_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: TICKET PRODUCTS -->";
 const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
 const char* FOURTH_ROW_BUTTONS_PLACEHOLDER = "<!-- PLACEHOLDER: FOURTH ROW BUTTONS -->";
@@ -39,7 +38,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 }
 
 // table.html
-std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::string productListPlaceholder, const std::vector<Product> products, Server& server){
+std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::vector<Product> products, Server& server){
     // Data to insert into HTML
     // 1. Table number
     // 2. Fourth row buttons
@@ -96,31 +95,51 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     using product = std::tuple<Product, std::vector<std::pair<std::string, int>>>;
 
-    const productsMenus_t data = server.getDataFromPage(0);
-    for (const auto& p : data) {
-        std::string product_name = std::get<0>(p).name;
-        double product_price = std::get<0>(p).price;
-        auto list = std::get<1>(p);
+    for (int i = 0; i < server.getRestaurantPagesSize(); i++) {
+        const productsMenus_t data = server.getDataFromPage(i);
+        for (const auto& p : data) {
+            std::string product_name = std::get<0>(p).name;
+            double product_price = std::get<0>(p).price;
+            auto list = std::get<1>(p);
 
-        // Is product
-        if (std::get<1>(p).empty()) {
-            ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'><div class='names'>" << product_name << "</div>" << "<div class='prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
-        }
+            // Is product
+            if (std::get<1>(p).empty()) {
+                if (product_name.size() <= 15)
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
+                else
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl;
+            }
 
-        // Is desployable
-        else {
+            // Is desployable
+            else {
+                ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>" << std::endl;
 
+                for (const auto& p : std::get<1>(p)) {
+                    product_name = p.first;
+                    product_price = p.second;
+
+                    ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div><div class='products-prices'>" << product_price << "</div></li>";
+                }
+
+                ss << "</li>" << std::endl;
+            }
+
+            productListHTML = ss.str();
+            ss.str("");
+
+            // 3. Insert HTML piece with the products of the restaurant into HTML
+            std::stringstream ss2;
+            ss2 << "<!-- PLACEHOLDER: LIST OF PRODUCTS " << i+1 << " -->" << std::endl; // i+1 because the fourth row starts counting in 1
+            std::string PRODUCT_LIST_PLACEHOLDER = ss2.str();
+            ss2.str("");
+
+            size_t productListPlaceholderPos = contentHTML.find(PRODUCT_LIST_PLACEHOLDER.c_str());
+            if (productListPlaceholderPos != std::string::npos) {
+                contentHTML.insert(productListPlaceholderPos, productListHTML);
+            }
         }
     }
 
-    productListHTML = ss.str();
-    ss.str("");
-
-    // 3. Insert HTML piece with the products of the restaurant into HTML
-    size_t productListPlaceholderPos = contentHTML.find(PRODUCT_LIST_1_PLACEHOLDER);
-    if (productListPlaceholderPos != std::string::npos) {
-        contentHTML.replace(productListPlaceholderPos, strlen(PRODUCT_LIST_1_PLACEHOLDER), productListHTML);
-    }
 
     // 4. Get ticket products and ticket bill
     const product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
@@ -189,7 +208,7 @@ int main() {
 
         // TODO: Put relative path
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
-        std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), PRODUCT_LIST_1_PLACEHOLDER, products, server);
+        std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
 
         // TODO: Change error handling
         if (modifiedHTML == "") {

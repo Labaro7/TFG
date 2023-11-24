@@ -37,6 +37,7 @@ public:
 
     // Get
     productsMenus_t getDataFromPage(const int n_page);
+    int getRestaurantPagesSize() const;
 
     std::vector<Table> getTables() const; // It works. 
     Table getTableByNumber(const int n_table) const; // It works 
@@ -65,7 +66,7 @@ public:
 
 private:
     std::unique_ptr<Database> _database;
-    std::unique_ptr<Restaurant> restaurant; // TODO: vector?
+    std::unique_ptr<Restaurant> restaurant;
 
 }; // class Server
 #endif

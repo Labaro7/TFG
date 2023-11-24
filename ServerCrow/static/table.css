@@ -155,7 +155,7 @@ numTable {
     gap: 3px;
 }
 
-.grid-product{
+.grid-product, .grid-product-small {
     flex: 31.99%;
     max-width: 31.99%;
     height: 60px;
@@ -172,12 +172,44 @@ numTable {
     flex-direction: column;
 }
 
+.grid-product-small {
+    font-size: 14px;
+}
+
 #grid2, #grid3, #grid4, #grid5 {
     display: none;
 }
 
-.prices {
+.products-prices {
     font-size: 12px;
+}
+
+.grid-deployable {
+    flex: 31.99%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    max-width: 31.99%;
+    border: 1px solid rgb(12, 9, 34);
+    background-color: #ffff94;
+}
+
+.deployable-product {
+    flex: 31.99%;
+    max-width: 31.99%;
+    height: 60px;
+    position: relative;
+    background-color: white;
+    border: 1px solid rgb(12, 9, 34);
+    color: rgb(12, 9, 34);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    word-break: break-word;
+    text-align: center;
+    flex-direction: column;
 }
 
 
