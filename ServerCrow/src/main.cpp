@@ -112,13 +112,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
             // Is desployable
             else {
-                ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>" << std::endl;
+                ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>";
 
-                for (const auto& p : std::get<1>(p)) {
-                    product_name = p.first;
-                    product_price = p.second;
-
-                    ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div><div class='products-prices'>" << product_price << "</div></li>";
+                for (const auto& q : std::get<1>(p)) {
+                    ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
                 }
 
                 ss << "</li>" << std::endl;

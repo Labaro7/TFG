@@ -77,37 +77,17 @@ function addProductToTicket(clickedProduct) {
 }
 
 function openDeployable(clickedDeployable) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(page => {
-        page.style.display = 'none';
-    });
-
     const grid = "grid" + page_number;
     const grid_products = document.getElementById(grid).querySelectorAll("li");
     for (let i of grid_products) {
         i.style.display = "none";
     }
 
-    const deployable_products = document.getElementById(grid).querySelectorAll(".deployable-product");
-    console.log(deployable_products);
-    for (let i of deployable_products) {
+    const clickedDeployableProducts = document.querySelectorAll("li[data-name='" + clickedDeployable.textContent);
+    for (let i of clickedDeployableProducts) {
         i.style.display = "flex";
+        console.log(i);
     }
-
-    /*clickedDeployable.style.visibility = "hidden";
-    clickedDeployable.textContent = "";
-
-    const deployable_page = clickedDeployable.children;
-    console.log(deployable_page);
-
-    const grid_products = document.getElementsByClassName("grid-product");
-    for (let i of grid_products) {
-        i.style.display = "none";
-    }
-
-    for (let i of deployable_page) {
-        i.style.visibility = "visible";
-    }*/
 }
 
 
@@ -177,6 +157,22 @@ function displayMenu(clickedButton) {
         currentGrid = document.getElementById("grid" + currentGridNumber);
         button = document.getElementById("fourthRowButton" + currentGridNumber);
         currentGrid.style.display = 'flex';
+        const currentGridDeployableElements = currentGrid.querySelectorAll("li");
+        console.log(currentGridDeployableElements);
+        for (let i of currentGridDeployableElements) {
+            console.log(i);
+            i.style.display = "none";
+        }
+
+        const currentGridElements = currentGrid.children;
+        for (let i of currentGridElements) {
+            i.style.display = "flex";
+        }
+
+        const currentGridDeployables = currentGrid.querySelectorAll(".deployable-product");
+        for (let i of currentGridDeployables) {
+            i.style.display = "none";
+        }
         selectButton(currentGridNumber);
     }
 }

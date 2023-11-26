@@ -16,11 +16,13 @@ void Server::initialize() {
     _database->initialize(); 
 
     // Make the restaurant instances that store different cfigs of products
-    using productsMenus_t = std::vector<std::tuple<Product, std::vector<std::pair<std::string, int>>>>;
+    using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
     
     Product p1("Bread", 1.0);
     Product p2("Russian salad", 2.0);
     Product p3("Drinks", 0.0);
+    Product p19("White wines", 0.0);
+    Product p20("Cheese", 2.0);
     Product p4("French Fries", 4.0);
     Product p5("Sweet Potato Fries", 5.0);
     Product p6("Tuna Tartar", 6.0);
@@ -42,6 +44,8 @@ void Server::initialize() {
     saveProduct(p10);
     saveProduct(p11);
     saveProduct(p12);
+    saveProduct(p19);
+    saveProduct(p20);
 
     Product p13("Water", 1.0);
     Product p14("Cocacola", 2.0);
@@ -57,22 +61,25 @@ void Server::initialize() {
     saveProduct(p18);
 
     std::vector<productsMenus_t> pages(5);
-    std::vector<std::pair<std::string, int>> empty_vec;
-    std::vector<std::pair<std::string, int>> full_vec = { {p13.name, p13.price}, {p14.name, p14.price}, {p15.name, p15.price}, {p16.name, p16.price}, {p17.name, p17.price} , {p18.name, p18.price} };
+    std::vector<Product> empty_vec;
+    std::vector<Product> drinks = { {p13}, {p14}, {p15}, {p16}, {p17} , {p18} };
+    std::vector<Product> white_wines = { {Product("", 0.0)} };
 
     // Page 0
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup1 = { p1, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup2 = { p2, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup3 = { p3, full_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup4 = { p4, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup5 = { p5, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup6 = { p6, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup7 = { p7, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup8 = { p8, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup9 = { p9, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup10 = { p10, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup11 = { p11, empty_vec };
-    std::tuple<Product, std::vector<std::pair<std::string, int>>> tup12 = { p12, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup1 = { p1, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup2 = { p2, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup3 = { p3, drinks };
+    std::tuple<Product, std::vector<Product>> tup4 = { p4, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup5 = { p5, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup6 = { p6, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup7 = { p7, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup8 = { p8, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup9 = { p9, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup10 = { p10, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup11 = { p11, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup12 = { p12, empty_vec };
+    std::tuple<Product, std::vector<Product>> tup19 = { p19, white_wines };
+    std::tuple<Product, std::vector<Product>> tup20 = { p20, empty_vec };
 
     product_unordered_map ps = { {p1, 1}, {p2, 1} };
 
@@ -88,7 +95,7 @@ void Server::initialize() {
         saveTableProduct(t2, p.first);
     }
 
-    pages[0] = { tup1, tup2, tup3 };
+    pages[0] = { tup1, tup2, tup3, tup19, tup20 };
     pages[1] = { tup4, tup5, tup6 };
     pages[2] = { tup7, tup8, tup9 };
     pages[3] = { tup10, tup11 };

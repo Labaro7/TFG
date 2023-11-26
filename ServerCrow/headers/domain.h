@@ -131,7 +131,7 @@ struct Allergen {
 
 
 /* ------------------------------------------- RESTAURANT ------------------------------------------- */
-using productsMenus_t = std::vector<std::tuple<Product, std::vector<std::pair<std::string, int>>>>;
+using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
 
 struct Restaurant {
     // vector[name, price, list of products]. If it is a product, list is empty. Else, if it is a menu, price is 0.
