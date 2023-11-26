@@ -145,7 +145,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     for (const auto& p : ticketProducts) {
         ss << std::fixed << std::setprecision(2) << 
-            "<li class='ticketProduct'>" << std::endl << "<div class='productTimes'>x" << p.second << "</div><div class='productNames'>" << p.first.name << "</div><div class='productPrices'>" << p.first.price << "</div></li>" << std::endl;
+            "<li class='ticketProduct'>" << std::endl << "<div class='productTimes'>x" << p.second << " </div><div class='productNames'>&nbsp" << p.first.name << "</div><div class='productPrices'>&nbsp" << p.first.price << "</div><div class='productTotalPrices'>&nbsp|&nbsp" << p.second * p.first.price << "</div></li>" << std::endl;
     }
     
     std::string ticketProductsHTML = ss.str();
@@ -225,37 +225,29 @@ int main() {
         std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
         std::stringstream ss;
         ss << file.rdbuf();
-        file.close();
         std::string index = ss.str();
-
-        //std::cout << "RECEIVED" << std::endl;
-        //std::cout << req.body << std::endl;
-
+        ss.str("");
+        file.close();
+        
         // TODO: Get the date from the JSON
         auto json_data = crow::json::load(req.body);
 
         int n_table = json_data["n_table"].i();
         auto order = json_data["order"];
         auto added = json_data["added"];
-        
         Table t = server.getTableByNumber(n_table);
+
         if (t.isEmpty()) {
             t = { n_table, 3, product_unordered_map(), 0.0 };
             server.saveTable(t);
         }
-        
-        //std::cout << n_table << std::endl;
 
         for (const auto& object : added) {
             int times = object["times"].i();
             Product p(object["name"].s(), object["price"].d());
 
             server.saveTableProduct(t, p);
-
-            //std::cout << times << std::endl;
-            //std::cout << p.name << " " << p.price << std::endl << std::endl;
         }
-
 
         // TODO: Change the response to the client
         res.set_header("Content-Type", "text/html");

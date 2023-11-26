@@ -244,6 +244,16 @@ numTable {
     background-color: #d7fcda;
 }
 
+.productNames, .productPrices {
+    width: 50%;
+}
+
+.productPrices {
+    text-align: right;
+}
+
+
+
 #bill {
     display: flex;
     position: relative;

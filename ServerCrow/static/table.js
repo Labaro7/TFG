@@ -66,7 +66,7 @@ function addProductToTicket(clickedProduct) {
     // Add the product in the ticket of the table
     let child = document.createElement("li");
     child.className = "addedTicketProduct";
-    child.textContent = last.name + " | " + last.price;
+    child.textContent = last.name;
     child.backgroundColor = "green";
     ticketList.appendChild(child);
 
@@ -86,7 +86,6 @@ function openDeployable(clickedDeployable) {
     const clickedDeployableProducts = document.querySelectorAll("li[data-name='" + clickedDeployable.textContent);
     for (let i of clickedDeployableProducts) {
         i.style.display = "flex";
-        console.log(i);
     }
 }
 
@@ -158,9 +157,8 @@ function displayMenu(clickedButton) {
         button = document.getElementById("fourthRowButton" + currentGridNumber);
         currentGrid.style.display = 'flex';
         const currentGridDeployableElements = currentGrid.querySelectorAll("li");
-        console.log(currentGridDeployableElements);
+
         for (let i of currentGridDeployableElements) {
-            console.log(i);
             i.style.display = "none";
         }
 
