@@ -34,11 +34,11 @@ for (let i = 0; i < ticketProducts.length; i++) {
 lastProduct.textContent = "-";
 
 function deleteLastOrder() {
-    let last = added_ticket[added_ticket.length - 1];
-    const discount = document.getElementById("discountValue").textContent;
-    price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
-
     if (added_ticket.length > 0) {
+        let last = added_ticket[added_ticket.length - 1];
+        const discount = document.getElementById("discountValue").textContent;
+        price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
+
         // Remove the li item
         ticketList.removeChild(ticketList.lastElementChild);
 
