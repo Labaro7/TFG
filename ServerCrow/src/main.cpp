@@ -147,7 +147,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     for (const auto& p : ticketProducts) {
         ss << std::fixed << std::setprecision(2) << 
-            "<li class='ticketProduct'>" << std::endl << "<div class='productTimes'>x" << p.second << " </div><div class='productNames'>&nbsp" << p.first.name << "</div><div class='productPrices'>&nbsp" << p.first.price << "</div><div class='productTotalPrices'>&nbsp|&nbsp" << p.second * p.first.price << "</div></li>" << std::endl;
+            "<li class='ticketProduct'>" << std::endl << "<div class='productTimes'>x" << p.second << " </div><div class='productNames'>" << p.first.name << "</div><div class='productPrices'>" << p.first.price << "</div><div class='productTotalPrices'>" << p.second * p.first.price << "</div></li>" << std::endl;
     }
     
     std::string ticketProductsHTML = ss.str();

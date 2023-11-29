@@ -247,30 +247,20 @@ numTable {
 
 .productTimes {
     width: 7%;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .productNames{
-    flex: 1;
+    width: 70%;
 }
 
 .productPrices, .productTotalPrices {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: max-content;
+    width: 12.5%;
     text-align: center;
-    font-size: 13px;
-    height: 70%;
-    font-weight: 100;
-}
-
-.productPrices {
-    padding-right: 4px;
+    font-size: 12px;
 }
 
 .productTotalPrices {
-    padding-left: 4px;
     border-left: 1px solid black;
     text-align: right;
 }
