@@ -208,3 +208,86 @@ function saveOrder() {
     setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
     
 }
+
+function openMoveTableMenu() {
+    let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
+    let moveTableMenu = document.getElementById("moveTableMenu");
+
+    tab[0].style.pointerEvents = "none";
+    tab[0].style.filter = "blur(5px)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(5px)";
+    moveTableMenu.style.display = "flex"; 
+}
+
+function appendNumber(number) {
+    const display = document.getElementById('tableInput');
+    display.value += number;
+}
+
+function clearDisplay() {
+    const display = document.getElementById('tableInput');
+    display.value = '';
+}
+
+function acceptMoveTableMenu() {
+    const api = "https://192.168.1.66:18080/api/moveTable";
+
+    let _current_n_table = parseInt(n_table.textContent.substr(7));
+    let _new_n_table = parseInt(document.getElementById("tableInput").value);
+    let data = {
+        current_n_table: _current_n_table,
+        new_n_table: _new_n_table
+    };
+    console.log(_current_n_table);
+    console.log(_new_n_table);
+    console.log(data)
+
+    fetch(api, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
+}
+
+function cancelMoveTableMenu() {
+    let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
+    let moveTableMenu = document.getElementById("moveTableMenu");
+
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px)";
+    productsMenu.style.pointerEvents = "auto";
+    productsMenu.style.filter = "blur(0px)";
+    moveTableMenu.style.display = "none";
+}
+
+function moveTable(table_number) {
+    const api = "https://192.168.1.66:18080/api/tables";
+    let res;
+
+    fetch(api)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            for (let i of data["tables"]) {
+                console.log("hey", i);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+}

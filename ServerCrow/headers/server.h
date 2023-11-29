@@ -54,6 +54,8 @@ public:
     std::vector<Allergen> getAllergens() const; // It works
     Allergen getAllergenByName(const std::string name) const; // It works
 
+    // Change
+    void moveTable(int current_n_table, const int new_n_table);
 
     // Remove
     void removeTable(const Table& table); // It works

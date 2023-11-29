@@ -83,7 +83,7 @@ void Server::initialize() {
 
     product_unordered_map ps = { {p1, 1}, {p2, 1} };
 
-    Table t1(69, 1, ps, 0.0);
+    Table t1(60, 1, ps, 0.0);
     saveTable(t1);
     for (auto const& p : ps) {
         saveTableProduct(t1, p.first);
@@ -167,6 +167,19 @@ Ingredient Server::getIngredientByName(std::string name) const { return _databas
 std::vector<Allergen> Server::getAllergens() const { return _database->getAllergens(); }
 
 Allergen Server::getAllergenByName(std::string name) const { return _database->getAllergenByName(name); }
+
+
+
+// Change
+void Server::moveTable(int current_n_table, const int new_n_table) {
+    Table t = restaurant->current_tables[current_n_table];
+    t.n_table = new_n_table;
+
+    restaurant->current_tables.erase(current_n_table);
+    restaurant->current_tables[new_n_table] = t;
+
+    database()->moveTable(current_n_table, new_n_table);
+}
 
 
 // Remove

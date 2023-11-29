@@ -115,7 +115,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
                 ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>";
 
                 for (const auto& q : std::get<1>(p)) {
-                    ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                    if(q.price) {
+                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                    }
                 }
 
                 ss << "</li>" << std::endl;
@@ -216,49 +218,76 @@ int main() {
         res.set_header("Content-Type", "text/html");
         res.write(modifiedHTML);
         res.end();
-        });
+    });
 
     CROW_ROUTE(app, "/order")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
-        // TODO: Put relative path
-        std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
-        std::stringstream ss;
-        ss << file.rdbuf();
-        std::string index = ss.str();
-        ss.str("");
-        file.close();
+            // TODO: Put relative path
+            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+            std::stringstream ss;
+            ss << file.rdbuf();
+            std::string index = ss.str();
+            ss.str("");
+            file.close();
         
-        // TODO: Get the date from the JSON
-        auto json_data = crow::json::load(req.body);
+            // TODO: Get the date from the JSON
+            auto json_data = crow::json::load(req.body);
 
-        int n_table = json_data["n_table"].i();
-        auto order = json_data["order"];
-        auto added = json_data["added"];
-        Table t = server.getTableByNumber(n_table);
+            int n_table = json_data["n_table"].i();
+            auto order = json_data["order"];
+            auto added = json_data["added"];
+            Table t = server.getTableByNumber(n_table);
 
-        if (t.isEmpty()) {
-            t = { n_table, 3, product_unordered_map(), 0.0 };
-            server.saveTable(t);
+            if (t.isEmpty()) {
+                t = { n_table, 3, product_unordered_map(), 0.0 };
+                server.saveTable(t);
+            }
+
+            for (const auto& object : added) {
+                int times = object["times"].i();
+                Product p(object["name"].s(), object["price"].d());
+
+                server.saveTableProduct(t, p);
+            }
+
+            // TODO: Change the response to the client
+            res.set_header("Content-Type", "text/html");
+            res.write(index);
+            res.end();
+        });
+
+    CROW_ROUTE(app, "/api/tables")([&server]() {
+        std::vector<Table> tables = server.getTables();
+        std::vector<int> n_tables;
+        crow::json::wvalue response;
+
+        for (const auto& t : tables) {
+            n_tables.push_back(t.n_table);
+            std::cout << t.n_table;
         }
 
-        for (const auto& object : added) {
-            int times = object["times"].i();
-            Product p(object["name"].s(), object["price"].d());
+        response["tables"] = n_tables;
 
-            server.saveTableProduct(t, p);
-        }
 
-        // TODO: Change the response to the client
-        res.set_header("Content-Type", "text/html");
-        res.write(index);
-        res.end();
-            });
+        return crow::response(response);
+    });
+
+    CROW_ROUTE(app, "/api/moveTable")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+        const auto& json_data = crow::json::load(req.body);
+
+        int current_n_table = json_data["current_n_table"].i();
+        int new_n_table = json_data["new_n_table"].i();
+
+        server.moveTable(current_n_table, new_n_table);
+    });
 
     CROW_CATCHALL_ROUTE(app)
         ([]() {
         return "Wrong Route";
-            });
+    });
 
     // App methods chain
     app.bindaddr("192.168.1.66")

@@ -118,6 +118,7 @@ numTable {
     border: 1px solid #0a3677;
 }
 
+
 .fourthRow {
     display: flex;
     margin-top: 0px;
@@ -275,4 +276,165 @@ numTable {
 #minus, #discountValue, #percentage {
     display: flex-column;
     align-self: flex-end;
+}
+
+/* Move table menu */
+#moveTableMenu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    z-index: 1;
+    background-color: #aaccff;
+    border: 3px solid #0a3677;
+    flex-wrap: wrap;
+}
+
+#tableInput {
+    background-color: #0a3677;
+    border: 1px solid rgb(12, 9, 34);
+    height: 10%;
+    width: 83%;
+    margin-top: 5%;
+    text-align: center;
+    font-size: 40px;
+    color: white;
+    pointer-events: none;
+}
+
+.button-grid {
+    flex: 1;
+    display: grid;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 85%;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.gridItem {
+    position: relative;
+    width: 100%;
+    height: attr(width);
+    background-color: white;
+    border: 1px solid rgb(12, 9, 34);
+}
+
+.button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    border: 0px solid red;
+    color: rgb(20, 20, 51);
+    font-family: Arial Arial, Helvetica, sans-serif;
+    font-weight: 100;
+}
+
+#moveTableMenuButtons {
+    display: flex;
+    width: 100%;
+    height: 10%;
+}
+
+#moveTableMenuAcceptButton, #moveTableMenuCancelButton {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    height: 100%;
+    text-shadow: 1px 1px 1px black;
+}
+
+#moveTableMenuAcceptButton {
+    background-color: green;
+    border-top: 1px solid black;
+}
+
+#moveTableMenuCancelButton {
+    background-color: red;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+
+/* Move table warning menu */
+#moveTableWarningMenu {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    width: 80%;
+    height: 25%;
+    z-index: 1;
+    background-color: white;
+    border: 3px solid #0a3677;
+    flex-wrap: wrap;
+}
+
+#warningSymbol {
+    height: 30%;
+    position: relative;
+    top: 10px;
+}
+
+#warning1, #warning2, #warning3 {
+    animation: borderToRed1 0.25s infinite;
+}
+
+#warning1 {
+    animation: borderToRed2 0.25s infinite;
+}
+
+@keyframes borderToRed1 {
+    50%{
+        stroke: black;
+    }
+}
+
+@keyframes borderToRed2 {
+    50% {
+        fill: black;
+    }
+}
+
+#moveTableWarningMenuText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#moveTableWarningMenuAcceptButton, #moveTableWarningMenuCancelButton {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    height: 30%;
+    text-shadow: 1px 1px 1px black;
+}
+
+#moveTableWarningMenuAcceptButton {
+    background-color: rgb(8, 141, 8);
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+}
+
+#moveTableWarningMenuCancelButton {
+    background-color: red;
+    border-top: 1px solid black;
 }

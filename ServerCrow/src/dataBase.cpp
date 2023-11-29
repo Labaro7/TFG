@@ -914,6 +914,30 @@ void Database::setEmployee_Finish() {
 
 
 
+// Change
+void Database::moveTable(int current_n_table, const int new_n_table) {
+    try {
+        std::stringstream query;
+        query << "SELECT * FROM tables WHERE n_table = " << current_n_table;
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
+
+        if (res->next()) {
+            int table_id = res->getInt("table_id");
+
+            pstmt = con->prepareStatement("UPDATE tables SET n_table = ? WHERE table_id = ?");
+            pstmt->setInt(1, new_n_table);
+            pstmt->setInt(2, table_id);
+            pstmt->execute();
+        }
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not change table number. Error message: " << e.what();
+    }
+}
+
+
+
 // Remove
 void Database::removeTable(const Table& table) {
     try {
