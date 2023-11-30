@@ -5,6 +5,10 @@
 #include "..\headers\server.h"
 #include <string>
 
+
+// These functions insert data from the DB into the HTML placeholders.
+
+
 // index.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server);
 

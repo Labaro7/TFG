@@ -270,7 +270,7 @@ function clearDisplay() {
 }
 
 function acceptMoveTableMenu() {
-    const api_moveTable = "https://192.168.1.66:18080/api/moveTable";
+    const api = "https://192.168.1.66:18080/api/moveTable";
 
     let _current_n_table = parseInt(n_table.textContent.substr(7));
     let _new_n_table = parseInt(document.getElementById("tableInput").value);
@@ -281,7 +281,7 @@ function acceptMoveTableMenu() {
 
     console.log(data)
 
-    fetch(api_moveTable, {
+    fetch(api, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -302,7 +302,7 @@ function acceptMoveTableMenu() {
 function cancelMoveTableMenu() {
     let tab = document.getElementsByClassName("tab");
     let productsMenu = document.getElementById("productsMenu");
-    let moveTableMenu = document.getElementById("moveTableWarningMenu");
+    let moveTableMenu = document.getElementById("moveTableMenu");
 
     tab[0].style.pointerEvents = "auto";
     tab[0].style.filter = "blur(0px)";
@@ -312,59 +312,26 @@ function cancelMoveTableMenu() {
 }
 
 function moveTable() {
-    const current_n_table = parseInt(n_table.textContent.substr(7));
-    const new_n_table = parseInt(document.getElementById("tableInput").value);
+    const n_table = parseInt(document.getElementById("tableInput").value);
+    const api = "https://192.168.1.66:18080/api/currentTables";
+    let res;
 
-    const api_currentTables = "https://192.168.1.66:18080/api/currentTables";
-    const api_moveTable = "https://192.168.1.66:18080/api/moveTable";
-
-    fetch(api_currentTables)
+    fetch(api)
         .then(response => response.json())
         .then(data => {
-            //console.log('Response:', data);
+            console.log('Response:', data);
             for (let i of data["tables"]) {
-                if (i === parseInt(new_n_table)) {
-                    // Display moveTableWarning
-                    const moveTableMenu = document.getElementById("moveTableMenu");
-                    moveTableMenu.style.display = "none";
-
-                    let tab = document.getElementsByClassName("tab");
-                    let productsMenu = document.getElementById("productsMenu");
-                    const warning = document.getElementById("moveTableWarningMenu");
-
-                    tab[0].style.pointerEvents = "none";
-                    tab[0].style.filter = "blur(5px)";
-                    productsMenu.style.pointerEvents = "none";
-                    productsMenu.style.filter = "blur(5px)";
-                    warning.style.display = "flex";
-
-                    return;
+                if (i === n_table) {
+                    //table exists. Are you sure?
+                    acceptMoveTableMenu();
+                    console.log("hey", i);
+                    debugger;
+                    break;
                 }
             }
-
-            data = {
-                current_n_table: current_n_table,
-                new_n_table: new_n_table
-            };
-
-            fetch(api_moveTable, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-                .then(response => response.text())
-                .then(data => {
-                    //console.log('Response:', data);
-                })
-                .catch(error => {
-                    //console.error('Error:', error);
-                });
-
-            setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
         })
         .catch(error => {
             console.error('Error:', error);
         });
+
 }

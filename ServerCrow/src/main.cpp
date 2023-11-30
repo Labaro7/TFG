@@ -91,7 +91,7 @@ int main() {
             res.end();
         });
 
-    CROW_ROUTE(app, "/api/tables")([&server]() {
+    CROW_ROUTE(app, "/api/currentTables")([&server]() {
         std::vector<Table> tables = server.getTables();
         std::vector<int> n_tables;
         crow::json::wvalue response;
