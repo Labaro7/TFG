@@ -1,13 +1,7 @@
 #include "..\headers\server.h"
 #include "..\headers\domain.h"
+#include "..\headers\constants.h"
 #include <tuple>
-
-const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";
-const char* TABLE_NUMBER_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE NUMBER -->"; // It is char* because of strlen()
-const char* TICKET_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: TICKET PRODUCTS -->";
-const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
-const char* FOURTH_ROW_BUTTONS_PLACEHOLDER = "<!-- PLACEHOLDER: FOURTH ROW BUTTONS -->";
-int N_FOURTH_ROW_BUTTONS = 5;
 
 // index.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server) {
@@ -234,8 +228,6 @@ int main() {
             // TODO: Get the date from the JSON
             auto json_data = crow::json::load(req.body);
 
-            std::cout << json_data << std::endl;
-
             int n_table = json_data["n_table"].i();
             auto order = json_data["order"];
             auto added = json_data["added"];
@@ -252,6 +244,8 @@ int main() {
 
                 server.saveTableProduct(t, p, times);
             }
+
+            // TODO: saveOrder();
 
             // TODO: Change the response to the client
             res.set_header("Content-Type", "text/html");
@@ -292,10 +286,10 @@ int main() {
     });
 
     // App methods chain
-    app.bindaddr("192.168.1.66")
-        .port(18080)
-        .server_name("CrowCpp")
+    app.bindaddr(SERVER_IP)
+        .port(SERVER_PORT)
+        .server_name(SERVER_NAME)
         .multithreaded()
-        .ssl_file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt", "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key") // TODO: Put relative path
+        .ssl_file(CRT_FILE_PATH, KEY_FILE_PATH)
         .run();
 }

@@ -13,7 +13,6 @@
 #include <string>
 #include <memory>
 
-
 class Server {  
 public:
     Server();
@@ -26,12 +25,12 @@ public:
 
 
     // Save
-    void saveTable(const Table& table); // It works
-    void saveEmployee(const Employee& employee); // It works
-    void saveProduct(const Product& product); // It works
-    void saveOrder(const Order& order); // It works
-    void saveIngredient(const Ingredient& ingredient); // It works
-    void saveAllergen(const Allergen& allergen); // It works
+    void saveTable(const Table& table);
+    void saveEmployee(const Employee& employee);
+    void saveProduct(const Product& product);
+    void saveOrder(const Order& order);
+    void saveIngredient(const Ingredient& ingredient);
+    void saveAllergen(const Allergen& allergen);
     void saveTableProduct(Table& table, const Product& product, const int& times);
 
 
@@ -58,12 +57,12 @@ public:
     void moveTable(int current_n_table, const int new_n_table);
 
     // Remove
-    void removeTable(const Table& table); // It works
-    void removeEmployee(const Employee& employee); // It works
-    void removeProduct(const Product& product); // It works
-    void removeOrder(const Order& order); // It works
-    void removeIngredient(const Ingredient& ingredient); // It works
-    void removeAllergen(const Allergen& allergen); // It works
+    void removeTable(const Table& table);
+    void removeEmployee(const Employee& employee);
+    void removeProduct(const Product& product);
+    void removeOrder(const Order& order);
+    void removeIngredient(const Ingredient& ingredient);
+    void removeAllergen(const Allergen& allergen);
 
 
 private:

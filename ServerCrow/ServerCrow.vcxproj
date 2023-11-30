@@ -144,12 +144,14 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\constants.h" />
     <ClInclude Include="headers\crow_all.h" />
     <ClInclude Include="headers\database.h" />
     <ClInclude Include="headers\domain.h" />
     <ClInclude Include="headers\server.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\constants.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\domain.cpp" />
     <ClCompile Include="src\main.cpp" />

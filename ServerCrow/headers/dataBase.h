@@ -10,32 +10,10 @@
 
 // Other includes
 #include "domain.h"
+#include "constants.h"
 #include <sstream>
 #include <mutex>
 #include <deque>
-
-// MySQL constants.
-const std::string HOST = "127.0.0.1";
-const int PORT = 3306;
-const std::string USERNAME = "user";
-const std::string PASSWORD = "user";
-const std::string DATABASE_NAME = "example_db";
-
-const int POOL_SIZE = 10;
-
-class Database;
-
-struct Connection {
-    Database* database;
-    int con_id;
-    std::shared_ptr<sql::Connection> con;
-    sql::Statement* stmt;
-    sql::PreparedStatement* pstmt;
-
-    // TODO: const
-    Connection(Database* database, int con_id, std::shared_ptr<sql::Connection> con);
-    ~Connection();
-};
 
 class Database {
 public:

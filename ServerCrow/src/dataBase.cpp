@@ -2,30 +2,6 @@
 #include "../headers/crow_all.h"
 #include "../headers/domain.h"
 
-Connection::Connection(Database* database, int con_id, std::shared_ptr<sql::Connection> con) :
-    database(database),
-    con_id(con_id),
-    con(con),
-    pstmt() {
-    stmt = con->createStatement();
-}
-
-Connection::~Connection() {
-    //con->close();
-    // These have to be explicitly deleted. con is shared_ptr so it doesnt need to
-    delete stmt;
-    delete pstmt;
-
-    //std::unique_lock<std::mutex> lock(database->mutex);
-
-    /*int pos = 0;
-    for (auto const& c : database->connection_pool) {
-        if (c->con == this->con) break;
-        pos++;
-    }
-    database->connection_pool.erase(database->connection_pool.begin() + pos);*/
-}
-
 Database::Database() : pstmt() {
     try{
         connection_properties = {

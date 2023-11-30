@@ -67,12 +67,15 @@ function addProductToTicket(clickedProduct) {
         found["times"]++;
 
         const text = found.name;
-        console.log(text);
+
         let f = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.children[1].textContent.includes(text));
-        console.log(f);
+
         f.children[0].textContent = "x" + found.times;
+        f.children[3].textContent = (found.times * found.price).toFixed(2);
 
         lastProduct.textContent = found.name + " | " + found.price;
+
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
     else {
         let product = { times: 1, name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent) };
@@ -107,9 +110,9 @@ function addProductToTicket(clickedProduct) {
         child.appendChild(child_total_price);
         
         ticketList.appendChild(child);
-    }
 
-    price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+    }
 }
 
 function openDeployable(clickedDeployable) {
