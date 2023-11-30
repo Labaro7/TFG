@@ -83,6 +83,9 @@
     <ClInclude Include="headers\constants.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="headers\placeholders.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\database.cpp">
@@ -98,6 +101,9 @@
       <Filter>Archivos de encabezado\domain</Filter>
     </ClCompile>
     <ClCompile Include="src\constants.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\placeholders.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
