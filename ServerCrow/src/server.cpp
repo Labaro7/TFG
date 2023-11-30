@@ -86,13 +86,13 @@ void Server::initialize() {
     Table t1(60, 1, ps, 0.0);
     saveTable(t1);
     for (auto const& p : ps) {
-        saveTableProduct(t1, p.first);
+        saveTableProduct(t1, p.first, p.second);
     }
 
     Table t2(12, 5, ps, 10.0);
     saveTable(t2);
     for (auto const& p : ps) {
-        saveTableProduct(t2, p.first);
+        saveTableProduct(t2, p.first, p.second);
     }
 
     pages[0] = { tup1, tup2, tup3, tup19, tup20 };
@@ -102,8 +102,8 @@ void Server::initialize() {
     pages[4] = { tup12 };
     restaurant->pages = pages;
 
-    saveTableProduct(t2, p2);
-    saveTableProduct(t2, p2);
+    saveTableProduct(t2, p2, 1);
+    saveTableProduct(t2, p2, 1);
 }
 
 void Server::dropAllTables() { _database->dropAllTables(); }
@@ -134,12 +134,11 @@ void Server::saveIngredient(const Ingredient& ingredient) { _database->saveIngre
 
 void Server::saveAllergen(const Allergen& allergen) { _database->saveAllergen(allergen); }
 
-void Server::saveTableProduct(Table& table, const Product& product) {
-    table.products[product]++;
+void Server::saveTableProduct(Table& table, const Product& product, const int& times) {
     table.bill += product.price;
     restaurant->current_tables[table.n_table] = table;
 
-    _database->saveTableProduct(table, product); 
+    _database->saveTableProduct(table, product, times); 
 }
 
 

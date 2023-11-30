@@ -32,7 +32,7 @@ public:
     void saveOrder(const Order& order); // It works
     void saveIngredient(const Ingredient& ingredient); // It works
     void saveAllergen(const Allergen& allergen); // It works
-    void saveTableProduct(Table& table, const Product& product);
+    void saveTableProduct(Table& table, const Product& product, const int& times);
 
 
     // Get

@@ -415,8 +415,7 @@ void Database::saveAllergen(const Allergen& allergen) {
     }
 }
 
-// TODO: Add amount parameter
-void Database::saveTableProduct(Table& table, const Product& product) {
+void Database::saveTableProduct(Table& table, const Product& product, const int& times) {
     try {
         std::unique_lock<std::mutex> lock(mutex);
         int table_id = 0;
@@ -434,7 +433,7 @@ void Database::saveTableProduct(Table& table, const Product& product) {
     
         if (res->next()) {
             table_id = res->getInt("table_id");
-            double new_bill = res->getDouble("bill") + product.price;
+            double new_bill = res->getDouble("bill") + (product.price * times);
 
             pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
             pstmt->setInt(1, new_bill);
@@ -456,7 +455,7 @@ void Database::saveTableProduct(Table& table, const Product& product) {
                 query.str("");
 
                 if (res->next()) {
-                    int new_amount = res->getInt("amount") + 1;
+                    int new_amount = res->getInt("amount") + times;
 
                     pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
                     pstmt->setInt(1, new_amount);
@@ -471,11 +470,11 @@ void Database::saveTableProduct(Table& table, const Product& product) {
                     pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
                     pstmt->setInt(1, table_id);
                     pstmt->setInt(2, product_id);
-                    pstmt->setInt(3, 1);
+                    pstmt->setInt(3, times);
                     pstmt->execute();
 
                     CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
-                        " and product_id " << product_id << " and amount 1 inserted into tableproduct.";
+                        " and product_id " << product_id << " and amount " << times << " inserted into tableproduct.";
                 }
             }
         }

@@ -80,7 +80,7 @@ public:
     void saveIngredient(const Ingredient& ingredient);
     void saveAllergen(const Allergen& allergen);
 
-    void saveTableProduct(Table& table, const Product& product);
+    void saveTableProduct(Table& table, const Product& product, const int& times);
     void saveProductIngredient(const Product& product, const Ingredient& ingredient);
     void saveProductOrder(const Product& product, const Order& order);
 

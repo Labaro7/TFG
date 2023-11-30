@@ -37,7 +37,7 @@ function deleteLastOrder() {
     if (added_ticket.length > 0) {
         let last = added_ticket[added_ticket.length - 1];
         const discount = document.getElementById("discountValue").textContent;
-        price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * parseInt(last.times) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
+        price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
 
         // Remove the li item
         ticketList.removeChild(ticketList.lastElementChild);
@@ -66,11 +66,10 @@ function addProductToTicket(clickedProduct) {
     if (found) {
         found["times"]++;
 
-        const text = found.name;
-        console.log(text);
-        let f = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.children[1].textContent.includes(text));
-        console.log(f);
-        f.children[0].textContent = "x" + found.times;
+        const text = "x" + (found.times-1).toString() + " " + found.name + " " + found.price; // found-times-1 because it has to find the element without increment
+
+        let f = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.textContent.includes(text));
+        f.textContent = "x" + found.times + " " + found.name + " " + found.price;
 
         lastProduct.textContent = found.name + " | " + found.price;
     }
@@ -84,28 +83,8 @@ function addProductToTicket(clickedProduct) {
         // Add the product in the ticket of the table
         let child = document.createElement("li");
         child.className = "addedTicketProduct";
+        child.textContent = "x" + last.times + " " + last.name + " " + last.price;
         child.backgroundColor = "green";
-
-        let child_times = document.createElement("div");
-        child_times.className = "productTimes";
-        child_times.textContent = "x" + 1;
-        child.appendChild(child_times);
-
-        let child_name = document.createElement("div");
-        child_name.className = "productNames";
-        child_name.textContent = product["name"];
-        child.appendChild(child_name);
-
-        let child_price = document.createElement("div");
-        child_price.className = "productPrices";
-        child_price.textContent = product["price"].toFixed(2);
-        child.appendChild(child_price);
-
-        let child_total_price = document.createElement("div");
-        child_total_price.className = "productTotalPrices";
-        child_total_price.textContent = (product["times"] * product["price"]).toFixed(2);
-        child.appendChild(child_total_price);
-        
         ticketList.appendChild(child);
     }
 

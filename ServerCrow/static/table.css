@@ -279,6 +279,7 @@ numTable {
 #bill {
     display: flex;
     position: relative;
+    left: 30px;
     align-content: center;
     justify-content: center;
     margin-bottom: 20px;
@@ -375,6 +376,7 @@ numTable {
     color: white;
     height: 100%;
     text-shadow: 1px 1px 1px black;
+    font-size: 30px;
 }
 
 #moveTableMenuAcceptButton {

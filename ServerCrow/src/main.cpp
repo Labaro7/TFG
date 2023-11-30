@@ -234,6 +234,8 @@ int main() {
             // TODO: Get the date from the JSON
             auto json_data = crow::json::load(req.body);
 
+            std::cout << json_data << std::endl;
+
             int n_table = json_data["n_table"].i();
             auto order = json_data["order"];
             auto added = json_data["added"];
@@ -248,7 +250,7 @@ int main() {
                 int times = object["times"].i();
                 Product p(object["name"].s(), object["price"].d());
 
-                server.saveTableProduct(t, p);
+                server.saveTableProduct(t, p, times);
             }
 
             // TODO: Change the response to the client
