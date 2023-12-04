@@ -66,6 +66,15 @@
     <None Include="ssl\server.key">
       <Filter>ssl</Filter>
     </None>
+    <None Include="templates\add.html">
+      <Filter>Archivos de recursos\html</Filter>
+    </None>
+    <None Include="static\add.css">
+      <Filter>Archivos de recursos\css</Filter>
+    </None>
+    <None Include="static\add.js">
+      <Filter>Archivos de recursos\js</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.h">

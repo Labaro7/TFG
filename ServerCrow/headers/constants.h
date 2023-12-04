@@ -14,10 +14,16 @@ extern const std::string KEY_FILE_PATH;
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;
 extern const char* TABLE_NUMBER_PLACEHOLDER;
+extern const char* PRODUCT_LIST_PLACEHOLDER; // This must not be const
 extern const char* TICKET_PRODUCTS_PLACEHOLDER;
 extern const char* TICKET_BILL_PLACEHOLDER;
 extern const char* FOURTH_ROW_BUTTONS_PLACEHOLDER;
 extern int N_FOURTH_ROW_BUTTONS;
+
+extern const char* CURRENT_PRODUCTS_PLACEHOLDER;
+extern const char* CURRENT_EMPLOYEES_PLACEHOLDER;
+extern const char* CURRENT_INGREDIENTS_PLACEHOLDER;
+extern const char* CURRENT_ALLERGENS_PLACEHOLDER;
 
 // MySQL constants
 extern const std::string HOST;

@@ -75,7 +75,7 @@ function addProductToTicket(clickedProduct) {
 
         lastProduct.textContent = found.name + " | " + found.price;
 
-        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price)  (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
     else {
         let product = { times: 1, name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent) };

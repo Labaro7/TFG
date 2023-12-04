@@ -14,43 +14,45 @@ int main() {
     server.dropAllTables();
     server.initialize();
 
-    CROW_ROUTE(app, "/")([&server](const crow::request& req, crow::response& res) {
-        // TODO: Put relative path
-        std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
-        std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
+    CROW_ROUTE(app, "/")
+        ([&server](const crow::request& req, crow::response& res) {
+            // TODO: Put relative path
+            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+            std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
 
-        // TODO: Change error handling
-        if (modifiedHTML == "") {
-            res.code = 500; // Internal Server Error
-            res.body = "Error reading HTML template", "text/plain";
-        }
+            // TODO: Change error handling
+            if (modifiedHTML == "") {
+                res.code = 500; // Internal Server Error
+                res.body = "Error reading HTML template", "text/plain";
+            }
 
-        res.set_header("Content-Type", "text/html");
-        res.write(modifiedHTML);
-        res.end();
+            res.set_header("Content-Type", "text/html");
+            res.write(modifiedHTML);
+            res.end();
         });
 
     // TODO: Fix the 505 error when not inputting table and accepting
-    CROW_ROUTE(app, "/table")([&server](const crow::request& req, crow::response& res) {
-        auto page = crow::mustache::load_text("table.html");
-        std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
-        Table t(stoi(n_table));
-        std::vector<Product> products = server.getProducts();
+    CROW_ROUTE(app, "/table")
+        ([&server](const crow::request& req, crow::response& res) {
+            auto page = crow::mustache::load_text("table.html");
+            std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
+            Table t(stoi(n_table));
+            std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 
-        // TODO: Put relative path
-        std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
-        std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
+            // TODO: Put relative path
+            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
+            std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
 
-        // TODO: Change error handling
-        if (modifiedHTML == "") {
-            res.code = 500; // Internal Server Error
-            res.body = "Error reading HTML template", "text/plain";
-        }
+            // TODO: Change error handling
+            if (modifiedHTML == "") {
+                res.code = 500; // Internal Server Error
+                res.body = "Error reading HTML template", "text/plain";
+            }
 
-        res.set_header("Content-Type", "text/html");
-        res.write(modifiedHTML);
-        res.end();
-    });
+            res.set_header("Content-Type", "text/html");
+            res.write(modifiedHTML);
+            res.end();
+        });
 
     CROW_ROUTE(app, "/order")
         .methods("POST"_method)
@@ -91,21 +93,21 @@ int main() {
             res.end();
         });
 
-    CROW_ROUTE(app, "/api/currentTables")([&server]() {
+    CROW_ROUTE(app, "/api/currentTables")
+        ([&server]() {
         std::vector<Table> tables = server.getTables();
         std::vector<int> n_tables;
         crow::json::wvalue response;
 
         for (const auto& t : tables) {
             n_tables.push_back(t.n_table);
-            std::cout << t.n_table;
         }
 
         response["tables"] = n_tables;
 
 
         return crow::response(response);
-    });
+            });
 
     CROW_ROUTE(app, "/api/moveTable")
         .methods("POST"_method)
@@ -116,12 +118,62 @@ int main() {
         int new_n_table = json_data["new_n_table"].i();
 
         server.moveTable(current_n_table, new_n_table);
-    });
+            });
 
     CROW_CATCHALL_ROUTE(app)
         ([]() {
         return "Wrong Route";
-    });
+            });
+
+    CROW_ROUTE(app, "/add")
+        ([&server](const crow::request& req, crow::response& res) {
+            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\add.html");
+            std::stringstream ss;
+            ss << file.rdbuf();
+            std::string page = ss.str();
+
+            // TODO: Put relative path
+            std::string modifiedHTML = insertDataInPlaceHolders(&file, PRODUCT_LIST_PLACEHOLDER, server);
+
+            // TODO: Change error handling
+            if (modifiedHTML == "") {
+                res.code = 500; // Internal Server Error
+                res.body = "Error reading HTML template", "text/plain";
+            }
+
+            res.set_header("Content-Type", "text/html");
+            res.write(modifiedHTML);
+            res.end();
+        });
+
+    CROW_ROUTE(app, "/add/product")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+
+
+        });
+
+    CROW_ROUTE(app, "/add/employee")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+
+
+        });
+
+    CROW_ROUTE(app, "/add/ingredient")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+
+
+        });
+
+    CROW_ROUTE(app, "/add/allergen")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+
+
+            });
+
 
     // App methods chain
     app.bindaddr(SERVER_IP)

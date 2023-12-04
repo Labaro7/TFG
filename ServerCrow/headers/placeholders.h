@@ -15,4 +15,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 // table.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::vector<Product> products, Server& server);
 
+
+// add.html
+std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productListPlaceHolder, Server& server);
 #endif

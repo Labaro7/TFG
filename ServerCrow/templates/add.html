@@ -1,0 +1,93 @@
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
+<head>
+    <title>Add Elements</title>
+    <link rel="stylesheet" type="text/css" href="..\static\add.css">
+</head>
+<body>
+    <div class="tabs">
+        <div class="tab-button" onclick="changeTab()">
+            <div id="productTab"><b>Product</b></div>
+            <div id="tab-buttonSelectTable"></div>
+        </div>
+
+        <div class="tab-button" onclick="changeTab()">
+            <div id="currentTables"><b>Employee</b></div>
+            <div id="tab-buttonCurrentTables"></div>
+        </div>
+
+        <div class="tab-button" onclick="changeTab()">
+            <div id="selectTable"><b>Ingredient</b></div>
+            <div id="tab-buttonSelectTable"></div>
+        </div>
+
+        <div class="tab-button" onclick="changeTab()">
+            <div id="currentTables"><b>Allergen</b></div>
+            <div id="tab-buttonCurrentTables"></div>
+        </div>
+    </div>
+
+    <div id="pages">
+        <div class="page" id="productPage">
+            <!-- PLACEHOLDER: CURRENT PRODUCTS -->
+            <!--
+            <div class="pageButton" id="pageButton1" data-number="1" onclick="displayMenu(this)">1</div>
+            -->
+            <div class="products">
+                <!--
+                <div class="content">
+                    <ul id="grid1">
+                        "<li class='grid-product' onclick='addProductToTicket(this)'>
+                            <div class='products-names'>Hamburguer</div>
+                            <div class='products-prices'>10.0</div>
+                        </li>
+
+                        <li class='grid-deployable' data-name='Drinks' onclick='openDeployable(this)'>Drinks</li>
+
+                        <li class='deployable-product' data-name='Drinks' onclick='addProductToTicket(this)'>
+                            <div class='products-names'>Hamburguer</div>
+                            <div class='products-prices'>10.0</div>
+                        </li>
+                    
+                    <!-- PLACEHOLDER: LIST OF PRODUCTS 1 -->
+                    <!--
+                    </ul>
+
+                    <ul id="grid2">
+                        <!-- PLACEHOLDER: LIST OF PRODUCTS 2 -->
+                    <!--
+                    </ul>
+
+                    <ul id="grid3">
+                        <!-- PLACEHOLDER: LIST OF PRODUCTS 3 -->
+                    <!--
+                    </ul>
+
+                    <ul id="grid4">
+                        <!-- PLACEHOLDER: LIST OF PRODUCTS 4 -->
+                    <!--
+                    </ul>
+
+                    <ul id="grid5">
+                        <!-- PLACEHOLDER: LIST OF PRODUCTS 5 -->
+                    <!--
+                    </ul>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <div class="page" id="employeePage">
+            <!-- PLACEHOLDER: CURRENT EMPLOYEES -->
+        </div>
+
+        <div class="page" id="ingredientPage">
+            <!-- PLACEHOLDER: CURRENT INGREDIENTS -->
+        </div>
+
+        <div class="page" id="allergenPage">
+            <!-- PLACEHOLDER: CURRENT ALLERGENS -->
+        </div>
+    </div>
+</body>
+</html>
