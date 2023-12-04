@@ -13,14 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Archivos de encabezado\domain">
-      <UniqueIdentifier>{a9fe68bc-bbd5-4aac-9063-96d636ee7f33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\crow">
       <UniqueIdentifier>{b9bde777-2c19-4254-97f5-8485ca3ecf68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Archivos de origen\domain">
-      <UniqueIdentifier>{0c1d04e0-c73e-47f9-85a7-0737fc7fda79}</UniqueIdentifier>
     </Filter>
     <Filter Include="Archivos de recursos\html">
       <UniqueIdentifier>{e3feac24-2cf6-44cc-905f-008ae5e8ec7f}</UniqueIdentifier>
@@ -86,13 +80,13 @@
     <ClInclude Include="headers\crow_all.h">
       <Filter>Archivos de encabezado\crow</Filter>
     </ClInclude>
-    <ClInclude Include="headers\domain.h">
-      <Filter>Archivos de encabezado\domain</Filter>
-    </ClInclude>
     <ClInclude Include="headers\constants.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="headers\placeholders.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\domain.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
@@ -106,13 +100,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\domain.cpp">
-      <Filter>Archivos de encabezado\domain</Filter>
-    </ClCompile>
     <ClCompile Include="src\constants.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\placeholders.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\domain.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

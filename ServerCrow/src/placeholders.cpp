@@ -62,16 +62,16 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     // 2. HTML with fourth row buttons
     for (int i = 1; i <= N_FOURTH_ROW_BUTTONS; i++) {
-        ss << "<div class='fourthRowButton' id='fourthRowButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
+        ss << "<div class='pagesButton' id='pagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
     }
 
-    std::string fourthRowButtonsHTML = ss.str();
+    std::string pagesButtonsHTML = ss.str();
     ss.str(""); // Important to clear here
 
     // 2. Insert previous HTML piece with the fourth row buttons into HTML
-    size_t fourthRowButtonsPlaceholderPos = contentHTML.find(FOURTH_ROW_BUTTONS_PLACEHOLDER);
-    if (fourthRowButtonsPlaceholderPos != std::string::npos) {
-        contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(FOURTH_ROW_BUTTONS_PLACEHOLDER), fourthRowButtonsHTML);
+    size_t pagesButtonsPlaceholderPos = contentHTML.find(PAGES_BUTTONS_PLACEHOLDER);
+    if (pagesButtonsPlaceholderPos != std::string::npos) {
+        contentHTML.replace(pagesButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
     }
 
     // 3. Get the data of products currently added to the database
@@ -120,8 +120,6 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
             // 3. Insert HTML piece with the products of the restaurant into HTML
             std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
             changedPlaceholder.replace(35, 1, std::to_string(i+1));
-            
-            std::cout << changedPlaceholder << std::endl;
 
             size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
             if (productListPlaceholderPos != std::string::npos) {
@@ -163,6 +161,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     return contentHTML;
 }
 
+// add.html
 std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productListPlaceHolder, Server& server) {
     // Data to insert into HTML
     // 1. Current products
@@ -194,9 +193,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productLi
     ss.str(""); // Important to clear here
 
     // 1.1. Insert previous HTML piece with the fourth row buttons into HTML
-    size_t fourthRowButtonsPlaceholderPos = contentHTML.find(FOURTH_ROW_BUTTONS_PLACEHOLDER);
+    size_t fourthRowButtonsPlaceholderPos = contentHTML.find(PAGES_BUTTONS_PLACEHOLDER);
     if (fourthRowButtonsPlaceholderPos != std::string::npos) {
-        contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(FOURTH_ROW_BUTTONS_PLACEHOLDER), fourthRowButtonsHTML);
+        contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), fourthRowButtonsHTML);
     }
 
     // 1.2. Get the data of products currently added to the database
@@ -244,12 +243,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productLi
             ss.str("");
 
             // 1.2. Insert HTML piece with the products of the restaurant into HTML
-            std::stringstream ss2;
-            ss2 << "<!-- PLACEHOLDER: LIST OF PRODUCTS " << i + 1 << " -->" << std::endl; // i+1 because the fourth row starts counting in 1
-            std::string PRODUCT_LIST_PLACEHOLDER = ss2.str();
-            ss2.str("");
+            std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
+            changedPlaceholder.replace(35, 1, std::to_string(i + 1));
 
-            size_t productListPlaceholderPos = contentHTML.find(PRODUCT_LIST_PLACEHOLDER.c_str());
+            size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
             if (productListPlaceholderPos != std::string::npos) {
                 contentHTML.insert(productListPlaceholderPos, productListHTML);
             }
