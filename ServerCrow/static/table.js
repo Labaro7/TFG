@@ -1,6 +1,6 @@
 // Init
 let currentGridNumber = 1;
-let currentButton = document.getElementById("pagesButton" + 1);
+let currentButton = document.getElementById("productsPagesButton" + 1);
 currentButton.style.backgroundColor = "#0a3677";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
@@ -169,13 +169,13 @@ function showPage(pageId) {
 
 
 function selectButton(number) {
-    let button = document.getElementById("pagesButton" + number);
+    let button = document.getElementById("productsPagesButton" + number);
     currentButton.style.backgroundColor = "white";
     currentButton.style.color = "black";
     currentButton.style.border = "1px solid #0a3677";
     currentButton = button;
 
-    button = document.getElementById("pagesButton" + number);
+    button = document.getElementById("productsPagesButton" + number);
     button.style.backgroundColor = "#0a3677";
     button.style.color = "white";
     currentButton.style.border = "1px solid black";
@@ -193,7 +193,7 @@ function displayMenu(clickedButton) {
         currentGridNumber = number;
 
         currentGrid = document.getElementById("grid" + currentGridNumber);
-        button = document.getElementById("pagesButton" + currentGridNumber);
+        button = document.getElementById("productsPagesButton" + currentGridNumber);
         currentGrid.style.display = 'flex';
         const currentGridDeployableElements = currentGrid.querySelectorAll("li");
 

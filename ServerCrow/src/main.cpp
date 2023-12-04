@@ -128,12 +128,11 @@ int main() {
     CROW_ROUTE(app, "/add")
         ([&server](const crow::request& req, crow::response& res) {
             std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\add.html");
-            std::stringstream ss;
-            ss << file.rdbuf();
-            std::string page = ss.str();
 
             // TODO: Put relative path
-            std::string modifiedHTML = insertDataInPlaceHolders(&file, PRODUCT_LIST_PLACEHOLDER, server);
+            std::cout << "ccc" << std::endl;
+            std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
+            std::cout << "ddd" << std::endl;
 
             // TODO: Change error handling
             if (modifiedHTML == "") {

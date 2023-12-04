@@ -36,16 +36,12 @@ body {
     visibility: hidden;
 }
 
-#pages {
-    border: 1px solid #0a3677;
-}
-
 #productPage {
     display: flex;
     flex-direction: column;
 }
 
-.productPages {
+.fourthRow {
     display: flex;
     margin-top: 0px;
     align-content: center;
@@ -54,7 +50,7 @@ body {
     margin: 0px 0px;
 }
 
-.productsPagesButton {
+.pagesButton {
     flex: 1;
     background-color: white;
     border: 1px solid #0a3677;
@@ -68,6 +64,7 @@ body {
 .page {
     display: none;
     margin-top: 10px;
+    border: 1px solid #0a3677;
 }
 
 #productPage {
@@ -147,12 +144,6 @@ body {
     word-break: break-word;
     text-align: center;
     flex-direction: column;
-}
-
-#productForm {
-    display: flex;
-    flex-direction: column;
-
 }
 
 

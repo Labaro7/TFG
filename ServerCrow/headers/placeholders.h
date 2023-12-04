@@ -17,5 +17,5 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 
 // add.html
-std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productListPlaceHolder, Server& server);
+std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& productListPlaceHolder, Server& server);
 #endif

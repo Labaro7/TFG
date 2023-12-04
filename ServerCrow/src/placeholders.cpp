@@ -62,7 +62,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
     // 2. HTML with fourth row buttons
     for (int i = 1; i <= N_FOURTH_ROW_BUTTONS; i++) {
-        ss << "<div class='pagesButton' id='pagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
+        ss << "<div class='productsPagesButton' id='productsPagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
     }
 
     std::string pagesButtonsHTML = ss.str();
@@ -162,7 +162,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 }
 
 // add.html
-std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productListPlaceHolder, Server& server) {
+std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& productListPlaceHolder, Server& server) {
     // Data to insert into HTML
     // 1. Current products
     // 1.1 Pages buttons
@@ -182,20 +182,22 @@ std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productLi
     file->close();
     std::string contentHTML = ssHTML.str();
 
+    std::cout << "1 "<< std::endl;
+
     std::stringstream ss;
 
     // 1.1. HTML with fourth row buttons
     for (int i = 1; i <= N_FOURTH_ROW_BUTTONS; i++) {
-        ss << "<div class='pageButton' id='pageButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
+        ss << "<div class='productsPagesButton' id='productsPagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
     }
 
-    std::string fourthRowButtonsHTML = ss.str();
+    std::string pagesButtonsHTML = ss.str();
     ss.str(""); // Important to clear here
 
     // 1.1. Insert previous HTML piece with the fourth row buttons into HTML
     size_t fourthRowButtonsPlaceholderPos = contentHTML.find(PAGES_BUTTONS_PLACEHOLDER);
     if (fourthRowButtonsPlaceholderPos != std::string::npos) {
-        contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), fourthRowButtonsHTML);
+        contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
     }
 
     // 1.2. Get the data of products currently added to the database
@@ -221,9 +223,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productLi
             // Is product
             if (std::get<1>(p).empty()) {
                 if (product_name.size() <= 15)
-                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
                 else
-                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl;
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small''><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl;
             }
 
             // Is desployable
@@ -232,7 +234,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, std::string& productLi
 
                 for (const auto& q : std::get<1>(p)) {
                     if (q.price) {
-                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
                     }
                 }
 
