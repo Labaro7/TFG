@@ -963,15 +963,15 @@ void Database::moveTable(int current_n_table, const int new_n_table) {
 
                 // If product_id matches between current and new table. Update amount and new table bill
                 if (res2->next()) {
-                    int new_table_product_id = res->getInt("product_id");
-                    int new_table_amount = res->getInt("amount");
+                    int new_table_product_id = res2->getInt("product_id");
+                    int new_table_amount = res2->getInt("amount");
 
-                    query << "SELECT amount FROM tableproduct WHERE product_id =" << current_table_product_id << " AND table_id =" << new_table_id;
-                    sql::ResultSet* res2 = stmt->executeQuery(query.str());
+                    query << "SELECT * FROM tableproduct WHERE table_id =" << current_table_id << " AND product_id = " << current_table_product_id;
+                    sql::ResultSet* res3 = stmt->executeQuery(query.str());
                     query.str("");
 
-                    if (res2->next()) {
-                        int current_table_amount = res2->getInt("amount");
+                    if (res3->next()) {
+                        int current_table_amount = res3->getInt("amount");
                         new_table_amount += current_table_amount;
 
                         // Update new table product amount
@@ -982,11 +982,11 @@ void Database::moveTable(int current_n_table, const int new_n_table) {
                         pstmt->execute();
 
                         query << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
-                        res2 = stmt->executeQuery(query.str());
+                        res3 = stmt->executeQuery(query.str());
                         query.str("");
 
-                        if (res2->next()) {
-                            int current_table_product_price = res2->getInt("price");
+                        if (res3->next()) {
+                            int current_table_product_price = res3->getInt("price");
                             new_table_bill += current_table_product_price * current_table_product_amount;
 
                             // Update new table bill
