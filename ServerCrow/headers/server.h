@@ -69,5 +69,7 @@ private:
     std::unique_ptr<Database> _database;
     std::unique_ptr<Restaurant> restaurant;
 
+    //std::mutex mutex;
+
 }; // class Server
 #endif

@@ -1007,6 +1007,58 @@ void Database::moveTable(int current_n_table, const int new_n_table) {
                             pstmt->execute();
                         }
                     }
+
+                    // If current table product matches new table product
+                    /*if (res2->next()) {
+                        std::cout << "b" << std::endl;
+                        int current_table_amount = res2->getInt("amount");
+
+                        query << "SELECT price FROM products WHERE product_id =" << new_table_product_id;
+                        sql::ResultSet* res3 = stmt->executeQuery(query.str());
+                        query.str("");
+
+                        if (res3->next()) {
+                            double new_table_product_price = res3->getDouble("price");
+
+                            pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+                            pstmt->setInt(1, new_table_amount + current_table_amount);
+                            pstmt->setInt(2, new_table_id);
+                            pstmt->setInt(3, new_table_product_id);
+                            pstmt->execute();
+
+                            new_table_bill += (current_table_amount * new_table_product_price);
+
+                            std::cout << "xxx " << new_table_bill << " " << current_table_amount << " - " << new_table_product_price << " + " << new_table_id << std::endl;
+                            pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+                            pstmt->setDouble(1, new_table_bill);
+                            std::cout << "yyy " << new_table_bill + (current_table_amount * new_table_product_price)  << std::endl;
+                            pstmt->setInt(2, new_table_id);
+                            pstmt->execute();
+                        }
+                    }*/
+                    /*else { 
+                        std::cout << "c" << std::endl;
+                        pstmt = con->prepareStatement("UPDATE tableproduct SET table_id = ? WHERE table_id = ?");
+                        pstmt->setInt(1, new_table_id);
+                        pstmt->setInt(2, current_table_id);
+                        pstmt->execute();
+                        std::cout << "f" << std::endl;
+
+                        query << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
+                        sql::ResultSet* res3 = stmt->executeQuery(query.str());
+                        query.str("");
+
+                        res3->next();
+                        int current_table_product_price = res3->getInt("price");
+                        new_table_bill += (current_table_product_price * current_table_product_amount);
+
+                        std::cout << "c2" << std::endl;
+                        pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+                        pstmt->setInt(1, new_table_bill);
+                        pstmt->setInt(2, new_table_id);
+                        pstmt->execute();
+                        std::cout << "f2" << std::endl;
+                    }*/
                 }
                 else { // If product doesnt match, change its table_id and update table bill
                     pstmt = con->prepareStatement("UPDATE tableproduct SET table_id = ? WHERE table_id = ? AND product_id = ?");
@@ -1047,6 +1099,7 @@ void Database::moveTable(int current_n_table, const int new_n_table) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not change table number. Error message: " << e.what();
     }
 }
+
 
 
 // Remove

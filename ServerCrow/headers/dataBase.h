@@ -49,6 +49,7 @@ public:
     void dropAllTables();
 
 
+
     // ALL THE METHODS BELOW MUST USE THE MUTEX ATTRIBUTE
     // Save
     void saveTable(const Table& table);
@@ -67,20 +68,20 @@ public:
     std::vector<Table> getTables();
     Table getTableByNumber(const int n_table);
 
-    std::vector<Employee> getEmployees() const;
-    Employee getEmployeeByName(const std::string name) const;
+    std::vector<Employee> getEmployees();
+    Employee getEmployeeByName(const std::string name);
 
-    std::vector<Product> getProducts() const;
-    Product getProductByName(const std::string name) const;
+    std::vector<Product> getProducts();
+    Product getProductByName(const std::string name);
 
-    std::vector<Order> getOrders() const;
-    Order getOrderByTime(const std::string time) const;
+    std::vector<Order> getOrders();
+    Order getOrderByTime(const std::string time);
 
-    std::vector<Ingredient> getIngredients() const;
-    Ingredient getIngredientByName(const std::string name) const;
+    std::vector<Ingredient> getIngredients();
+    Ingredient getIngredientByName(const std::string name);
 
-    std::vector<Allergen> getAllergens() const;
-    Allergen getAllergenByName(const std::string name) const;
+    std::vector<Allergen> getAllergens();
+    Allergen getAllergenByName(const std::string name);
 
 
     // Print

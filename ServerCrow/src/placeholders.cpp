@@ -182,8 +182,6 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
     file->close();
     std::string contentHTML = ssHTML.str();
 
-    std::cout << "1 "<< std::endl;
-
     std::stringstream ss;
 
     // 1.1. HTML with fourth row buttons

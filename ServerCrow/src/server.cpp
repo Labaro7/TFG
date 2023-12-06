@@ -171,11 +171,29 @@ Allergen Server::getAllergenByName(std::string name) const { return _database->g
 
 // Change
 void Server::moveTable(int current_n_table, const int new_n_table) {
-    Table t = restaurant->current_tables[current_n_table];
-    t.n_table = new_n_table;
+    Table current_table = restaurant->current_tables[current_n_table];
+    Table new_table = restaurant->current_tables[new_n_table];
 
     restaurant->current_tables.erase(current_n_table);
-    restaurant->current_tables[new_n_table] = t;
+
+    if (new_table.isEmpty()) {
+        current_table.n_table = new_n_table;
+        restaurant->current_tables[new_n_table] = current_table;
+    }
+    else {
+        for (auto curr_table_product : current_table.products) {
+            auto found = new_table.products.find(curr_table_product.first);
+            new_table.bill += (curr_table_product.first.price * curr_table_product.second * new_table.discount);
+            std::cout << new_table.bill << std::endl;
+
+            if (found != new_table.products.end()) {
+                found->second += curr_table_product.second;
+            }
+            else {
+                new_table.products[curr_table_product.first] = curr_table_product.second;
+            }
+        }
+    }
 
     database()->moveTable(current_n_table, new_n_table);
 }

@@ -73,6 +73,7 @@ int main() {
             auto added = json_data["added"];
             Table t = server.getTableByNumber(n_table);
 
+            // If a table with that number doesnt exist
             if (t.isEmpty()) {
                 t = { n_table, 3, product_unordered_map(), 0.0 };
                 server.saveTable(t);
@@ -112,13 +113,13 @@ int main() {
     CROW_ROUTE(app, "/api/moveTable")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
-        const auto& json_data = crow::json::load(req.body);
+            const auto& json_data = crow::json::load(req.body);
 
-        int current_n_table = json_data["current_n_table"].i();
-        int new_n_table = json_data["new_n_table"].i();
+            int current_n_table = json_data["current_n_table"].i();
+            int new_n_table = json_data["new_n_table"].i();
 
-        server.moveTable(current_n_table, new_n_table);
-            });
+            server.moveTable(current_n_table, new_n_table);
+        });
 
     CROW_CATCHALL_ROUTE(app)
         ([]() {
@@ -130,9 +131,7 @@ int main() {
             std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\add.html");
 
             // TODO: Put relative path
-            std::cout << "ccc" << std::endl;
             std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
-            std::cout << "ddd" << std::endl;
 
             // TODO: Change error handling
             if (modifiedHTML == "") {
