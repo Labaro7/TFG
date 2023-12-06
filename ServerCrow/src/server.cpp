@@ -184,7 +184,6 @@ void Server::moveTable(int current_n_table, const int new_n_table) {
         for (auto curr_table_product : current_table.products) {
             auto found = new_table.products.find(curr_table_product.first);
             new_table.bill += (curr_table_product.first.price * curr_table_product.second * new_table.discount);
-            std::cout << new_table.bill << std::endl;
 
             if (found != new_table.products.end()) {
                 found->second += curr_table_product.second;
