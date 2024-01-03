@@ -82,3 +82,39 @@ function openDeployable(clickedDeployable) {
         i.style.display = "flex";
     }
 }
+
+function addProduct() {
+    const name = document.getElementById("nameInput").value;
+    const price = document.getElementById("priceInput").value;
+    const color = document.getElementById("colorInput").value;
+    const page = document.getElementById("pageInput").value;
+    let deployable = document.getElementById("deployableInput").value;
+
+    deployable == "Deployable" ? deployable = "Yes" : deployable = "No";
+
+    const data = {
+        name: name,
+        price: price,
+        color: color,
+        page: page,
+        deployable: deployable
+    };
+
+    const url = 'https://192.168.1.66:18080/add/product';
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
+}

@@ -81,7 +81,7 @@ int main() {
 
             for (const auto& object : added) {
                 int times = object["times"].i();
-                Product p(object["name"].s(), object["price"].d());
+                Product p(object["name"].s(), object["price"].d(), "#FFFFFF", 0, false);
 
                 server.saveTableProduct(t, p, times);
             }
@@ -147,8 +147,21 @@ int main() {
     CROW_ROUTE(app, "/add/product")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
+            const auto& json_data = crow::json::load(req.body);
 
+            std::string name = json_data["name"].s();
+            double price = std::stod(json_data["price"].s());
+            std::string color = json_data["color"].s();
+            int page = json_data["page"].i();
+            std::string deployable_text = json_data["deployable"].s();
+            bool deployable;
 
+            deployable_text == "Yes" ? deployable = true : deployable = false;
+
+            Product p(name, price, color, page, deployable);
+            std::vector<Product> empty_vector;
+            server.restaurant->pages[page-1].push_back({p, empty_vector});
+            server.saveProduct(p);
         });
 
     CROW_ROUTE(app, "/add/employee")

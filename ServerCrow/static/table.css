@@ -161,7 +161,7 @@ numTable {
     max-width: 31.99%;
     height: 60px;
     position: relative;
-    background-color: white;
+    /*background-color: white;*/
     border: 1px solid rgb(12, 9, 34);
     color: rgb(12, 9, 34);
     display: flex;
@@ -193,7 +193,7 @@ numTable {
     font-size: 18px;
     max-width: 31.99%;
     border: 1px solid rgb(12, 9, 34);
-    background-color: #ffff94;
+    /*background-color: #ffff94;*/
 }
 
 .deployable-product {
@@ -201,7 +201,7 @@ numTable {
     max-width: 31.99%;
     height: 60px;
     position: relative;
-    background-color: white;
+    /*background-color: white;*/
     border: 1px solid rgb(12, 9, 34);
     color: rgb(12, 9, 34);
     display: none;

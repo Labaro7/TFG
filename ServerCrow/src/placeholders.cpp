@@ -91,23 +91,25 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
         for (const auto& p : data) {
             std::string product_name = std::get<0>(p).name;
             double product_price = std::get<0>(p).price;
+            std::string product_color = std::get<0>(p).color;
             auto list = std::get<1>(p);
 
             // Is product
             if (std::get<1>(p).empty()) {
                 if (product_name.size() <= 15)
-                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
                 else
-                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl;
+                    ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl;
             }
 
             // Is desployable
             else {
-                ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>";
+                ss << "<li class='grid-deployable' onclick='openDeployable(this)' style='background-color:" << product_color << ";'>" << product_name << "</li>";
 
                 for (const auto& q : std::get<1>(p)) {
                     if (q.price) {
-                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                        product_color = q.color;
+                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
                     }
                 }
 

@@ -18,20 +18,20 @@ void Server::initialize() {
     // Make the restaurant instances that store different cfigs of products
     using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
     
-    Product p1("Bread", 1.0);
-    Product p2("Russian salad", 2.0);
-    Product p3("Drinks", 0.0);
-    Product p19("White wines", 0.0);
-    Product p20("Cheese", 2.0);
-    Product p4("French Fries", 4.0);
-    Product p5("Sweet Potato Fries", 5.0);
-    Product p6("Tuna Tartar", 6.0);
-    Product p7("Steak Tartar", 7.0);
-    Product p8("Goat Cheese and Honey Toast", 8.0);
-    Product p9("Tomahawk", 9.0);
-    Product p10("Foie", 10.0);
-    Product p11("Sandwhich", 11.0);
-    Product p12("Salmon", 12.0);
+    Product p1("Bread", 1.0, "#FFFFFF", 1, false);
+    Product p2("Russian salad", 2.0, "#FFFFFF", 1, false);
+    Product p3("Drinks", 0.0, "#FEF95D", 1, true);
+    Product p19("White wines", 0.0, "#FEF95D", 1, true);
+    Product p20("Cheese", 2.0, "#FFFFFF", 1, false);
+    Product p4("French Fries", 4.0, "#FFFFFF", 2, false);
+    Product p5("Sweet Potato Fries", 5.0, "#FFFFFF", 2, false);
+    Product p6("Tuna Tartar", 6.0, "#FFFFFF", 2, false);
+    Product p7("Steak Tartar", 7.0, "#FFFFFF", 3, false);
+    Product p8("Goat Cheese and Honey Toast", 8.0, "#FFFFFF", 3, false);
+    Product p9("Tomahawk", 9.0, "#FFFFFF", 4, false);
+    Product p10("Foie", 10.0, "#FFFFFF", 4, false);
+    Product p11("Sandwhich", 11.0, "#FFFFFF", 4, false);
+    Product p12("Salmon", 12.0, "#FFFFFF", 4, false);
     saveProduct(p1);
     saveProduct(p2);
     saveProduct(p3);
@@ -47,12 +47,12 @@ void Server::initialize() {
     saveProduct(p19);
     saveProduct(p20);
 
-    Product p13("Water", 1.0);
-    Product p14("Cocacola", 2.0);
-    Product p15("Fanta", 2.0);
-    Product p16("Aquarius", 2.0);
-    Product p17("Nestea", 2.0);
-    Product p18("Sprite", 2.0);
+    Product p13("Water", 1.0, "#FFFFFF", 1, false);
+    Product p14("Cocacola", 2.0, "#FFFFFF", 1, false);
+    Product p15("Fanta", 2.0, "#FFFFFF", 1, false);
+    Product p16("Aquarius", 2.0, "#FFFFFF", 1, false);
+    Product p17("Nestea", 2.0, "#FFFFFF", 1, false);
+    Product p18("Sprite", 2.0, "#FFFFFF", 1, false);
     saveProduct(p13);
     saveProduct(p14);
     saveProduct(p15);
@@ -63,7 +63,7 @@ void Server::initialize() {
     std::vector<productsMenus_t> pages(5);
     std::vector<Product> empty_vec;
     std::vector<Product> drinks = { {p13}, {p14}, {p15}, {p16}, {p17} , {p18} };
-    std::vector<Product> white_wines = { {Product("", 0.0)} };
+    std::vector<Product> white_wines = { {Product("", 0.0, "#FFFFFF", 1, false)}};
 
     // Page 0
     std::tuple<Product, std::vector<Product>> tup1 = { p1, empty_vec };

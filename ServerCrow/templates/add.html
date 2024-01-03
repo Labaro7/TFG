@@ -71,30 +71,65 @@
                         <!-- PLACEHOLDER: LIST OF PRODUCTS 5 -->
                     </ul>
                 </div>
-                <form id="productForm">
-                    <div>
-                        Name: <input />
+                <div id="forms">
+                    <div id="addProductForm" action="/add/product" method="post">
+                        <div id="name">
+                            <div>NAME</div>
+                            <input id="nameInput" name="nameInput" maxlength="30" size="30" />
+                        </div>
+
+                        <div id="price">
+                            <div>PRICE</div>
+                            <input type="number" maxlength="5" size="5" id="priceInput" name="priceInput" min="0" max="9999.999" step="0.01" />
+                        </div>
+
+                        <div id="color">
+                            <div>COLOR</div>
+                            <input type="color" list="redColors" id="colorInput" name="colorInput" />
+                            <datalist id="redColors">
+                                <option value="#FFFFFF"></option>
+                                <option value="#EDEDED"></option>
+                                <option value="#DBDBDB"></option>
+                                <option value="#C4C4C4"></option>
+                                <option value="#A8A8A8"></option>
+                                <option value="#FF7070"></option>
+                                <option value="#FFD06B"></option>
+                                <option value="#FEF95D"></option>
+                                <option value="#7AFF83"></option>
+                                <option value="#85F1FF"></option>
+                                <option value="#B190FE"></option>
+                                <option value="#FF80EE"></option>
+                            </datalist>
+                        </div>
+
+                        <div id="page">
+                            <div>PAGE</div>
+                            <select id="pageInput" name="pageInput">
+                                <!-- PLACEHOLDER: LIST OF PAGES -->
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+
+                        <div name="isDeployable" id="isDeployable">
+                            <div>DEPLOYABLE</div>
+                            <select id="deployableInput" name="deployableInput">
+                                <option value="Non-deployable">Non-deployable</option>
+                                <option value="Deployable">Deployable</option>
+                            </select>
+                        </div>
+
+                        <button type="reset" id="resetInput">Reset</button>
+                        <button type="submit" id="acceptInput" onclick="addProduct()">Accept</button>
                     </div>
 
-                    <div>
-                        Price: <input />
-                    </div>
+                    <form id="modifyProductForm">
+                    </form>
 
-                    <div>
-                        Color: <input type="color" value="#ffffff" />
-                    </div>
-
-                    <div>
-                    Page: <input />
-                    </div>
-
-                    <div>
-                        Deployable: <input />
-                    </div>
-
-                    <button type="submit">Accept</button>
-                    <button type="reset">Reset</button>
-                </form>
+                    <form id="deleteProductForm">
+                    </form>
+                </div>
             </div>
         </div>
 

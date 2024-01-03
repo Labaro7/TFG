@@ -27,9 +27,12 @@ struct Employee {
 struct Product {
     std::string name;
     double price;
+    std::string color;
+    int page;
+    bool deployable;
 
     Product();
-    Product(const std::string& _name, double _price);
+    Product(const std::string& name, double price, std::string color, int page, bool deployable);
 
     bool isEmpty();
 

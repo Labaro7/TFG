@@ -135,7 +135,7 @@ void Database::initializeEmployeesTable() {
 }
 
 void Database::initializeProductsTable() {
-    std::vector<std::string> productNames = { "DRINKS", "BEERS", "CAFETERIA",
+    /*std::vector<std::string> productNames = {"DRINKS", "BEERS", "CAFETERIA",
     "WHITE WINES", "RED WINES", "ROSSE WINES",
     "SPARKLING WINES", "COCKTAILS", "RUM",
     "GIN", "WHISKY", "VODKA" };
@@ -146,9 +146,9 @@ void Database::initializeProductsTable() {
     10.99, 15.99, 8.50 };
 
     for (size_t i = 0; i < productNames.size(); i++) {
-        Product product = { productNames[i], prices[i] };
+        Product product = { productNames[i], prices[i], "#FFFFFF", 1, false};
         saveProduct(product);
-    }
+    }*/
 }
 
 void Database::initializeOrdersTable() {
@@ -185,7 +185,7 @@ void Database::initialize() {
     // TODO: Make n_table primary key so there are no duplicate tables
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
     MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
-    MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE");
+    MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
     MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
     MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
     MySqlCreateTable("allergens", "allergen_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -294,16 +294,17 @@ void Database::saveProduct(const Product& product) {
 
         std::string name = product.name;
         double price = product.price;
+        std::string color = product.color;
+        int page = product.page;
+        bool deployable = product.deployable;
 
         if (getProductByName(name).isEmpty()) {
-            std::ostringstream oss;
-            oss << name << "," << name << "," << price;
-            std::string values = oss.str();
-
-            pstmt = con->prepareStatement("INSERT INTO products(name, price) VALUES(?,?)");
-
+            pstmt = con->prepareStatement("INSERT INTO products(name, price, color, page, deployable) VALUES(?,?,?,?,?)");
             pstmt->setString(1, name);
             pstmt->setDouble(2, price);
+            pstmt->setString(3, color);
+            pstmt->setInt(4, page);
+            pstmt->setBoolean(5, deployable);
             pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Product " << name <<
@@ -427,7 +428,7 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
             double new_bill = res->getDouble("bill") + (product.price * times);
 
             pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
-            pstmt->setInt(1, new_bill);
+            pstmt->setDouble(1, new_bill);
             pstmt->setInt(2, table_id);
             pstmt->execute();
 
@@ -560,7 +561,7 @@ Table Database::getTableByNumber(const int n_table) {
                 query.str("");
 
                 if (res2->next()) {
-                    Product p(res2->getString("name"), res2->getDouble("price"));
+                    Product p(res2->getString("name"), res2->getDouble("price"), res2->getString("color"), res2->getInt("page"), res2->getBoolean("deployable"));
 
                     products[p] = amount;
                 }
@@ -655,8 +656,11 @@ std::vector<Product> Database::getProducts() {
             //int id = res->getInt("product_id");
             std::string name = res->getString("name");
             double price = res->getDouble("price");
+            std::string color = res->getString("color");
+            int page = res->getInt("page");
+            bool deployable = res->getBoolean("deployable");
 
-            Product product = { name, price };
+            Product product = { name, price, color, page, deployable};
 
             //std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
             products.push_back(product);

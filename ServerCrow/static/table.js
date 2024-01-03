@@ -101,7 +101,7 @@ function addProductToTicket(clickedProduct) {
 
         let child_price = document.createElement("div");
         child_price.className = "productPrices";
-        child_price.textContent = product["price"].toFixed(2);
+        child_price.textContent = product["price"];
         child.appendChild(child_price);
 
         let child_total_price = document.createElement("div");
@@ -122,10 +122,11 @@ function openDeployable(clickedDeployable) {
         i.style.display = "none";
     }
 
-    const clickedDeployableProducts = document.querySelectorAll("li[data-name='" + clickedDeployable.textContent);
+    const clickedDeployableProducts = document.querySelectorAll("li[data-name='" + clickedDeployable.textContent + "']");
     for (let i of clickedDeployableProducts) {
         i.style.display = "flex";
     }
+    console.log("Hey");
 }
 
 
@@ -224,6 +225,7 @@ function saveOrder() {
         added: added,
         n_table: n_table
     };
+
     const url = 'https://192.168.1.66:18080/order';
 
     fetch(url, {
@@ -279,7 +281,7 @@ function acceptMoveTableMenu() {
         new_n_table: _new_n_table
     };
 
-    console.log(data)
+    //console.log(data)
 
     fetch(api_moveTable, {
         method: 'POST',

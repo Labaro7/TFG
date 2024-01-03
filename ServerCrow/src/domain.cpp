@@ -54,11 +54,17 @@ bool Employee::isEmpty() {
 /* ------------------------------------------- PRODUCT ------------------------------------------- */
 Product::Product() : 
     name(), 
-    price(0.0) {}
+    price(0.0),
+    color("#FFFFFF"),
+    page(1),
+    deployable(false){}
 
-Product::Product(const std::string& _name, double _price) : 
-    name(_name), 
-    price(_price) {}
+Product::Product(const std::string& name, double price, std::string color, int page, bool deployable) :
+    name(name), 
+    price(price),
+    color(color),
+    page(page),
+    deployable(deployable){}
 
 bool Product::isEmpty() { return name.empty() && price == 0.0; }
 
