@@ -81,7 +81,7 @@ int main() {
 
             for (const auto& object : added) {
                 int times = object["times"].i();
-                Product p(object["name"].s(), object["price"].d(), "#FFFFFF", 0, false);
+                Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
 
                 server.saveTableProduct(t, p, times);
             }
@@ -89,9 +89,9 @@ int main() {
             // TODO: saveOrder();
 
             // TODO: Change the response to the client
-            res.set_header("Content-Type", "text/html");
-            res.write(index);
-            res.end();
+            //res.set_header("Content-Type", "text/html");
+            //res.write(index);
+            //res.end();
         });
 
     CROW_ROUTE(app, "/api/currentTables")
