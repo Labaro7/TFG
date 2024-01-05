@@ -56,12 +56,6 @@ function deleteLastOrder() {
 }
 
 function addProductToTicket(clickedProduct) {
-    const secondRow = document.getElementById("secondRow");
-    secondRow.classList.toggle('clicked');
-    setTimeout(function () {
-        secondRow.classList.remove('clicked');
-    }, 125); // Glow animation
-
     // Add the product to the list of products of the table
     const price = document.getElementById("price");
     const discount = document.getElementById("discountValue").textContent;
@@ -132,6 +126,7 @@ function openDeployable(clickedDeployable) {
     for (let i of clickedDeployableProducts) {
         i.style.display = "flex";
     }
+    console.log("Hey");
 }
 
 
@@ -286,6 +281,8 @@ function acceptMoveTableMenu() {
         new_n_table: _new_n_table
     };
 
+    //console.log(data)
+
     fetch(api_moveTable, {
         method: 'POST',
         headers: {
@@ -307,16 +304,13 @@ function acceptMoveTableMenu() {
 function cancelMoveTableMenu() {
     let tab = document.getElementsByClassName("tab");
     let productsMenu = document.getElementById("productsMenu");
-    let moveTableMenu = document.getElementById("moveTableMenu");
-    let moveTableWarningMenu = document.getElementById("moveTableWarningMenu");
+    let moveTableMenu = document.getElementById("moveTableWarningMenu");
 
     tab[0].style.pointerEvents = "auto";
     tab[0].style.filter = "blur(0px)";
     productsMenu.style.pointerEvents = "auto";
     productsMenu.style.filter = "blur(0px)";
     moveTableMenu.style.display = "none";
-    moveTableWarningMenu.style.display = "none";
-
 }
 
 function moveTable() {
@@ -375,8 +369,4 @@ function moveTable() {
         .catch(error => {
             console.error('Error:', error);
         });
-}
-
-function cancelMoveTable() {
-
 }
