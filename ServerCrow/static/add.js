@@ -6,7 +6,7 @@ currentButton.style.backgroundColor = "#0a3677";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
 let selectedDeployable = 0;
-let selectedPage = 0;
+let selectedPage = 1;
 
 // Fourth row
 let page_number = 1;
@@ -88,12 +88,12 @@ function openDeployable(clickedDeployable) {
 
 function addProduct() {
     const name = document.getElementById("nameInput").value;
-    const price = document.getElementById("priceInput").value;
+    let price = document.getElementById("priceInput").value;
     const color = document.getElementById("colorInput").value;
     //const page = document.getElementById("pageInput").value;
-    let deployable;
+    let deployable = document.getElementById("deployableInput").value;
 
-    deployable == "Deployable" ? deployable = 0 : deployable = selectedDeployable;
+    deployable == "Deployable" ? (deployable = 0, price = "0") : deployable = selectedDeployable;
 
     const data = {
         name: name,
