@@ -73,6 +73,7 @@ public:
 
     std::vector<Product> getProducts();
     Product getProductByName(const std::string name);
+    int getProductIdByName(const std::string name);
 
     std::vector<Order> getOrders();
     Order getOrderByTime(const std::string time);

@@ -92,6 +92,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
             std::string product_name = std::get<0>(p).name;
             double product_price = std::get<0>(p).price;
             std::string product_color = std::get<0>(p).color;
+            int product_deployable = std::get<0>(p).deployable;
+            int product_id = server.getProductIdByName(product_name);
             auto list = std::get<1>(p);
 
             // Is product
@@ -104,12 +106,16 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
             // Is desployable
             else {
-                ss << "<li class='grid-deployable' onclick='openDeployable(this)' style='background-color:" << product_color << ";'>" << product_name << "</li>";
+                if (std::get<0>(p).deployable == 0 && std::get<0>(p).price == 0) {
+                    ss << "<li class='grid-deployable' onclick='openDeployable(this)' style='background-color:" << product_color << ";' data-id='" << product_id << "'>" << product_name << "</li>";
 
+                }
+                
                 for (const auto& q : std::get<1>(p)) {
                     if (q.price) {
                         product_color = q.color;
-                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                        product_deployable = q.deployable;
+                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_deployable << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div></li>";
                     }
                 }
 
@@ -218,6 +224,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
         for (const auto& p : data) {
             std::string product_name = std::get<0>(p).name;
             double product_price = std::get<0>(p).price;
+            int product_deployable = std::get<0>(p).deployable;
             auto list = std::get<1>(p);
 
             // Is product
@@ -230,7 +237,9 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 
             // Is desployable
             else {
-                ss << "<li class='grid-deployable' onclick='openDeployable(this)'>" << product_name << "</li>";
+                int product_id = server.getProductIdByName(product_name);
+
+                ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)'>" << product_name << "</li>";
 
                 for (const auto& q : std::get<1>(p)) {
                     if (q.price) {

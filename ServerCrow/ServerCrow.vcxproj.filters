@@ -69,6 +69,12 @@
     <None Include="static\add.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
+    <None Include="templates\login.html">
+      <Filter>Archivos de recursos\html</Filter>
+    </None>
+    <None Include="static\login.css">
+      <Filter>Archivos de recursos\css</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.h">

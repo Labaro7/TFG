@@ -74,6 +74,7 @@ function selectButton(number) {
 
 function openDeployable(clickedDeployable) {
     selectedDeployable = clickedDeployable.dataset.id;
+    console.log(selectedDeployable);
     const grid = "grid" + page_number;
     const grid_products = document.getElementById(grid).querySelectorAll("li");
     for (let i of grid_products) {
@@ -102,6 +103,8 @@ function addProduct() {
         page: selectedPage,
         deployable: deployable,
     };
+
+    console.log(data);
 
     const url = 'https://192.168.1.66:18080/add/product';
     fetch(url, {

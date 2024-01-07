@@ -46,6 +46,7 @@ public:
 
     std::vector<Product> getProducts() const; // It works
     Product getProductByName(const std::string name) const; // It works
+    int getProductIdByName(const std::string name) const;
 
     std::vector<Ingredient> getIngredients() const; // It works
     Ingredient getIngredientByName(const std::string name) const;

@@ -11274,7 +11274,7 @@ namespace crow
                 }
                 else
                 {
-                    CROW_LOG_ERROR << "Could not start adaptor: " << ec.message();
+                    //CROW_LOG_ERROR << "Could not start adaptor: " << ec.message();
                     check_destroy();
                 }
             });

@@ -296,7 +296,7 @@ void Database::saveProduct(const Product& product) {
         double price = product.price;
         std::string color = product.color;
         int page = product.page;
-        bool deployable = product.deployable;
+        int deployable = product.deployable;
 
         if (getProductByName(name).isEmpty()) {
             pstmt = con->prepareStatement("INSERT INTO products(name, price, color, page, deployable) VALUES(?,?,?,?,?)");
@@ -304,7 +304,7 @@ void Database::saveProduct(const Product& product) {
             pstmt->setDouble(2, price);
             pstmt->setString(3, color);
             pstmt->setInt(4, page);
-            pstmt->setBoolean(5, deployable);
+            pstmt->setInt(5, deployable);
             pstmt->execute();
 
             CROW_LOG_INFO << "[ADDED] Product " << name <<
@@ -695,6 +695,28 @@ Product Database::getProductByName(const std::string name) {
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get product by name. Error message: " << e.what();
         return product; // Return an empty Product on error
+    }
+}
+
+int Database::getProductIdByName(const std::string name) {
+    int id = 0;
+
+    try {
+        //std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+        query << "SELECT product_id FROM products WHERE name = '" << name << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            id = res->getInt("product_id");
+        }
+
+        return id;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get product id by name. Error message: " << e.what();
+        return id; // Return an empty Product on error
     }
 }
 

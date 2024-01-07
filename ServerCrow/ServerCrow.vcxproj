@@ -139,10 +139,12 @@
     <None Include="static\add.js" />
     <None Include="static\index.css" />
     <None Include="static\index.js" />
+    <None Include="static\login.css" />
     <None Include="static\table.css" />
     <None Include="static\table.js" />
     <None Include="templates\add.html" />
     <None Include="templates\index.html" />
+    <None Include="templates\login.html" />
     <None Include="templates\table.html" />
     <None Include="vcpkg.json" />
   </ItemGroup>

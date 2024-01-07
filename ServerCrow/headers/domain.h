@@ -14,9 +14,12 @@ struct Employee {
     int level;
     std::string start;
     std::string finish;
+    std::string password_hash;
+    std::string session_token;
 
     Employee();
-    Employee(const std::string& _name, int _level, const std::string& _start, const std::string& _finish);
+    Employee(const std::string& name, int level, const std::string& start, const std::string& finish);
+    Employee(const std::string& name, int level, const std::string& start, const std::string& finish, const std::string password_hash, const std::string session_token);
 
     bool isEmpty();
 };
@@ -29,10 +32,10 @@ struct Product {
     double price;
     std::string color;
     int page;
-    bool deployable;
+    int deployable;
 
     Product();
-    Product(const std::string& name, double price, std::string color, int page, bool deployable);
+    Product(const std::string& name, double price, std::string color, int page, int deployable);
 
     bool isEmpty();
 
@@ -47,7 +50,7 @@ struct ProductHashFunction {
     }
 };
 
-// [Product -> int (number of products)]
+// {Product, int} (int represents the number of products)
 using product_unordered_map = std::unordered_map<Product, int, ProductHashFunction>;
 
 

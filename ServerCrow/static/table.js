@@ -128,7 +128,7 @@ function openDeployable(clickedDeployable) {
         i.style.display = "none";
     }
 
-    const clickedDeployableProducts = document.querySelectorAll("li[data-name='" + clickedDeployable.textContent + "']");
+    const clickedDeployableProducts = document.querySelectorAll("li[data-deployable='" + clickedDeployable.dataset.id + "']");
     for (let i of clickedDeployableProducts) {
         i.style.display = "flex";
     }
@@ -377,6 +377,38 @@ function moveTable() {
         });
 }
 
-function cancelMoveTable() {
+function payTable() {
+    let data = {
+        n_table: n_table.textContent.substr(7), //substr to delete "Table: "
+        ticket : current_ticket,
+        price: price.textContent
+        // employee: employees name
+        // date: date
+        // method: cash or card
+    }
+
+    console.log(data);
+
+    const url = "https://192.168.1.66:18080/payTable";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            //console.log('Response:', data);
+        })
+        .catch(error => {
+            //console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
+}
+
+function deleteTable() {
 
 }
+

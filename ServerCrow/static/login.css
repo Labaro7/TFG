@@ -1,0 +1,30 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #aaccff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background-color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    align-items: center;
+    padding: 30px;
+    border: 2px solid #0a3677;
+}
+
+#login {
+    display: flex;
+}
+
+form {
+    align-items: center;    
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

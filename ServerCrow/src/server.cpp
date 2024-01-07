@@ -18,13 +18,13 @@ void Server::initialize() {
     // Make the restaurant instances that store different cfigs of products
     using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
     
-    Product p1("Drinks", 0.0, "#FEF95D", 1, true);
-    Product p2("Beers", 0.0, "#FEF95D", 1, true);
-    Product p3("Caffeteria", 0.0, "#FEF95D", 1, true);
-    Product p4("White wines", 0.0, "#FEF95D", 1, true);
-    Product p5("Red wines", 0.0, "#FEF95D", 1, true);
-    Product p6("Rosse wines", 0.0, "#FEF95D", 1, true);
-    Product p7("Sparkling wines", 0.0, "#FEF95D", 1, true);
+    Product p1("Drinks", 0.0, "#FEF95D", 1, 0);
+    Product p2("Beers", 0.0, "#FEF95D", 1, 0);
+    Product p3("Caffeteria", 0.0, "#FEF95D", 1, 0);
+    Product p4("White wines", 0.0, "#FEF95D", 1, 0);
+    Product p5("Red wines", 0.0, "#FEF95D", 1, 0);
+    Product p6("Rosse wines", 0.0, "#FEF95D", 1, 0);
+    Product p7("Sparkling wines", 0.0, "#FEF95D", 1, 0);
     saveProduct(p1);
     saveProduct(p2);
     saveProduct(p3);
@@ -33,13 +33,13 @@ void Server::initialize() {
     saveProduct(p6);
     saveProduct(p7);
 
-    Product p8("Appetizers", 0.0, "#FEF95D", 2, true);
-    Product p9("Snacks", 0.0, "#FEF95D", 2, true);
-    Product p10("Salads", 0.0, "#FEF95D", 2, true);
-    Product p11("Burguers and Sandwiches", 0.0, "#FEF95D", 2, true);
-    Product p12("Kids Menu", 0.0, "#FEF95D", 2, true);
-    Product p13("Pizzas", 0.0, "#FEF95D", 2, true);
-    Product p14("Desserts", 0.0, "#FEF95D", 2, true);
+    Product p8("Appetizers", 0.0, "#FEF95D", 2, 0);
+    Product p9("Snacks", 0.0, "#FEF95D", 2, 0);
+    Product p10("Salads", 0.0, "#FEF95D", 2, 0);
+    Product p11("Burguers and Sandwiches", 0.0, "#FEF95D", 2, 0);
+    Product p12("Kids Menu", 0.0, "#FEF95D", 2, 0);
+    Product p13("Pizzas", 0.0, "#FEF95D", 2, 0);
+    Product p14("Desserts", 0.0, "#FEF95D", 2, 0);
     saveProduct(p8);
     saveProduct(p9);
     saveProduct(p10);
@@ -48,13 +48,13 @@ void Server::initialize() {
     saveProduct(p13);
     saveProduct(p14);
 
-    Product p15("Cocktails", 0.0, "#FEF95D", 5, true);
-    Product p16("Rum", 0.0, "#FEF95D", 5, true);
-    Product p17("Gin", 0.0, "#FEF95D", 5, true);
-    Product p18("Whisky", 0.0, "#FEF95D", 5, true);
-    Product p19("Vodka", 0.0, "#FEF95D", 5, true);
-    Product p20("Various", 0.0, "#FEF95D", 5, true);
-    Product p21("Juices", 0.0, "#FEF95D", 5, true);
+    Product p15("Cocktails", 0.0, "#FEF95D", 5, 0);
+    Product p16("Rum", 0.0, "#FEF95D", 5, 0);
+    Product p17("Gin", 0.0, "#FEF95D", 5, 0);
+    Product p18("Whisky", 0.0, "#FEF95D", 5, 0);
+    Product p19("Vodka", 0.0, "#FEF95D", 5, 0);
+    Product p20("Various", 0.0, "#FEF95D", 5, 0);
+    Product p21("Juices", 0.0, "#FEF95D", 5, 0);
     saveProduct(p15);
     saveProduct(p16);
     saveProduct(p17);
@@ -64,12 +64,12 @@ void Server::initialize() {
     saveProduct(p21);
 
     // Drinks
-    Product p22("Water", 1.5, "#FFFFFF", 1, false);
-    Product p23("Cocacola", 2.0, "#FFFFFF", 1, false);
-    Product p24("Fanta", 2.0, "#FFFFFF", 1, false);
-    Product p25("Aquarius", 2.0, "#FFFFFF", 1, false);
-    Product p26("Nestea", 2.0, "#FFFFFF", 1, false);
-    Product p27("Sprite", 2.0, "#FFFFFF", 1, false);
+    Product p22("Water", 1.5, "#FFFFFF", 1, 1);
+    Product p23("Cocacola", 2.0, "#FFFFFF", 1, 1);
+    Product p24("Fanta", 2.0, "#FFFFFF", 1, 1);
+    Product p25("Aquarius", 2.0, "#FFFFFF", 1, 1);
+    Product p26("Nestea", 2.0, "#FFFFFF", 1, 1);
+    Product p27("Sprite", 2.0, "#FFFFFF", 1, 1);
     saveProduct(p22);
     saveProduct(p23);
     saveProduct(p24);
@@ -78,11 +78,11 @@ void Server::initialize() {
     saveProduct(p27);
 
     // Beers
-    Product p28("Guiness", 4.0, "#FFFFFF", 1, false);
-    Product p29("Paulaner", 4.0, "#FFFFFF", 1, false);
-    Product p30("Voll-Damm", 4.5, "#FFFFFF", 1, false);
-    Product p31("Estrella Galicia", 3.0, "#FFFFFF", 1, false);
-    Product p32("Heineken", 3.0, "#FFFFFF", 1, false);
+    Product p28("Guiness", 4.0, "#FFFFFF", 1, 2);
+    Product p29("Paulaner", 4.0, "#FFFFFF", 1, 2);
+    Product p30("Voll-Damm", 4.5, "#FFFFFF", 1, 2);
+    Product p31("Estrella Galicia", 3.0, "#FFFFFF", 1, 2);
+    Product p32("Heineken", 3.0, "#FFFFFF", 1, 2);
     saveProduct(p28);
     saveProduct(p29);
     saveProduct(p30);
@@ -90,11 +90,11 @@ void Server::initialize() {
     saveProduct(p32);
 
     // Caffeteria
-    Product p33("Espresso", 1.0, "#FFFFFF", 1, false);
-    Product p34("Latte", 2.0, "#FFFFFF", 1, false);
-    Product p35("Capuccino", 2.0, "#FFFFFF", 1, false);
-    Product p36("American", 2.0, "#FFFFFF", 1, false);
-    Product p37("Irish Coffee", 2.0, "#FFFFFF", 1, false);
+    Product p33("Espresso", 1.0, "#FFFFFF", 1, 3);
+    Product p34("Latte", 2.0, "#FFFFFF", 1, 3);
+    Product p35("Capuccino", 2.0, "#FFFFFF", 1, 3);
+    Product p36("American", 2.0, "#FFFFFF", 1, 3);
+    Product p37("Irish Coffee", 2.0, "#FFFFFF", 1, 3);
     saveProduct(p33);
     saveProduct(p34);
     saveProduct(p35);
@@ -103,7 +103,7 @@ void Server::initialize() {
 
     std::vector<productsMenus_t> pages(5);
     std::vector<Product> empty_vec;
-    std::vector<Product> empty_deployable = { {Product("", 0.0, "#FFFFFF", 1, false)} };
+    std::vector<Product> empty_deployable = { {Product("", 0.0, "#FFFFFF", 1, 0)} };
 
     // Page 1
     std::vector<Product> drinks = { {p22}, {p23}, {p24}, {p25}, {p26} , {p27} };
@@ -217,6 +217,8 @@ Employee Server::getEmployeeByName(std::string name) const { return _database->g
 std::vector<Product> Server::getProducts() const { return _database->getProducts(); }
 
 Product Server::getProductByName(std::string name) const { return _database->getProductByName(name); }
+
+int Server::getProductIdByName(const std::string name) const { return _database->getProductIdByName(name); }
 
 std::vector<Ingredient> Server::getIngredients() const { return _database->getIngredients(); }
 

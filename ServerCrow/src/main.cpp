@@ -31,6 +31,20 @@ int main() {
             res.end();
         });
 
+    CROW_ROUTE(app, "/login")
+        ([&server](const crow::request& req, crow::response& res) {
+            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html");
+            std::stringstream ss;
+            ss << file.rdbuf();
+            std::string login_page = ss.str();
+            ss.str("");
+            file.close();
+
+            res.set_header("Content-Type", "text/html");
+            res.write(login_page);
+            res.end();
+        });
+
     // TODO: Fix the 505 error when not inputting table and accepting
     CROW_ROUTE(app, "/table")
         ([&server](const crow::request& req, crow::response& res) {
@@ -87,12 +101,33 @@ int main() {
             }
 
             // TODO: saveOrder();
+            // TODO: send signal to arduino to make a sound and print the order
 
             // TODO: Change the response to the client
             //res.set_header("Content-Type", "text/html");
             //res.write(index);
             //res.end();
         });
+
+    CROW_ROUTE(app, "/payTable")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+        // Save order
+        auto json_data = crow::json::load(req.body);
+        auto ticket_json = json_data["ticket"];
+
+        std::cout << json_data["n_table"].i() << std::endl;
+        std::cout << ticket_json << std::endl;
+        std::cout << std::stod(json_data["price"].s()) << std::endl;
+
+        // Delete tableproduct rows
+        });
+
+    /*CROW_ROUTE(app, "/deleteTable")
+        .methods("POST"_method)
+        ([&server]() {
+
+        });*/
 
     CROW_ROUTE(app, "/api/currentTables")
         ([&server]() {
@@ -148,20 +183,37 @@ int main() {
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
-
             std::string name = json_data["name"].s();
             double price = std::stod(json_data["price"].s());
             std::string color = json_data["color"].s();
             int page = json_data["page"].i();
-            std::string deployable_text = json_data["deployable"].s();
-            bool deployable;
-
-            deployable_text == "Yes" ? deployable = true : deployable = false;
-
-            Product p(name, price, color, page, deployable);
+            int deployable = json_data["deployable"].i();
             std::vector<Product> empty_vector;
-            server.restaurant->pages[page-1].push_back({p, empty_vector});
-            server.saveProduct(p);
+
+            if (deployable == 0 && price == 0) {
+                empty_vector = { Product("", 0.0, "#FFFFFF", 0, 0) };
+                Product p(name, price, color, page, deployable);
+                server.restaurant->pages[page-1].push_back({ p, empty_vector });
+
+                server.saveProduct(p);
+            }
+            else if (deployable == 0 && price != 0) {
+                Product p(name, price, color, page, deployable);
+                server.restaurant->pages[page-1].push_back({ p, empty_vector });
+
+                server.saveProduct(p);
+            }
+            else {
+                Product p(name, price, color, page, deployable);
+                for (auto& q : server.restaurant->pages[page-1]) {
+                    if (server.getProductIdByName(std::get<0>(q).name) == deployable) {
+                        std::get<1>(q).push_back(p);
+                        std::cout << std::get<0>(q).deployable << std::endl;
+                    }
+                }
+
+                server.saveProduct(p);
+            }
         });
 
     CROW_ROUTE(app, "/add/employee")
@@ -183,7 +235,7 @@ int main() {
         ([&server](const crow::request& req, crow::response& res) {
 
 
-            });
+        });
 
 
     // App methods chain

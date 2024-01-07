@@ -39,11 +39,20 @@ Employee::Employee() :
     start(), 
     finish() {}
 
-Employee::Employee(const std::string& _name, int _level, const std::string& _start, const std::string& _finish) : 
-    name(_name), 
-    level(_level), 
-    start(_start), 
-    finish(_finish) {}
+Employee::Employee(const std::string& name, int level, const std::string& start, const std::string& finish) : 
+    name(name), 
+    level(level), 
+    start(start), 
+    finish(finish) {}
+
+Employee::Employee(const std::string& name, int level, const std::string& start, const std::string& finish, std::string password_hash, std::string session_token) :
+    name(name),
+    level(level),
+    start(start),
+    finish(finish),
+    password_hash(password_hash),
+    session_token(session_token) {}
+
 
 bool Employee::isEmpty() {
     return name.empty() && level == 0 && start.empty() && finish.empty();
@@ -59,7 +68,7 @@ Product::Product() :
     page(1),
     deployable(false){}
 
-Product::Product(const std::string& name, double price, std::string color, int page, bool deployable) :
+Product::Product(const std::string& name, double price, std::string color, int page, int deployable) :
     name(name), 
     price(price),
     color(color),
