@@ -408,19 +408,11 @@ function payTable() {
     setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
 }
 
-function openDeleteTableWarningMenu() {
-    const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
-
-    deleteTableWarningMenu.style.display = "flex";
-}
-
-function cancelDeleteTableWarningMenu() {
-    const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
-
-    deleteTableWarningMenu.style.display = "none";
-}
-
 function deleteTable() {
+    const deleteTableMenu = document.getElementById("deleteTableWarningMenu");
+
+    deleteTableMenu.display = "flex";
+
     let data = {
         n_table: n_table.textContent.substr(7),
         employee: "Adri"

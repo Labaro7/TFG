@@ -112,24 +112,28 @@ int main() {
     CROW_ROUTE(app, "/payTable")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
-        // Save order
-        auto json_data = crow::json::load(req.body);
-        const int n_table = json_data["n_table"].i();
-        const std::string employee = json_data["employee"].s();
-        const std::string date = json_data["date"].s();
+            // Save order
+            auto json_data = crow::json::load(req.body);
+            const int n_table = json_data["n_table"].i();
+            const std::string employee = json_data["employee"].s();
+            const std::string date = json_data["date"].s();
 
-        std::cout << json_data << std::endl;
+            std::cout << json_data << std::endl;
 
-        server.payTable(n_table, employee, date);
+            server.payTable(n_table, employee, date);
 
-        // Delete tableproduct rows
+            // Delete tableproduct rows
         });
 
-    /*CROW_ROUTE(app, "/deleteTable")
+    CROW_ROUTE(app, "/deleteTable")
         .methods("POST"_method)
-        ([&server]() {
+        ([&server](const crow::request& req, crow::response& res) {
+            auto json_data = crow::json::load(req.body);
+            const int n_table = json_data["n_table"].i();
 
-        });*/
+            Table t = server.getTableByNumber(n_table);
+            server.removeTable(t);
+        });
 
     CROW_ROUTE(app, "/api/currentTables")
         ([&server]() {
