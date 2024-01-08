@@ -117,6 +117,7 @@ public:
     void removeIngredient(const Ingredient& ingredient);
     void removeAllergen(const Allergen& allergen);
 
+
 private:
     sql::ConnectOptionsMap connection_properties;
     sql::Driver* driver;

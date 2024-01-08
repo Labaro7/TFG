@@ -114,11 +114,13 @@ int main() {
         ([&server](const crow::request& req, crow::response& res) {
         // Save order
         auto json_data = crow::json::load(req.body);
-        auto ticket_json = json_data["ticket"];
+        const int n_table = json_data["n_table"].i();
+        const std::string employee = json_data["employee"].s();
+        const std::string date = json_data["date"].s();
 
-        std::cout << json_data["n_table"].i() << std::endl;
-        std::cout << ticket_json << std::endl;
-        std::cout << std::stod(json_data["price"].s()) << std::endl;
+        std::cout << json_data << std::endl;
+
+        server.payTable(n_table, employee, date);
 
         // Delete tableproduct rows
         });

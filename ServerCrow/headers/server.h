@@ -65,6 +65,8 @@ public:
     void removeIngredient(const Ingredient& ingredient);
     void removeAllergen(const Allergen& allergen);
 
+    void payTable(const int& n_table, const std::string& employee, const std::string& date);
+
 
 private:
     std::unique_ptr<Database> _database;

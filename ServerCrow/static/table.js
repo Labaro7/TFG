@@ -381,10 +381,10 @@ function payTable() {
     let data = {
         n_table: n_table.textContent.substr(7), //substr to delete "Table: "
         ticket : current_ticket,
-        price: price.textContent
-        // employee: employees name
-        // date: date
-        // method: cash or card
+        price: price.textContent,
+        employee: "Adri",
+        date: new Date(),
+        //method: cash or card
     }
 
     console.log(data);

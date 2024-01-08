@@ -152,14 +152,14 @@ void Database::initializeProductsTable() {
 }
 
 void Database::initializeOrdersTable() {
-    std::vector<std::string> times = { "2023-10-04 15:45:00", "2023-10-05 12:30:00", "2023-10-06 18:15:00" };
+    /*std::vector<std::string> times = { "2023-10-04 15:45:00", "2023-10-05 12:30:00", "2023-10-06 18:15:00" };
     std::vector<std::string> messages = { "Order 1", "Order 2", "Order 3" };
 
     for (size_t i = 0; i < times.size(); i++) {
         Order order = { times[i], messages[0] };
 
         saveOrder(order);
-    }
+    }*/
 }
 
 void Database::initializeIngredientsTable() {
@@ -186,7 +186,7 @@ void Database::initialize() {
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
     MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
     MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
-    MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, time VARCHAR(45), message VARCHAR(45)");
+    MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, employee VARCHAR(45), date VARCHAR(45)");
     MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
     MySqlCreateTable("allergens", "allergen_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
     MySqlCreateTable("restaurants", "restaurant_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -324,28 +324,21 @@ void Database::saveOrder(const Order& order) {
     try {
         //std::unique_lock<std::mutex> lock(mutex);
 
-        // TODO: Add products of the order to Table class and Table table
-        std::string time = order.time;
-        std::string message = order.message;
+        pstmt = con->prepareStatement("INSERT INTO orders(n_table, n_clients, bill, discount, employee, date) VALUES(?,?,?,?,?,?)");
+        pstmt->setInt(1, order.n_table);
+        pstmt->setInt(2, order.n_clients);
+        pstmt->setDouble(3, order.bill);
+        pstmt->setDouble(4, order.discount);
+        pstmt->setString(5, order.employee);
+        pstmt->setString(6, order.date);
+        pstmt->execute();
 
-        if (getOrderByTime(time).isEmpty()) {
-            std::ostringstream oss;
-            oss << time << "," << message;
-            std::string values = oss.str();
 
-            pstmt = con->prepareStatement("INSERT INTO orders(time, message) VALUES(?,?)");
-
-            pstmt->setString(1, time);
-            pstmt->setString(2, message);
-            pstmt->execute();
-
-            CROW_LOG_INFO << "[ADDED] Order with time " << time <<
-                " and message " << message <<
-                " inserted into orders.";
-        }
-        else {
-            CROW_LOG_WARNING << "[EXCEPTION] Order is already in the database.";
-        }
+        CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
+            " with bill " << order.bill <<
+            " with discount" << order.discount <<
+            " by employee " << order.employee <<
+            "at date " << order.date;
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not save order. Error message: " << e.what();
@@ -721,7 +714,7 @@ int Database::getProductIdByName(const std::string name) {
 }
 
 std::vector<Order> Database::getOrders() {
-    std::vector<Order> orders;
+    /*std::vector<Order> orders;
 
     try {
         //std::unique_lock<std::mutex> lock(mutex);
@@ -741,11 +734,11 @@ std::vector<Order> Database::getOrders() {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get orders. Error message: " << e.what();
     }
 
-    return orders;
+    return orders;*/
 }
 
 Order Database::getOrderByTime(const std::string time) {
-    Order order;
+    /*Order order;
 
     try {
         //std::unique_lock<std::mutex> lock(mutex);
@@ -766,7 +759,7 @@ Order Database::getOrderByTime(const std::string time) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get order by time. Error message: " << e.what();
     }
 
-    return order;
+    return order;*/
 }
 
 std::vector<Ingredient> Database::getIngredients() {
@@ -889,12 +882,12 @@ void Database::printProducts() {
 }
 
 void Database::printOrders() {
-    std::vector<Order> orders = getOrders();
+    /*std::vector<Order> orders = getOrders();
 
     CROW_LOG_INFO << "[LIST] Orders: ";
     for (const auto order : orders) {
         std::cout << "\t- Time: " << order.time << ", Message: " << order.message << std::endl;
-    }
+    }*/
 }
 
 void Database::printIngredients() {
@@ -1147,7 +1140,7 @@ void Database::removeProduct(const Product& product) {
 }
 
 void Database::removeOrder(const Order& order) {
-    try {
+    /*try {
         std::string time = order.time;
         std::string message = order.message;
 
@@ -1162,7 +1155,7 @@ void Database::removeOrder(const Order& order) {
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not remove order. Error message: " << e.what();
-    }
+    }*/
 }
 
 void Database::removeIngredient(const Ingredient& ingredient) {

@@ -100,13 +100,20 @@ using table_unordered_map = std::unordered_map<int, Table, TableHashFunction>;
 
 /* ------------------------------------------- ORDER ------------------------------------------- */
 struct Order {
-    std::string time;
-    std::string message;
+    int id;
+    int n_table;
+    int n_clients;
+    double bill;
+    double discount;
+    std::vector<std::pair<Product, int>> products;
+    std::string employee;
+    std::string date;
 
     Order();
-    Order(std::string time, std::string message);
+    Order(const int& id, const int& n_table, const int& n_clients, const double& bill, const double& discount, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date);
 
     bool isEmpty();
+    void copyDataFromTable(const Table& t);
 };
 
 
@@ -133,8 +140,6 @@ struct Allergen {
     bool isEmpty();
 };
 
-#endif
-
 
 
 /* ------------------------------------------- RESTAURANT ------------------------------------------- */
@@ -153,3 +158,6 @@ struct Restaurant {
     productsMenus_t getDataFromPage(int n_page);
 
 };
+
+
+#endif

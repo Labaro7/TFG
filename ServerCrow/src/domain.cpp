@@ -88,15 +88,38 @@ bool Products::empty() {
 
 /* ------------------------------------------- ORDER ------------------------------------------- */
 Order::Order() : 
-    time(), 
-    message() {}
+    id(), 
+    n_table(),
+    n_clients(),
+    bill(),
+    discount(),
+    products(),
+    employee(),
+    date() {}
 
-Order::Order(std::string time, std::string message) : 
-    message(), 
-    time() {}
+Order::Order(const int& id, const int& n_table, const int& n_clients, const double& bill, const double& discount, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date) :
+    id(id),
+    n_table(n_table),
+    n_clients(n_clients),
+    bill(bill),
+    discount(discount),
+    products(products),
+    employee(employee),
+    date(date) {}
 
 bool Order::isEmpty() {
-    return time.empty() && message.empty();
+    return !id && !n_table && !n_clients && !bill && !discount && products.empty() && employee.empty() && date.empty();
+}
+
+void Order::copyDataFromTable(const Table& t) {
+    n_table = t.n_table;
+    n_clients = t.n_clients;
+    bill = t.bill;
+    discount = t.discount;
+
+    for (const auto& p : t.products) {
+        products.push_back({ p.first, p.second });
+    }
 }
 
 

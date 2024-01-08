@@ -281,6 +281,4 @@ void Server::payTable(const int& n_table, const std::string& employee, const std
     o.employee = employee;
     o.date = date;
     saveOrder(o);
-
-    removeTable(t);
 }
