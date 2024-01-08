@@ -194,6 +194,7 @@ void Database::initialize() {
     // TODO: Create Junction tables
     // Create the junction tables to the ManyToMany relationships
     MySqlCreateTable("tableproduct", "table_id INT, product_id INT, amount INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
+    MySqlCreateTable("orderproduct", "order_id INT, product_id INT, amount INT, PRIMARY KEY(order_id, product_id)");
     MySqlCreateTable("productorder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
     MySqlCreateTable("productingredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
     //MySqlCreateDatabase("ingredientallergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
@@ -213,6 +214,7 @@ void Database::dropAllTables() {
 
         // We must drop first the tables that have a reference to another
         stmt->execute("DROP TABLE IF EXISTS tableproduct;");
+        stmt->execute("DROP TABLE IF EXISTS orderproduct;");
         stmt->execute("DROP TABLE IF EXISTS productingredient;");
         stmt->execute("DROP TABLE IF EXISTS productorder;");
         
@@ -333,15 +335,58 @@ void Database::saveOrder(const Order& order) {
         pstmt->setString(6, order.date);
         pstmt->execute();
 
+        std::stringstream query;
+        query << "SELECT table_id FROM tables WHERE n_table = '" << order.n_table << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
 
-        CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
-            " with bill " << order.bill <<
-            " with discount" << order.discount <<
-            " by employee " << order.employee <<
-            "at date " << order.date;
+        if (res->next()) {
+            int table_id = res->getInt("table_id");
+
+            query << "SELECT * FROM tableproduct WHERE table_id = '" << table_id << "'";
+            res = stmt->executeQuery(query.str());
+            query.str("");
+
+            while(res->next()) {
+                int product_id = res->getInt("product_id");
+                int amount = res->getInt("amount");
+
+                saveOrderProduct(order, product_id, amount);
+            }
+
+            CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
+                " with bill " << order.bill <<
+                " with discount" << order.discount <<
+                " by employee " << order.employee <<
+                "at date " << order.date;
+        }
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not save order. Error message: " << e.what();
+    }
+}
+
+void Database::saveOrderProduct(const Order& order, const int& product_id, const int& amount) {
+    try {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+        query << "SELECT order_id FROM orders WHERE n_table = '" << order.n_table << "' AND n_clients = '" << order.n_clients << "' AND bill = '" << order.bill << "' AND discount = '" << order.discount << "' AND employee = '" << order.employee << "' AND date = '" << order.date << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
+
+        if (res->next()) {
+            int order_id = res->getInt("order_id");
+
+            pstmt = con->prepareStatement("INSERT INTO orderproduct(order_id, product_id, amount) VALUES(?,?,?)");
+            pstmt->setInt(1, order_id);
+            pstmt->setInt(2, product_id);
+            pstmt->setInt(3, amount);
+            pstmt->execute();
+        }
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not save order/product. Error message: " << e.what();
     }
 }
 

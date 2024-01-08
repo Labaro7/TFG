@@ -56,6 +56,7 @@ public:
     void saveEmployee(const Employee& employee);
     void saveProduct(const Product& product);
     void saveOrder(const Order& order);
+    void saveOrderProduct(const Order& order, const int& product_id, const int& amount);
     void saveIngredient(const Ingredient& ingredient);
     void saveAllergen(const Allergen& allergen);
 
