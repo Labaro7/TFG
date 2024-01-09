@@ -479,7 +479,7 @@ numTable {
     text-align: center;
     font-size: 25px;
     color: white;
-    border: 2px solid #0a3677;
+    border: 1px solid #0a3677;
     height: 50px;
     bottom: 0;
     text-shadow: 2px 2px 2px black;
@@ -536,4 +536,53 @@ numTable {
 #deleteTableWarningMenuCancelButton {
     background-color: red;
     border-top: 1px solid black;   
+}
+
+
+/* Pay table warning menu */
+#payTableWarningMenu {
+    display: none;
+    justify-content: center;
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    width: 80%;
+    z-index: 1;
+    background-color: white;
+    border: 3px solid #0a3677;
+    flex-wrap: wrap;
+}
+
+#payTableButton {
+    background-color: green;
+}
+
+
+#payTableWarningMenuText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 10px;
+}
+
+#payTableWarningMenuAcceptButton, #payTableWarningMenuCancelButton {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    color: white;
+    text-shadow: 2px 2px 2px black;
+}
+
+#payTableWarningMenuAcceptButton {
+    background-color: rgb(8, 141, 8);
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+}
+
+#payTableWarningMenuCancelButton {
+    background-color: red;
+    border-top: 1px solid black;
 }

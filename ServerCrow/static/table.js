@@ -410,14 +410,26 @@ function payTable() {
 
 function openDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
 
     deleteTableWarningMenu.style.display = "flex";
+    tab[0].style.pointerEvents = "none";
+    tab[0].style.filter = "blur(5px)";
+    ticketMenu.style.pointerEvents = "none";
+    ticketMenu.style.filter = "blur(5px)";
 }
 
 function cancelDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
 
     deleteTableWarningMenu.style.display = "none";
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px)";
+    ticketMenu.style.pointerEvents = "auto";
+    ticketMenu.style.filter = "blur(0px)";
 }
 
 function deleteTable() {
@@ -443,5 +455,29 @@ function deleteTable() {
         });
 
     setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
+}
+
+function openPayTableWarningMenu() {
+    const payTableWarningMenu = document.getElementById("payTableWarningMenu");
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
+
+    payTableWarningMenu.style.display = "flex";
+    tab[0].style.pointerEvents = "none";
+    tab[0].style.filter = "blur(5px)";
+    ticketMenu.style.pointerEvents = "none";
+    ticketMenu.style.filter = "blur(5px)";
+}
+
+function cancelPayTableWarningMenu() {
+    const payTableWarningMenu = document.getElementById("payTableWarningMenu");
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
+
+    payTableWarningMenu.style.display = "none";
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px)";
+    ticketMenu.style.pointerEvents = "auto";
+    ticketMenu.style.filter = "blur(0px)";
 }
 

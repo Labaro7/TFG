@@ -118,7 +118,7 @@ int main() {
             const std::string employee = json_data["employee"].s();
             const std::string date = json_data["date"].s();
 
-            std::cout << json_data << std::endl;
+            //std::cout << json_data << std::endl;
 
             server.payTable(n_table, employee, date);
 

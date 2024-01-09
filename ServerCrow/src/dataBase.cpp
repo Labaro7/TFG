@@ -356,9 +356,9 @@ void Database::saveOrder(const Order& order) {
 
             CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
                 " with bill " << order.bill <<
-                " with discount" << order.discount <<
+                " with discount " << order.discount <<
                 " by employee " << order.employee <<
-                "at date " << order.date;
+                " at date " << order.date;
         }
     }
     catch (const sql::SQLException& e) {

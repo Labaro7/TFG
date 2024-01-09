@@ -1907,16 +1907,16 @@ namespace crow
             switch (level)
             {
                 case LogLevel::Debug:
-                    prefix = "DEBUG   ";
+                    prefix = "DEBUG";
                     break;
                 case LogLevel::Info:
-                    prefix = "INFO    ";
+                    prefix = "INFO";
                     break;
                 case LogLevel::Warning:
-                    prefix = "WARNING ";
+                    prefix = "WARNING";
                     break;
                 case LogLevel::Error:
-                    prefix = "ERROR   ";
+                    prefix = "ERROR";
                     break;
                 case LogLevel::Critical:
                     prefix = "CRITICAL";
