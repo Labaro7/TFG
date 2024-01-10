@@ -9,10 +9,10 @@ int main() {
     Server server;
 
     // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
-    crow::logger::setLogLevel(crow::LogLevel::Warning);
+    crow::logger::setLogLevel(crow::LogLevel::Error);
     
-    server.dropAllTables();
-    server.initialize();
+    //server.dropAllTables();
+    //server.initialize();
 
     CROW_ROUTE(app, "/")
         ([&server](const crow::request& req, crow::response& res) {
@@ -25,6 +25,8 @@ int main() {
                 res.code = 500; // Internal Server Error
                 res.body = "Error reading HTML template", "text/plain";
             }
+
+            //std::cout << (server.restaurant->pages[0][0]).second[0].name << std::endl;
 
             res.set_header("Content-Type", "text/html");
             res.write(modifiedHTML);
@@ -212,9 +214,9 @@ int main() {
             else {
                 Product p(name, price, color, page, deployable);
                 for (auto& q : server.restaurant->pages[page-1]) {
-                    if (server.getProductIdByName(std::get<0>(q).name) == deployable) {
-                        std::get<1>(q).push_back(p);
-                        std::cout << std::get<0>(q).deployable << std::endl;
+                    if (server.getProductIdByName(q.first.name) == deployable) {
+                        q.second.push_back(p);
+                        std::cout << q.first.deployable << std::endl;
                     }
                 }
 

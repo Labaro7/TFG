@@ -84,20 +84,20 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     // 3. Generate HTML piece with the products of the restaurant
     std::string productListHTML;
 
-    using product = std::tuple<Product, std::vector<std::pair<std::string, int>>>;
-
-    for (int i = 0; i < server.getRestaurantPagesSize(); i++) {
-        const productsMenus_t data = server.getDataFromPage(i);
-        for (const auto& p : data) {
-            std::string product_name = std::get<0>(p).name;
-            double product_price = std::get<0>(p).price;
-            std::string product_color = std::get<0>(p).color;
-            int product_deployable = std::get<0>(p).deployable;
+    std::vector<page_t> pages = server.getDataFromPages();
+    std::cout << pages.size() << std::endl;
+    int i = 0;
+    for (const auto& page : pages) {
+        for (const auto& p : page) {
+            std::string product_name = p.first.name;
+            double product_price = p.first.price;
+            std::string product_color = p.first.color;
+            int product_deployable = p.first.deployable;
             int product_id = server.getProductIdByName(product_name);
-            auto list = std::get<1>(p);
+            auto list = p.second;
 
             // Is product
-            if (std::get<1>(p).empty()) {
+            if (p.first.deployable == 0 && p.second.empty()) {
                 if (product_name.size() <= 15)
                     ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
                 else
@@ -106,16 +106,16 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
             // Is desployable
             else {
-                if (std::get<0>(p).deployable == 0 && std::get<0>(p).price == 0) {
+                if (p.first.deployable == 0 && p.first.price == 0) {
                     ss << "<li class='grid-deployable' onclick='openDeployable(this)' style='background-color:" << product_color << ";' data-id='" << product_id << "'>" << product_name << "</li>";
-
                 }
                 
-                for (const auto& q : std::get<1>(p)) {
+                for (const auto& q : p.second) {
+                    std::cout << p.first.name << " y " << q.price << " " << q.name << std::endl;
                     if (q.price) {
                         product_color = q.color;
                         product_deployable = q.deployable;
-                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_deployable << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div></li>";
+                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div></li>";
                     }
                 }
 
@@ -134,8 +134,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
                 contentHTML.insert(productListPlaceholderPos, productListHTML);
             }
         }
-    }
 
+        i++;
+    }
 
     // 4. Get ticket products and ticket bill
     const product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
@@ -217,18 +218,16 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
     // 1.2. Generate HTML piece with the products of the restaurant
     std::string productListHTML;
 
-    using product = std::tuple<Product, std::vector<std::pair<std::string, int>>>;
-
-    for (int i = 0; i < server.getRestaurantPagesSize(); i++) {
-        const productsMenus_t data = server.getDataFromPage(i);
-        for (const auto& p : data) {
-            std::string product_name = std::get<0>(p).name;
-            double product_price = std::get<0>(p).price;
-            int product_deployable = std::get<0>(p).deployable;
-            auto list = std::get<1>(p);
+    std::vector<page_t> pages = server.getDataFromPages();
+    int i = 0;
+    for(const auto& page : pages) {
+        for(const auto& p : page) {
+            std::string product_name = p.first.name;
+            double product_price = p.first.price;
+            int product_deployable = p.first.deployable;
 
             // Is product
-            if (std::get<1>(p).empty()) {
+            if (p.first.deployable == 0 && p.second.empty()) {
                 if (product_name.size() <= 15)
                     ss << std::fixed << std::setprecision(2) << "<li class ='grid-product'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div></li>" << std::endl; // We use this because std::to_string() eliminates the precision set
                 else
@@ -237,17 +236,19 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 
             // Is desployable
             else {
-                int product_id = server.getProductIdByName(product_name);
+                if (p.first.deployable == 0 && p.first.price == 0) {
+                    int product_id = server.getProductIdByName(product_name);
 
-                ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)'>" << product_name << "</li>";
+                    ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)'>" << product_name << "</li>";
 
-                for (const auto& q : std::get<1>(p)) {
-                    if (q.price) {
-                        ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                    for (const auto& q : p.second) {
+                        if (q.price) {
+                            ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                        }
                     }
-                }
 
-                ss << "</li>" << std::endl;
+                    ss << "</li>" << std::endl;
+                }
             }
 
             productListHTML = ss.str();
@@ -262,6 +263,8 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
                 contentHTML.insert(productListPlaceholderPos, productListHTML);
             }
         }
+
+        i++;
     }
 
     return contentHTML;

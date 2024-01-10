@@ -143,19 +143,19 @@ struct Allergen {
 
 
 /* ------------------------------------------- RESTAURANT ------------------------------------------- */
-using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
+using page_t = std::vector<std::pair<Product, std::vector<Product>>>;
 
 struct Restaurant {
     // vector[name, price, list of products]. If it is a product, list is empty. Else, if it is a menu, price is 0.
-    std::vector<productsMenus_t> pages;
+    std::vector<page_t> pages;
     table_unordered_map current_tables;
 
     Restaurant();
-    Restaurant(std::vector<productsMenus_t> pages, table_unordered_map current_tables);
+    Restaurant(std::vector<page_t> pages, table_unordered_map current_tables);
 
     bool isEmpty();
 
-    productsMenus_t getDataFromPage(int n_page);
+    page_t getDataFromPage(int n_page);
 
 };
 

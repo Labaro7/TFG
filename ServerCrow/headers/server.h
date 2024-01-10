@@ -20,6 +20,7 @@ public:
 
 
     void initialize(); // Initializes the database to the model of the restaurant.
+    void getDataFromDatabase();
     std::unique_ptr<Database>& database(); // Returns the database to operate with its methods
     void dropAllTables();
 
@@ -35,7 +36,8 @@ public:
 
 
     // Get
-    productsMenus_t getDataFromPage(const int n_page);
+    //page_t getDataFromPage(const int n_page);
+    std::vector<page_t> getDataFromPages();
     int getRestaurantPagesSize() const;
 
     std::vector<Table> getTables() const; // It works. 

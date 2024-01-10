@@ -75,6 +75,8 @@ public:
     std::vector<Product> getProducts();
     Product getProductByName(const std::string name);
     int getProductIdByName(const std::string name);
+    std::vector<Product> getProductsByDeployableId(int id);
+    std::pair<int, std::vector<Product>> getProductsAndIds();
 
     std::vector<Order> getOrders();
     Order getOrderByTime(const std::string time);
@@ -84,6 +86,8 @@ public:
 
     std::vector<Allergen> getAllergens();
     Allergen getAllergenByName(const std::string name);
+
+    std::vector<page_t> getDataFromPages();
 
 
     // Print

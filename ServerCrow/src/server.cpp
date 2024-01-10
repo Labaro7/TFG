@@ -159,10 +159,26 @@ void Server::initialize() {
     pages[2] = { tup15, tup16, tup17, tup18, tup19, tup20, tup21 };
     pages[3] = { };
     pages[4] = { };
-    restaurant->pages = pages;
+    //restaurant->pages = pages;
+}
 
-    //saveTableProduct(t2, p2, 1);
-    //saveTableProduct(t2, p2, 1);
+void Server::getDataFromDatabase() {
+    auto ps = _database->getProducts();
+    int id = 1;
+
+    for (auto& p : ps) {
+        if (p.deployable == 0) {
+            std::vector<Product> deployable_products = _database->getProductsByDeployableId(id);
+            if (deployable_products.empty()) deployable_products = { Product("", 0.0, "#FFFFFF", 0, 0) };
+            restaurant->pages[p.page-1].push_back({ p, deployable_products });
+        }
+        else {
+            std::vector<Product> empty_vector;
+            restaurant->pages[p.page - 1].push_back({ p, empty_vector });
+        }
+
+        id++;
+    }
 }
 
 void Server::dropAllTables() { _database->dropAllTables(); }
@@ -202,7 +218,9 @@ void Server::saveTableProduct(Table& table, const Product& product, const int& t
 
 
 // Get
-productsMenus_t Server::getDataFromPage(int n_page) { return restaurant->getDataFromPage(n_page); }
+//productsMenus_t Server::getDataFromPage(int n_page) { return _database->getDataFromPage(n_page); }
+
+std::vector<page_t> Server::getDataFromPages() { return _database->getDataFromPages(); }
 
 int Server::getRestaurantPagesSize() const { return restaurant->pages.size(); }
 

@@ -758,6 +758,40 @@ int Database::getProductIdByName(const std::string name) {
     }
 }
 
+std::vector<Product> Database::getProductsByDeployableId(int deployable_id) {
+    std::vector<Product> products;
+    try {
+        //std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+        query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        while(res->next()) {
+            std::string name = res->getString("name");
+            double price = res->getDouble("price");
+            std::string color = res->getString("color");
+            int page = res->getInt("page");
+            int deployable = res->getInt("deployable");
+
+            Product p(name, price, color, page, deployable);
+            products.push_back(p);
+        }
+
+        return products;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get products by deployable id. Error message: " << e.what();
+        return products; // Return an empty vector on error
+    }
+}
+
+std::pair<int, std::vector<Product>> Database::getProductsAndIds() {
+    std::vector<Product> products = getProducts();
+
+    return std::pair<int, std::vector<Product>>();
+}
+
 std::vector<Order> Database::getOrders() {
     /*std::vector<Order> orders;
 
@@ -895,6 +929,65 @@ Allergen Database::getAllergenByName(const std::string name) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not get allergen by name. Error message: " << e.what();
         return allergen; // Return an empty Allergen on error
     }
+}
+
+std::vector<page_t> Database::getDataFromPages(){
+    std::vector<page_t> pages(N_FOURTH_ROW_BUTTONS);
+    int i = 0;
+
+    for (auto& p : pages) {
+        std::stringstream query;
+        query << "SELECT * FROM products WHERE page = '" << i+1 << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
+        std::cout << "pag " << i << std::endl;
+
+        while(res->next()) {
+            std::string name = res->getString("name");
+            double price = res->getDouble("price");
+            std::string color = res->getString("color");
+            int page = res->getInt("page");
+            bool deployable = res->getBoolean("deployable");
+
+            Product p1(name, price, color, page, deployable);
+            std::vector<Product> deployable_vector;
+
+            if (deployable == 0) {
+                if (price == 0) {
+                    query << "SELECT product_id FROM products WHERE name = '" << name << "' AND price = 0 AND color = '" << color << "' AND page = '" << page << "' AND deployable = 0";
+                    sql::ResultSet* res2 = stmt->executeQuery(query.str());
+                    query.str("");
+
+                    if (res2->next()) {
+                        int deployable_id = res->getInt("product_id");
+
+                        query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
+                        res2 = stmt->executeQuery(query.str());
+                        query.str("");
+
+                        deployable_vector = { Product("", 0.0, "#FFFFFF", 0, 0)};
+                        while (res2->next()) {
+                            name = res2->getString("name");
+                            price = res2->getDouble("price");
+                            color = res2->getString("color");
+                            page = res2->getInt("page");
+                            deployable = res2->getBoolean("deployable");
+      
+                            Product p2(name, price, color, page, deployable);
+                            deployable_vector.push_back(p2);
+                        }
+                    }
+                }
+            }
+            
+            p.push_back({ p1, deployable_vector });
+            if (!deployable_vector.empty()) std::cout << p1.name << " " << deployable_vector.back().name << std::endl;
+        }
+
+        i++;
+    }
+
+    return pages;
 }
 
 

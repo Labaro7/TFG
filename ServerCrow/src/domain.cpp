@@ -1,5 +1,6 @@
 #include "..\headers\domain.h"
 #include <iostream>
+#include "../headers/constants.h"
 
 /* ------------------------------------------- TABLE ------------------------------------------- */
 Table::Table() : 
@@ -152,10 +153,10 @@ bool Allergen::isEmpty() {
 
 /* ------------------------------------------- RESTAURANT ------------------------------------------- */
 Restaurant::Restaurant() : 
-    pages(),
+    pages(N_FOURTH_ROW_BUTTONS),
     current_tables() {}
 
-Restaurant::Restaurant(std::vector<productsMenus_t> pages, table_unordered_map current_tables) :  
+Restaurant::Restaurant(std::vector<page_t> pages, table_unordered_map current_tables) :  
     pages(pages),
     current_tables(current_tables) {}
 
@@ -163,6 +164,6 @@ bool Restaurant::isEmpty(){
     return pages.empty() && current_tables.empty();
 }
 
-productsMenus_t Restaurant::getDataFromPage(int n_page) {
+page_t Restaurant::getDataFromPage(int n_page) {
     return pages[n_page]; // TODO: Check n_page < pages.size()-1
 }
