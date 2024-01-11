@@ -166,8 +166,16 @@ int main() {
     CROW_ROUTE(app, "/api/stats")
         ([&server]() {
             std::vector<Order> orders = server.getOrders();
+            std::cout << "Hey" << std::endl;
+            for (const auto& order : orders) {
+                std::cout << order.id << std::endl;
+                for (const auto& p : order.products) {
+                    std::cout << "- " << p.first.name << " " << p.first.price << std::endl;
+                }
+            }
 
             return "Stats";
+
         });
 
     CROW_CATCHALL_ROUTE(app)

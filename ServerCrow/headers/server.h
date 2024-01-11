@@ -40,21 +40,23 @@ public:
     std::vector<page_t> getDataFromPages();
     int getRestaurantPagesSize() const;
 
-    std::vector<Table> getTables() const; // It works. 
-    Table getTableByNumber(const int n_table) const; // It works 
+    std::vector<Table> getTables() const;
+    Table getTableByNumber(const int n_table) const; 
 
-    std::vector<Employee> getEmployees() const; // It works
-    Employee getEmployeeByName(const std::string name) const; // It works
+    std::vector<Employee> getEmployees() const;
+    Employee getEmployeeByName(const std::string name) const;
 
-    std::vector<Product> getProducts() const; // It works
-    Product getProductByName(const std::string name) const; // It works
+    std::vector<Product> getProducts() const;
+    Product getProductByName(const std::string name) const;
     int getProductIdByName(const std::string name) const;
 
-    std::vector<Ingredient> getIngredients() const; // It works
+    std::vector<Order> getOrders() const;
+
+    std::vector<Ingredient> getIngredients() const;
     Ingredient getIngredientByName(const std::string name) const;
 
-    std::vector<Allergen> getAllergens() const; // It works
-    Allergen getAllergenByName(const std::string name) const; // It works
+    std::vector<Allergen> getAllergens() const;
+    Allergen getAllergenByName(const std::string name) const;
 
     // Change
     void moveTable(int current_n_table, const int new_n_table);

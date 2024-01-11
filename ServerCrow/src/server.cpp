@@ -238,6 +238,8 @@ Product Server::getProductByName(std::string name) const { return _database->get
 
 int Server::getProductIdByName(const std::string name) const { return _database->getProductIdByName(name); }
 
+std::vector<Order> Server::getOrders() const { return _database->getOrders(); };
+
 std::vector<Ingredient> Server::getIngredients() const { return _database->getIngredients(); }
 
 Ingredient Server::getIngredientByName(std::string name) const { return _database->getIngredientByName(name); }

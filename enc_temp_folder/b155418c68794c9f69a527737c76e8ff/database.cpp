@@ -821,6 +821,7 @@ std::vector<Order> Database::getOrders() {
             while(res2->next()) {
                 int product_id = res2->getInt("product_id");
                 int amount = res2->getInt("amount");
+                std::cout << "y " << product_id << " " << amount << std::endl;
                 
                 query << "SELECT * from products WHERE product_id = '" << product_id << "'";
                 sql::ResultSet* res3 = stmt->executeQuery(query.str());

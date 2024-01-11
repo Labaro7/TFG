@@ -85,7 +85,6 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     std::string productListHTML;
 
     std::vector<page_t> pages = server.getDataFromPages();
-    std::cout << pages.size() << std::endl;
     int i = 0;
     for (const auto& page : pages) {
         for (const auto& p : page) {
@@ -111,7 +110,6 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
                 }
                 
                 for (const auto& q : p.second) {
-                    std::cout << p.first.name << " y " << q.price << " " << q.name << std::endl;
                     if (q.price) {
                         product_color = q.color;
                         product_deployable = q.deployable;
