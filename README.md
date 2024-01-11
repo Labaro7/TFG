@@ -5,11 +5,11 @@ Web-based system to manage the logic of a hospitality business (restaurant, bar,
 This is my Final Degree Project (TFG in Spanish).
 
 The project manages the following aspects:
-  - Web interface for the waiters operations.
+  - Web interface for the employees operations.
   - Employees data (number of worked hours, number of orders taken, etc).
   - Products, ingredients and allergens.
   - Clients' orders and clients' tables control.
-  - Visualization of sales statistics.
+  - Visualization of statistics.
 
 ## 🖥️ Technologies used
 - Crow C++ framework to create the web server.
