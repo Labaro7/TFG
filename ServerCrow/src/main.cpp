@@ -165,9 +165,50 @@ int main() {
 
     CROW_ROUTE(app, "/api/stats")
         ([&server]() {
-            std::vector<Order> orders = server.getOrders();
+        std::vector<Order> orders = server.getOrders();
+        std::stringstream ss;
 
-            return "Stats";
+        ss << "{\n  'orders':[ \n";
+
+        for (auto& order : orders) {
+            ss << "    {\n"
+                << "      'id':" << order.id << ",\n"
+                << "      'n_table':" << order.n_table << ",\n"
+                << "      'bill':" << order.bill << ",\n"
+                << "      'discount':" << order.discount << ",\n"
+                << "      'employee':'" << order.employee << "',\n"
+                << "      'date':'" << order.date << "',\n"
+                << "      'products':[ \n";
+
+            for (const auto& product : order.products) {
+                ss << "        {\n"
+                    << "          'name':'" << product.first.name << "',\n"
+                    << "          'price':'" << product.first.price << "',\n"
+                    << "          'amount':" << product.second << "\n"
+                    << "        }, \n";
+
+                // Remove the trailing comma if products are present
+                if (product.first.name == order.products.back().first.name) {
+                    ss.seekp(-3, std::ios_base::end);
+                }
+            }
+
+            ss << "] \n    }, \n";
+
+            // Remove the trailing comma if orders are present
+            if (order.id == orders.back().id) {
+                ss.seekp(-3, std::ios_base::end);
+            }
+        }
+
+        // Remove the trailing comma if orders are present
+        if (!orders.empty()) {
+            ss.seekp(-2, std::ios_base::end);
+        }
+
+        ss << "\n  ] \n}";
+
+        return crow::response{ ss.str() };
         });
 
     CROW_CATCHALL_ROUTE(app)
