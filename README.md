@@ -44,7 +44,7 @@ The project manages the following aspects:
   <img src="https://github.com/Labaro7/TFG/assets/59017230/e3e993a7-955d-41e9-9654-688816f32694" width="120">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/68b02b27-cb80-4717-90e5-dfea1cef2ea9" width="120">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/361e3c4d-e30d-4ac4-a3ab-0c4426cf8919" width="120">
-
+</div>
 
 ## ✏️ Author
 A. Lábaro H. T.
