@@ -203,10 +203,10 @@ int main() {
 
         // Remove the trailing comma if orders are present
         if (!orders.empty()) {
-            ss.seekp(-2, std::ios_base::end);
+            ss.seekp(-3, std::ios_base::end);
         }
 
-        ss << "\n  ] \n}";
+        ss << "]\n}";
 
         return crow::response{ ss.str() };
         });
