@@ -151,12 +151,21 @@ int main() {
     CROW_ROUTE(app, "/payTable")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
+            // Save order
             auto json_data = crow::json::load(req.body);
             const int n_table = json_data["n_table"].i();
             const std::string employee = json_data["employee"].s();
             const std::string date = json_data["date"].s();
 
+            //std::cout << json_data << std::endl;
+
+            //TODO: Fix the following error:
+            /*  (2024-01-16 20:46:21) [ERROR] An uncaught exception occurred: invalid stoi argument
+                (2024-01-16 20:47:44) [ERROR] An uncaught exception occurred: resource deadlock would occur: resource deadlock would occur
+            */
             server.payTable(n_table, employee, date);
+
+            // Delete tableproduct rows
         });
 
     CROW_ROUTE(app, "/deleteTable")

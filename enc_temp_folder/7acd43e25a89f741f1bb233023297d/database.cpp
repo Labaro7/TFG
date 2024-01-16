@@ -386,7 +386,6 @@ void Database::saveOrder(const Order& order) {
     }
 }
 
-// Do not use the mutex here!. This function is called from another one that uses it.
 void Database::saveOrderProduct(const Order& order, const int& product_id, const int& amount) {
     try {
         //std::unique_lock<std::mutex> lock(mutex);
@@ -465,7 +464,6 @@ void Database::saveAllergen(const Allergen& allergen) {
     }
 }
 
-// Do not use the mutex here!. This function is called from another one that uses it.
 void Database::saveTableProduct(Table& table, const Product& product, const int& times) {
     try {
         //std::unique_lock<std::mutex> lock(mutex);
