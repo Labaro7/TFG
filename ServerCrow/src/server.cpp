@@ -183,6 +183,71 @@ void Server::getDataFromDatabase() {
 
 void Server::dropAllTables() { _database->dropAllTables(); }
 
+std::string Server::prepareOrdersJSON(const std::vector<Order>& orders) const{
+    std::stringstream ss;
+
+    ss << "{\n  'orders':[ \n";
+
+    for (auto& order : orders) {
+        ss << "    {\n"
+            << "      'id':" << order.id << ",\n"
+            << "      'n_table':" << order.n_table << ",\n"
+            << "      'bill':" << order.bill << ",\n"
+            << "      'discount':" << order.discount << ",\n"
+            << "      'employee':'" << order.employee << "',\n"
+            << "      'date':'" << order.date << "',\n"
+            << "      'products':[ \n";
+
+        for (const auto& product : order.products) {
+            ss << "        {\n"
+                << "          'name':'" << product.first.name << "',\n"
+                << "          'price':'" << product.first.price << "',\n"
+                << "          'amount':" << product.second << "\n"
+                << "        }, \n";
+
+            // Remove the comma
+            if (product.first.name == order.products.back().first.name) {
+                ss.seekp(-3, std::ios_base::end);
+            }
+        }
+
+        ss << "] \n    }, \n";
+
+        // Remove the comma
+        if (order.id == orders.back().id) {
+            ss.seekp(-3, std::ios_base::end);
+        }
+    }
+
+    // Remove the comma
+    if (!orders.empty()) {
+        ss.seekp(-3, std::ios_base::end);
+    }
+
+    ss << "]\n}";
+
+    return ss.str();
+}
+
+
+std::string Server::hash(const std::string& s) {
+    std::hash<std::string> hasher;
+    size_t hashValue = hasher(s);
+
+    std::mt19937 generator(hashValue);
+
+    std::uniform_int_distribution<int> distribution(0, ASCII_CHARACTERS.size() - 1);
+
+    // Generate the random hash
+    std::stringstream ss;
+    for (int i = 0; i < HASH_LENGTH; ++i) {
+        ss << ASCII_CHARACTERS[distribution(generator)];
+    }
+
+    return ss.str();
+}
+
+std::string Server::generateSessionToken(Employee e) { return _database->generateSessionToken(e); };
 
 
 // Save
@@ -231,6 +296,10 @@ Table Server::getTableByNumber(int n_table) const { return _database->getTableBy
 std::vector<Employee> Server::getEmployees() const { return _database->getEmployees(); }
 
 Employee Server::getEmployeeByName(std::string name) const { return _database->getEmployeeByName(name); }
+
+Employee Server::getEmployeeByAccount(const std::string& username, const std::string& password_hash) const { return _database->getEmployeeByAccount(username, password_hash); }
+
+Employee Server::getEmployeeBySessionToken(const std::string& session_token) { return _database->getEmployeeBySessionToken(session_token); }
 
 std::vector<Product> Server::getProducts() const { return _database->getProducts(); }
 

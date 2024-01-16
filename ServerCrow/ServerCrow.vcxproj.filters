@@ -75,6 +75,9 @@
     <None Include="static\login.css">
       <Filter>Archivos de recursos\css</Filter>
     </None>
+    <None Include="static\login.js">
+      <Filter>Archivos de recursos\js</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.h">
@@ -95,6 +98,9 @@
     <ClInclude Include="headers\domain.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="headers\authMiddleware.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\database.cpp">
@@ -113,6 +119,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\domain.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\authMiddleware.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,16 +18,17 @@
             <h2>Login</h2>
         </div>
 
-        <form action="/login" method="post">
+        <form>
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
+            <input type="text" id="username" required>
 
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" required>
 
-            <button type="submit">Login</button>
+            <button onclick="login()">Login</button>
         </form>
     </div>
-</body>
 
+    <script src="..\static\login.js"></script>
+</body>
 </html>

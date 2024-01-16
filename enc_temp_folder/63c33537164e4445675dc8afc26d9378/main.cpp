@@ -69,8 +69,8 @@ int main() {
 
                 res.set_header("Content-Type", "text/html");
                 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
-                res.redirect("/");
-                //res.write(index_page);
+                //res.redirect("/");
+                res.write(index_page);
 
                 //std::cout << "ppp " << res.get_header_value("session_token") << std::endl;
             }

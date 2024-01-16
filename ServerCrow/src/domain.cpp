@@ -56,7 +56,7 @@ Employee::Employee(const std::string& name, int level, const std::string& start,
 
 
 bool Employee::isEmpty() {
-    return name.empty() && level == 0 && start.empty() && finish.empty();
+    return name.empty();
 }
 
 

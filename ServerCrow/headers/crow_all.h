@@ -7306,6 +7306,9 @@ namespace crow
     template<typename T>
     inline const std::string& get_header_value(const T& headers, const std::string& key)
     {
+        if (key == "token" && headers.count("Cookie")) {
+            return headers.find("Cookie")->second;
+        }
         if (headers.count(key))
         {
             return headers.find(key)->second;

@@ -23,6 +23,26 @@ Database::Database() : pstmt() {
     }
 }
 
+Database::Database(const Database& database) {
+    connection_properties = database.connection_properties;
+
+    driver = database.driver;
+
+    if (database.con) {
+        con = std::shared_ptr<sql::Connection>(driver->connect(connection_properties), [](sql::Connection* ptr) {
+            delete ptr;
+        });
+    }
+
+    if (database.stmt) {
+        stmt = con->createStatement();
+    }
+
+    if (database.pstmt) {
+        pstmt = database.pstmt;
+    }
+}
+
 Database::~Database() {
     con->close();
 
@@ -184,7 +204,7 @@ void Database::initialize() {
     // Create the tables to define the domain
     // TODO: Make n_table primary key so there are no duplicate tables
     MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
-    MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45)");
+    MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45), username VARCHAR(45), password VARCHAR(45), session_token VARCHAR(45)");
     MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
     MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, employee VARCHAR(45), date VARCHAR(45)");
     MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -682,11 +702,74 @@ Employee Database::getEmployeeByName(const std::string name) {
     }
 }
 
+Employee Database::getEmployeeByAccount(const std::string& username, const std::string& password_hash) const {
+    Employee employee;
+
+    try {
+        //std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+        query << "SELECT * FROM employees WHERE username = '" << username << "' AND password ='" << password_hash << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+
+        if (res->next()) {
+            std::string name = res->getString("name");
+            int level = res->getInt("level");
+            std::string start = res->getString("start");
+            std::string finish = res->getString("finish");
+            std::string session_token = res->getString("session_token");
+
+            employee.name = name;
+            employee.level = level;
+            employee.start = start;
+            employee.finish = finish;
+            employee.session_token = session_token;
+        }
+
+        return employee;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get employee by account. Error message: " << e.what();
+        return employee;
+    }
+}
+
+Employee Database::getEmployeeBySessionToken(const std::string& session_token) {
+    Employee employee;
+
+    try {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+        query << "SELECT * FROM employees WHERE session_token = '" << session_token << "'";
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
+
+        if (res->next()) {
+            std::string name = res->getString("name");
+            int level = res->getInt("level");
+            std::string start = res->getString("start");
+            std::string finish = res->getString("finish");
+
+            employee.name = name;
+            employee.level = level;
+            employee.start = start;
+            employee.finish = finish;
+        }
+
+        return employee;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get employee by account. Error message: " << e.what();
+        return employee;
+    }
+}
+
 std::vector<Product> Database::getProducts() {
     std::vector<Product> products;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
         
@@ -740,7 +823,7 @@ int Database::getProductIdByName(const std::string name) {
     int id = 0;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT product_id FROM products WHERE name = '" << name << "'";
@@ -761,7 +844,7 @@ int Database::getProductIdByName(const std::string name) {
 std::vector<Product> Database::getProductsByDeployableId(int deployable_id) {
     std::vector<Product> products;
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
@@ -788,6 +871,8 @@ std::vector<Product> Database::getProductsByDeployableId(int deployable_id) {
 }
 
 std::pair<int, std::vector<Product>> Database::getProductsAndIds() {
+    //std::unique_lock<std::mutex> lock(mutex);
+
     std::vector<Product> products = getProducts();
 
     return std::pair<int, std::vector<Product>>();
@@ -797,7 +882,7 @@ std::vector<Order> Database::getOrders() {
     std::vector<Order> orders;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM orders";
@@ -880,7 +965,7 @@ std::vector<Ingredient> Database::getIngredients() {
     std::vector<Ingredient> ingredients;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM ingredients");
 
@@ -902,7 +987,7 @@ Ingredient Database::getIngredientByName(const std::string name) {
     Ingredient ingredient;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
@@ -925,7 +1010,7 @@ std::vector<Allergen> Database::getAllergens() {
     std::vector<Allergen> allergens;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM allergens");
 
@@ -947,7 +1032,7 @@ Allergen Database::getAllergenByName(const std::string name) {
     Allergen allergen;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM allergens WHERE name = '" << name << "'";
@@ -970,57 +1055,87 @@ std::vector<page_t> Database::getDataFromPages(){
     std::vector<page_t> pages(N_FOURTH_ROW_BUTTONS);
     int i = 0;
 
-    for (auto& p : pages) {
-        std::stringstream query;
-        query << "SELECT * FROM products WHERE page = '" << i+1 << "'";
-        sql::ResultSet* res = stmt->executeQuery(query.str());
-        query.str("");
+    try {
+        std::unique_lock<std::mutex> lock(mutex);
 
-        while(res->next()) {
-            std::string name = res->getString("name");
-            double price = res->getDouble("price");
-            std::string color = res->getString("color");
-            int page = res->getInt("page");
-            bool deployable = res->getBoolean("deployable");
+        for (auto& p : pages) {
+            std::stringstream query;
+            query << "SELECT * FROM products WHERE page = '" << i + 1 << "'";
+            sql::ResultSet* res = stmt->executeQuery(query.str());
+            query.str("");
 
-            Product p1(name, price, color, page, deployable);
-            std::vector<Product> deployable_vector;
+            while (res->next()) {
+                std::string name = res->getString("name");
+                double price = res->getDouble("price");
+                std::string color = res->getString("color");
+                int page = res->getInt("page");
+                bool deployable = res->getBoolean("deployable");
 
-            if (deployable == 0) {
-                if (price == 0) {
-                    query << "SELECT product_id FROM products WHERE name = '" << name << "' AND price = 0 AND color = '" << color << "' AND page = '" << page << "' AND deployable = 0";
-                    sql::ResultSet* res2 = stmt->executeQuery(query.str());
-                    query.str("");
+                Product p1(name, price, color, page, deployable);
+                std::vector<Product> deployable_vector;
 
-                    if (res2->next()) {
-                        int deployable_id = res->getInt("product_id");
-
-                        query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
-                        res2 = stmt->executeQuery(query.str());
+                if (deployable == 0) {
+                    if (price == 0) {
+                        query << "SELECT product_id FROM products WHERE name = '" << name << "' AND price = 0 AND color = '" << color << "' AND page = '" << page << "' AND deployable = 0";
+                        sql::ResultSet* res2 = stmt->executeQuery(query.str());
                         query.str("");
 
-                        deployable_vector = { Product("", 0.0, "#FFFFFF", 0, 0)};
-                        while (res2->next()) {
-                            name = res2->getString("name");
-                            price = res2->getDouble("price");
-                            color = res2->getString("color");
-                            page = res2->getInt("page");
-                            deployable = res2->getBoolean("deployable");
-      
-                            Product p2(name, price, color, page, deployable);
-                            deployable_vector.push_back(p2);
+                        if (res2->next()) {
+                            int deployable_id = res->getInt("product_id");
+
+                            query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
+                            res2 = stmt->executeQuery(query.str());
+                            query.str("");
+
+                            deployable_vector = { Product("", 0.0, "#FFFFFF", 0, 0) };
+                            while (res2->next()) {
+                                name = res2->getString("name");
+                                price = res2->getDouble("price");
+                                color = res2->getString("color");
+                                page = res2->getInt("page");
+                                deployable = res2->getBoolean("deployable");
+
+                                Product p2(name, price, color, page, deployable);
+                                deployable_vector.push_back(p2);
+                            }
                         }
                     }
                 }
+
+                p.push_back({ p1, deployable_vector });
             }
-            
-            p.push_back({ p1, deployable_vector });
+
+            i++;
         }
 
-        i++;
+        return pages;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not get data from pages. Error message: " << e.what();
+        return pages;
+    }
+}
+
+std::string Database::generateSessionToken(Employee e) {
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
+    std::uniform_int_distribution<int> distribution(0, ASCII_CHARACTERS.size() - 1);
+
+    std::stringstream ss;
+    for (int i = 0; i < SESSION_TOKEN_LENGTH; ++i) {
+        ss << ASCII_CHARACTERS[distribution(generator)];
     }
 
-    return pages;
+    std::string new_session_token = ss.str();
+
+    pstmt = con->prepareStatement("UPDATE employees SET session_token = ? WHERE name = ? AND level = ?");
+    pstmt->setString(1, new_session_token);
+    pstmt->setString(2, e.name);
+    pstmt->setInt(3, e.level);
+    pstmt->execute();
+    
+    return new_session_token;
 }
 
 
@@ -1089,6 +1204,7 @@ void Database::setTable_NClients() {
 
 void Database::setTable_Products(const Table table, const std::unordered_map<std::string, int> products) {
     int n_table = table.n_table;
+
     std::stringstream query;
     query << "SELECT * FROM tables WHERE n_table = '" << n_table << "'";
     sql::ResultSet* res = stmt->executeQuery(query.str());

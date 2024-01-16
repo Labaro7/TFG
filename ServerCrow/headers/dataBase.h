@@ -14,10 +14,14 @@
 #include <sstream>
 #include <mutex>
 #include <deque>
+#include <iomanip>
+#include <iostream>
+#include <random>
 
 class Database {
 public:
     Database();
+    Database(const Database& database);
     ~Database();
 
 
@@ -71,6 +75,8 @@ public:
 
     std::vector<Employee> getEmployees();
     Employee getEmployeeByName(const std::string name);
+    Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) const;
+    Employee getEmployeeBySessionToken(const std::string& session_token);
 
     std::vector<Product> getProducts();
     Product getProductByName(const std::string name);
@@ -88,6 +94,7 @@ public:
     Allergen getAllergenByName(const std::string name);
 
     std::vector<page_t> getDataFromPages();
+    std::string generateSessionToken(Employee e);
 
 
     // Print

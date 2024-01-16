@@ -140,6 +140,7 @@
     <None Include="static\index.css" />
     <None Include="static\index.js" />
     <None Include="static\login.css" />
+    <None Include="static\login.js" />
     <None Include="static\table.css" />
     <None Include="static\table.js" />
     <None Include="templates\add.html" />
@@ -149,6 +150,7 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\authMiddleware.h" />
     <ClInclude Include="headers\constants.h" />
     <ClInclude Include="headers\crow_all.h" />
     <ClInclude Include="headers\database.h" />
@@ -157,6 +159,7 @@
     <ClInclude Include="headers\server.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\authMiddleware.cpp" />
     <ClCompile Include="src\constants.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\domain.cpp" />

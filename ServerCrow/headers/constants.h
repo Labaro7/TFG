@@ -10,6 +10,7 @@ extern const int SERVER_PORT;
 extern const std::string SERVER_NAME;
 extern const std::string CRT_FILE_PATH;
 extern const std::string KEY_FILE_PATH;
+extern const bool AUTH_NEEDED;
 
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;
@@ -31,5 +32,11 @@ extern const int PORT;
 extern const std::string USERNAME;
 extern const std::string PASSWORD;
 extern const std::string DATABASE_NAME;
+
+// Other constants
+extern const std::string ASCII_CHARACTERS;
+extern const int HASH_LENGTH;
+extern const int SESSION_TOKEN_LENGTH;
+extern const std::string SESSION_TOKEN_NAME;
 
 #endif

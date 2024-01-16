@@ -12,6 +12,8 @@
 #include <sstream>
 #include <string>
 #include <memory>
+#include <functional>
+#include <iostream>
 
 class Server {  
 public:
@@ -23,6 +25,10 @@ public:
     void getDataFromDatabase();
     std::unique_ptr<Database>& database(); // Returns the database to operate with its methods
     void dropAllTables();
+    void payTable(const int& n_table, const std::string& employee, const std::string& date);
+    std::string prepareOrdersJSON(const std::vector<Order>& orders) const;
+    std::string hash(const std::string& s);
+    std::string generateSessionToken(Employee e);
 
 
     // Save
@@ -45,6 +51,8 @@ public:
 
     std::vector<Employee> getEmployees() const;
     Employee getEmployeeByName(const std::string name) const;
+    Employee getEmployeeByAccount(const std::string& usernname, const std::string& password_hash) const;
+    Employee getEmployeeBySessionToken(const std::string& session_token);
 
     std::vector<Product> getProducts() const;
     Product getProductByName(const std::string name) const;
@@ -58,8 +66,10 @@ public:
     std::vector<Allergen> getAllergens() const;
     Allergen getAllergenByName(const std::string name) const;
 
+
     // Change
     void moveTable(int current_n_table, const int new_n_table);
+
 
     // Remove
     void removeTable(const Table& table);
@@ -68,8 +78,6 @@ public:
     void removeOrder(const Order& order);
     void removeIngredient(const Ingredient& ingredient);
     void removeAllergen(const Allergen& allergen);
-
-    void payTable(const int& n_table, const std::string& employee, const std::string& date);
 
 
 private:
