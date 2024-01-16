@@ -1,6 +1,6 @@
 ## 📄 Description
 
-Web-based system to manage the logic of a hospitality business (restaurant, bar, pub, etc).
+Web-based system to manage a business. It is mainly focused on hospitality businesses (restaurant, bar, pub, etc).
 
 This is my Final Degree Project (TFG in Spanish).
 
@@ -14,7 +14,7 @@ The project manages the following aspects:
 ## 🖥️ Technologies used
 - Crow C++ framework to make the web server.
 - MySQL, MySQL Workbench and Connect/C++ for the database.
-- HTTPS (HTTP over SSL/TLS) for security.
+- HTTPS (HTTP over SSL/TLS) for security. Cookies for authentication.
 - Qt for the statistics visualization (not done yet).
 - GoogleTest for testing (not done yet)
 
