@@ -32,7 +32,7 @@ The project manages the following aspects:
 ## 💾 Database Entity-Relationship Diagram
 
 <div align="center">
-  <img src="https://github.com/Labaro7/TFG/assets/59017230/4e040583-3cfc-4f8c-8228-90c54b904138" width="100%">
+  <img src="https://github.com/Labaro7/TFG/assets/59017230/448ccd54-1684-4955-9a00-1a2268d2f10e" width="100%">
 </div>
 
 
