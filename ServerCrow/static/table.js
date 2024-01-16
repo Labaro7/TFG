@@ -382,7 +382,7 @@ function payTable() {
         n_table: n_table.textContent.substr(7), //substr to delete "Table: "
         ticket : current_ticket,
         price: price.textContent,
-        employee: "Adri",
+        employee: getCookie("employee_name"),
         date: new Date(),
         //method: cash or card
     }
@@ -479,5 +479,24 @@ function cancelPayTableWarningMenu() {
     tab[0].style.filter = "blur(0px)";
     ticketMenu.style.pointerEvents = "auto";
     ticketMenu.style.filter = "blur(0px)";
+}
+
+
+function getCookie(cookieName) {
+    const name = cookieName + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(';');
+
+    for (let i = 0; i < cookieArray.length; i++) {
+        let cookie = cookieArray[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name) === 0) {
+            return cookie.substring(name.length, cookie.length);
+        }
+    }
+
+    return null;
 }
 

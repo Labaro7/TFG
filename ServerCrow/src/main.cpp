@@ -4,6 +4,8 @@
 #include "..\headers\placeholders.h"
 #include "..\headers\authMiddleware.h"
 #include <tuple>
+#include <chrono>
+#include <iomanip>
 
 int main() {
     crow::App<AuthMiddleware> app;
@@ -11,7 +13,9 @@ int main() {
 
     // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
     crow::logger::setLogLevel(crow::LogLevel::Warning);
-    
+
+    std::cout << "Server running on: " << SERVER_IP << ":" << SERVER_PORT << std::endl;
+
     //server.dropAllTables();
     //server.initialize();
 
@@ -58,6 +62,7 @@ int main() {
             Employee e = server.getEmployeeByAccount(username, password);
             if (!e.isEmpty()) {
                 CROW_LOG_INFO << "Found employee with session token: " << e.session_token;
+                // TODO: Set starting_date of the employee
 
                 std::ifstream file(INDEX_HTML_FILE_PATH);
                 std::stringstream ss;
@@ -68,6 +73,7 @@ int main() {
 
                 res.set_header("Content-Type", "text/html");
                 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
+                res.add_header("Set-Cookie", "employee_name=" + e.name + "; Path=/");
                 res.redirect("/");
             }
             else {
@@ -153,6 +159,10 @@ int main() {
 
             //std::cout << json_data << std::endl;
 
+            //TODO: Fix the following error:
+            /*  (2024-01-16 20:46:21) [ERROR] An uncaught exception occurred: invalid stoi argument
+                (2024-01-16 20:47:44) [ERROR] An uncaught exception occurred: resource deadlock would occur: resource deadlock would occur
+            */
             server.payTable(n_table, employee, date);
 
             // Delete tableproduct rows

@@ -14,8 +14,8 @@ function getCookie(cookieName) {
             return cookie.substring(name.length, cookie.length);
         }
     }
-    return null;
 
+    return null;
 }
 
 function login() {
