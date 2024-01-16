@@ -18,11 +18,11 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
         }
 
         if (!authenticated && req.url != "/login") {
-            std::cout << "Redirecting... " << std::endl;
             res.redirect("https://192.168.1.66:18080/login");
+            CROW_LOG_INFO << "Redirecting...";
         }
         else if (authenticated) {
-            std::cout << "AUTHENTICATED" << std::endl;
+            CROW_LOG_INFO << "Authenticated";
             //res.redirect(req.url);
         }
     }

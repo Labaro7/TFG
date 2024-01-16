@@ -25,7 +25,6 @@ public:
     ~Database();
 
 
-
     // ------------------------------- MySQL queries ------------------------------- //
     // These are methods to create, update or remove databases and tables 
 
@@ -40,7 +39,6 @@ public:
     void MySqlDropTable(const std::string name);
     void MySqlModifyTable(const std::string name, std::string modifications);
     void MySqlEmptyTable(const std::string name);
-
     // ------------------------------- /MySQL queries ------------------------------- //
 
 
@@ -51,7 +49,6 @@ public:
     void initializeOrdersTable();
     void initialize(); // Makes the corresponding database and tables with their corresponding columns.
     void dropAllTables();
-
 
 
     // ALL THE METHODS BELOW MUST USE THE MUTEX ATTRIBUTE
@@ -116,6 +113,7 @@ public:
     void setEmployee_Level();
     void setEmployee_Start();
     void setEmployee_Finish();
+
 
     // Change
     void moveTable(int current_n_table, const int new_n_table);
