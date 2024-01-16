@@ -1,6 +1,6 @@
 ## 📄 Description
 
-Web-based system to manage the logic of a hospitality business (restaurant, bar, pub, etc).
+Web-based system to manage a business. It is mainly focused on hospitality businesses (restaurant, bar, pub, etc).
 
 This is my Final Degree Project (TFG in Spanish).
 
