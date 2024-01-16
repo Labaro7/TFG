@@ -228,8 +228,7 @@ function saveOrder() {
     const data = {
         order: order,
         added: added,
-        n_table: n_table,
-        employee: getCookie("employee_name")
+        n_table: n_table
     };
 
     const url = 'https://192.168.1.66:18080/order';
@@ -284,8 +283,7 @@ function acceptMoveTableMenu() {
     let _new_n_table = parseInt(document.getElementById("tableInput").value);
     let data = {
         current_n_table: _current_n_table,
-        new_n_table: _new_n_table,
-        employee: getCookie("employee_name")
+        new_n_table: _new_n_table
     };
 
     fetch(api_moveTable, {
@@ -354,8 +352,7 @@ function moveTable() {
 
             data = {
                 current_n_table: current_n_table,
-                new_n_table: new_n_table,
-                employee: getCookie("employee_name")
+                new_n_table: new_n_table
             };
 
             fetch(api_moveTable, {
