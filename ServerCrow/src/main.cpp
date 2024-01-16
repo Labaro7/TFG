@@ -18,7 +18,7 @@ int main() {
     CROW_ROUTE(app, "/")
         ([&server](const crow::request& req, crow::response& res) {
             // TODO: Put relative path
-            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+            std::ifstream file(INDEX_HTML_FILE_PATH);
             std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
 
             // TODO: Change error handling
@@ -34,7 +34,7 @@ int main() {
 
     CROW_ROUTE(app, "/login")
         ([&server](const crow::request& req, crow::response& res) {
-            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html");
+            std::ifstream file(LOGIN_HTML_FILE_PATH);
             std::stringstream ss;
             ss << file.rdbuf();
             std::string login_page = ss.str();
@@ -60,7 +60,7 @@ int main() {
                 //std::string session_token = server.generateSessionToken(e);
                 std::cout << "FOUND! " << e.session_token << std::endl;
 
-                std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+                std::ifstream file(INDEX_HTML_FILE_PATH);
                 std::stringstream ss;
                 ss << file.rdbuf();
                 std::string index_page = ss.str();
@@ -71,8 +71,6 @@ int main() {
                 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
                 res.redirect("/");
                 //res.write(index_page);
-
-                //std::cout << "ppp " << res.get_header_value("session_token") << std::endl;
             }
             else {
                 res.redirect("/login");
@@ -92,7 +90,7 @@ int main() {
             std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 
             // TODO: Put relative path
-            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html");
+            std::ifstream file(TABLE_HTML_FILE_PATH);
             std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
 
             // TODO: Change error handling
@@ -110,7 +108,7 @@ int main() {
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             // TODO: Put relative path
-            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html");
+            std::ifstream file(INDEX_HTML_FILE_PATH);
             std::stringstream ss;
             ss << file.rdbuf();
             std::string index = ss.str();
@@ -215,7 +213,7 @@ int main() {
 
     CROW_ROUTE(app, "/add")
         ([&server](const crow::request& req, crow::response& res) {
-            std::ifstream file("C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\add.html");
+            std::ifstream file(ADD_HTML_FILE_PATH);
 
             // TODO: Put relative path
             std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);

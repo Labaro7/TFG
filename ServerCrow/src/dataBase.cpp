@@ -257,7 +257,7 @@ void Database::dropAllTables() {
 // Save
 void Database::saveTable(const Table& table) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
         pstmt->setInt(1, table.n_table);
@@ -277,7 +277,7 @@ void Database::saveTable(const Table& table) {
 
 void Database::saveEmployee(const Employee& employee) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::string name = employee.name;
         int level = employee.level;
@@ -312,7 +312,7 @@ void Database::saveEmployee(const Employee& employee) {
 
 void Database::saveProduct(const Product& product) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::string name = product.name;
         double price = product.price;
@@ -344,7 +344,7 @@ void Database::saveProduct(const Product& product) {
 
 void Database::saveOrder(const Order& order) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         pstmt = con->prepareStatement("INSERT INTO orders(n_table, n_clients, bill, discount, employee, date) VALUES(?,?,?,?,?,?)");
         pstmt->setInt(1, order.n_table);
@@ -412,7 +412,7 @@ void Database::saveOrderProduct(const Order& order, const int& product_id, const
 
 void Database::saveIngredient(const Ingredient& ingredient) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::string name = ingredient.name;
 
@@ -439,7 +439,7 @@ void Database::saveIngredient(const Ingredient& ingredient) {
 
 void Database::saveAllergen(const Allergen& allergen) {
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::string name = allergen.name;
 
@@ -555,11 +555,10 @@ void Database::saveProductOrder(const Product& product, const Order& order) {
 
 //Get
 std::vector<Table> Database::getTables() {
-    std::unique_lock<std::mutex> lock(mutex);
     std::vector<Table> tables;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
 
@@ -590,7 +589,7 @@ Table Database::getTableByNumber(const int n_table) {
     Table table;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
 
@@ -647,7 +646,7 @@ std::vector<Employee> Database::getEmployees() {
     std::vector<Employee> employees;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         sql::ResultSet* res = stmt->executeQuery("SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
 
@@ -676,7 +675,7 @@ Employee Database::getEmployeeByName(const std::string name) {
     Employee employee;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
@@ -702,11 +701,11 @@ Employee Database::getEmployeeByName(const std::string name) {
     }
 }
 
-Employee Database::getEmployeeByAccount(const std::string& username, const std::string& password_hash) const {
+Employee Database::getEmployeeByAccount(const std::string& username, const std::string& password_hash) {
     Employee employee;
 
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
 
         std::stringstream query;
         query << "SELECT * FROM employees WHERE username = '" << username << "' AND password ='" << password_hash << "'";
@@ -798,7 +797,7 @@ std::vector<Product> Database::getProducts() {
 Product Database::getProductByName(const std::string name) {
     Product product;
     try {
-        //std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
         
         std::stringstream query;
         query << "SELECT * FROM products WHERE name = '" << name << "'";
@@ -843,6 +842,7 @@ int Database::getProductIdByName(const std::string name) {
 
 std::vector<Product> Database::getProductsByDeployableId(int deployable_id) {
     std::vector<Product> products;
+
     try {
         std::unique_lock<std::mutex> lock(mutex);
 
@@ -871,7 +871,7 @@ std::vector<Product> Database::getProductsByDeployableId(int deployable_id) {
 }
 
 std::pair<int, std::vector<Product>> Database::getProductsAndIds() {
-    //std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
 
     std::vector<Product> products = getProducts();
 

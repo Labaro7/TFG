@@ -12,6 +12,15 @@ extern const std::string CRT_FILE_PATH;
 extern const std::string KEY_FILE_PATH;
 extern const bool AUTH_NEEDED;
 extern const std::string SESSION_TOKEN_NAME;
+const std::string SERVER_PORT_STRING = std::to_string(SERVER_PORT);
+
+// Routes
+const std::string SERVER_DOMAIN = "https://" + SERVER_IP + ":" + SERVER_PORT_STRING + "/";
+const std::string TABLE_NUMBER_HREF = SERVER_DOMAIN + "table?tableInput=";
+extern const std::string LOGIN_HTML_FILE_PATH;
+extern const std::string INDEX_HTML_FILE_PATH;
+extern const std::string TABLE_HTML_FILE_PATH;
+extern const std::string ADD_HTML_FILE_PATH;
 
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;

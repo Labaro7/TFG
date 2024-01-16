@@ -72,7 +72,7 @@ public:
 
     std::vector<Employee> getEmployees();
     Employee getEmployeeByName(const std::string name);
-    Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) const;
+    Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash);
     Employee getEmployeeBySessionToken(const std::string& session_token);
 
     std::vector<Product> getProducts();

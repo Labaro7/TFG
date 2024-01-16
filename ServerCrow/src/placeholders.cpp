@@ -13,7 +13,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     std::ostringstream ss;
 
     for (const auto& t : tables) {
-        ss << "<li class='table'><a class='tableNumber' href='https://192.168.1.66:18080/table?tableInput=" << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * (1 - (t.discount / 100)) << "</div></li>" << std::endl;
+        ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * (1 - (t.discount / 100)) << "</div></li>" << std::endl;
     }
 
     std::string tablesPricesHTML = ss.str();
