@@ -46,6 +46,7 @@ extern const std::string DATABASE_NAME;
 // Other constants
 extern const std::string ASCII_CHARACTERS;
 extern const int HASH_LENGTH;
+extern const std::string SESSION_TOKEN_NAME;
 extern const int SESSION_TOKEN_LENGTH;
 
 #endif

@@ -8,7 +8,6 @@ const std::string SERVER_NAME = "CrowCpp";
 const std::string CRT_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt"; // TODO: Put relative path
 const std::string KEY_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key"; // TODO: Put relative path
 const bool AUTH_NEEDED = true;
-const std::string SESSION_TOKEN_NAME = "token";
 
 // Routes
 extern const std::string LOGIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html";
@@ -41,4 +40,5 @@ const std::string DATABASE_NAME = "example_db";
 // Other constants
 const std::string ASCII_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>";
 const int HASH_LENGTH = 32;
-extern const int SESSION_TOKEN_LENGTH = 32;
+const std::string SESSION_TOKEN_NAME = "session_token";
+const int SESSION_TOKEN_LENGTH = 32;
