@@ -1,5 +1,7 @@
 const username = document.getElementById("username");
 const password = document.getElementById("password");
+
+console.log(document.cookie);
 function getCookie(cookieName) {
     const name = cookieName + "=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -25,7 +27,6 @@ function login() {
     }
 
     const url = 'https://192.168.1.66:18080/login';
-    console.log("c");
     fetch(url, {
         method: 'POST',
         headers: {
@@ -34,19 +35,26 @@ function login() {
         body: JSON.stringify(data),
     })
         .then(response => {
+            console.log('Response:', response);
+
             const cookieHeader = response.headers.get('Set-Cookie');
+
+            console.log(response.headers);
 
             if (cookieHeader) {
                 document.cookie = cookieHeader;
+
+                console.log("Cookies set:", document.cookie);
+                setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
             } else {
                 console.log("No 'Set-Cookie' header in the response");
             }
-
-            setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
-            console.log("a");
         })
         .then(data => {
-            console.log("b");
+
+            console.log(data);
+            //getCookie();
+
         })
         .catch(error => {
             console.error('Error:', error);

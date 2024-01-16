@@ -53,11 +53,12 @@ int main() {
             std::string username = json_data["username"].s();
             std::string password = server.hash(json_data["password"].s());
 
-            CROW_LOG_INFO << "Employee logged in with username: " << username << " and password hash:" << password;
+            std::cout << username << " " << password << std::endl;
 
             Employee e = server.getEmployeeByAccount(username, password);
             if (!e.isEmpty()) {
-                CROW_LOG_INFO << "Found employee with session token: " << e.session_token;
+                //std::string session_token = server.generateSessionToken(e);
+                std::cout << "FOUND! " << e.session_token << std::endl;
 
                 std::ifstream file(INDEX_HTML_FILE_PATH);
                 std::stringstream ss;
@@ -69,10 +70,12 @@ int main() {
                 res.set_header("Content-Type", "text/html");
                 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
                 res.redirect("/");
+                //res.write(index_page);
             }
             else {
                 res.redirect("/login");
-                CROW_LOG_ERROR << "Employee not found";
+
+                std::cout << "Not found" << std::endl;
             }
             
             res.end();

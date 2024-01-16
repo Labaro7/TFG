@@ -10,7 +10,6 @@ const std::string KEY_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\Se
 const bool AUTH_NEEDED = true;
 
 // Routes
-// TODO: Change to relative paths.
 extern const std::string LOGIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html";
 extern const std::string INDEX_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html";
 extern const std::string TABLE_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html";
