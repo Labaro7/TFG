@@ -52,7 +52,7 @@ function goToTable(clickedTable) {
     const n_table = (clickedTable.children)[1].textContent.substring(1);
     console.log(n_table);
 
-    let url = "/table?tableInput=" + n_table;
+    let url = 'https://192.168.1.66:18080/table?tableInput=' + n_table;
 
     fetchData(url)
         .then(response => {

@@ -70,17 +70,6 @@ body {
     justify-content: space-between;
 }
 
-.goBack {
-    background-color: white;
-    height: 40px;
-    width: 40px;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;    
-    text-align: center;
-}
-
 .numClients {
     width: 70px;
     text-align: center;
@@ -298,10 +287,9 @@ numTable {
 #bill {
     display: flex;
     position: relative;
-    left: 5%;
+    left: 30px;
     align-content: center;
     justify-content: center;
-    text-align: center;
     font-size: 60px;
     max-height: calc(100% - 69px);
 }
@@ -378,7 +366,7 @@ numTable {
     border: 0px solid red;
     color: rgb(20, 20, 51);
     font-family: Arial Arial, Helvetica, sans-serif;
-    font-weight: 500;
+    font-weight: 100;
 }
 
 #moveTableMenuButtons {
@@ -491,11 +479,10 @@ numTable {
     text-align: center;
     font-size: 25px;
     color: white;
-    border: 1px solid black;
+    border: 1px solid #0a3677;
     height: 50px;
     bottom: 0;
     text-shadow: 2px 2px 2px black;
-    margin: 0 -10px;
 }
 
 #payTableButton {

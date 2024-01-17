@@ -33,9 +33,6 @@ for (let i = 0; i < ticketProducts.length; i++) {
 //if (current_ticket.length > 0) lastProduct.textContent = current_ticket[added_ticket.length - 1];
 lastProduct.textContent = "-";
 
-function goBack() {
-    setTimeout(() => { window.location.href = "/"; }, 10);
-}
 function deleteLastOrder() {
     if (added_ticket.length > 0) {
         let last = added_ticket[added_ticket.length - 1];
@@ -235,7 +232,7 @@ function saveOrder() {
         employee: getCookie("employee_name")
     };
 
-    const url = "/order";
+    const url = 'https://192.168.1.66:18080/order';
 
     fetch(url, {
         method: 'POST',
@@ -255,7 +252,7 @@ function saveOrder() {
     // If setTimeout is not used, when the index.html is received
     // it doesn't have the tables prices updated because
     // it didn't have enough time to retrieve the new information
-    setTimeout(() => { window.location.href = "/"; }, 100);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
 }
 
 function openMoveTableMenu() {
@@ -281,7 +278,7 @@ function clearDisplay() {
 }
 
 function acceptMoveTableMenu() {
-    const api_moveTable = "/moveTable";
+    const api_moveTable = "https://192.168.1.66:18080/api/moveTable";
 
     let _current_n_table = parseInt(n_table.textContent.substr(7));
     let _new_n_table = parseInt(document.getElementById("tableInput").value);
@@ -306,7 +303,7 @@ function acceptMoveTableMenu() {
             //console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/"; }, 100);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
 }
 
 function cancelMoveTableMenu() {
@@ -328,8 +325,8 @@ function moveTable() {
     const current_n_table = parseInt(n_table.textContent.substr(7));
     const new_n_table = parseInt(document.getElementById("tableInput").value);
 
-    const api_currentTables = "/api/currentTables";
-    const api_moveTable = "/api/moveTable";
+    const api_currentTables = "https://192.168.1.66:18080/api/currentTables";
+    const api_moveTable = "https://192.168.1.66:18080/api/moveTable";
 
     fetch(api_currentTables)
         .then(response => response.json())
@@ -376,7 +373,7 @@ function moveTable() {
                     //console.error('Error:', error);
                 });
 
-            setTimeout(() => { window.location.href = "/"; }, 100);
+            setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -395,7 +392,7 @@ function payTable() {
 
     console.log(data);
 
-    const url = "/payTable";
+    const url = "https://192.168.1.66:18080/payTable";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -411,7 +408,7 @@ function payTable() {
             //console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/"; }, 100);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
 }
 
 function openDeleteTableWarningMenu() {
@@ -444,7 +441,7 @@ function deleteTable() {
         employee: "Adri"
     }
 
-    const url = "/deleteTable";
+    const url = "https://192.168.1.66:18080/deleteTable";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -460,7 +457,7 @@ function deleteTable() {
             //console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/"; }, 100);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
 }
 
 function openPayTableWarningMenu() {

@@ -90,6 +90,7 @@ function addProduct() {
     const name = document.getElementById("nameInput").value;
     let price = document.getElementById("priceInput").value;
     const color = document.getElementById("colorInput").value;
+    //const page = document.getElementById("pageInput").value;
     let deployable = document.getElementById("deployableInput").value;
 
     deployable == "Deployable" ? (deployable = 0, price = "0") : deployable = selectedDeployable;
@@ -102,7 +103,7 @@ function addProduct() {
         deployable: deployable,
     };
 
-    const url = "/add/product";
+    const url = 'https://192.168.1.66:18080/add/product';
     fetch(url, {
         method: 'POST',
         headers: {
@@ -118,5 +119,5 @@ function addProduct() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/add"; }, 100);
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080/add"; }, 100);
 }

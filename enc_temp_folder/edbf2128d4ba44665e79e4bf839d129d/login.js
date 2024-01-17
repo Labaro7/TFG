@@ -26,6 +26,7 @@ function login() {
 
     const url = 'https://192.168.1.66:18080/login';
     console.log("c");
+    setTimeout(() => { window.location.href = "https://192.168.1.66:18080"; }, 100);
     fetch(url, {
         method: 'POST',
         headers: {
@@ -43,7 +44,7 @@ function login() {
             }
 
             console.log("a1");
-            setTimeout(() => { window.location.href = "/"; }, 100);
+            
             console.log("a2");
         })
         .then(data => {

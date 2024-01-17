@@ -171,19 +171,19 @@ int main() {
 
     CROW_ROUTE(app, "/api/currentTables")
         ([&server]() {
-        std::vector<Table> tables = server.getTables();
-        std::vector<int> n_tables;
-        crow::json::wvalue response;
+            std::vector<Table> tables = server.getTables();
+            std::vector<int> n_tables;
+            crow::json::wvalue response;
 
-        for (const auto& t : tables) {
-            n_tables.push_back(t.n_table);
-        }
+            for (const auto& t : tables) {
+                n_tables.push_back(t.n_table);
+            }
 
-        response["tables"] = n_tables;
+            response["tables"] = n_tables;
 
 
-        return crow::response(response);
-            });
+            return crow::response(response);
+        });
 
     CROW_ROUTE(app, "/api/moveTable")
         .methods("POST"_method)

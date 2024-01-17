@@ -65,14 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex: 1;
-}
-
-#buttonGrid {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100% - 70px);
+    height: 100%;
 }
 
 .tableInput {
@@ -107,28 +100,25 @@ body {
 }
 
 .button-grid {
-    flex: 1;
     display: grid;
     margin-left: 5%;
     margin-right: 5%;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin-bottom: 15px;
 }
 
 .grid-item {
     position: relative;
     width: 100%;
+    padding-top: 100%;
     background-color: white;
     border: 1px solid rgb(12, 9, 34);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
 }
 
 .button {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: flex;
@@ -153,9 +143,9 @@ body {
     color: white;
     border: none;
     position: absolute;
-    bottom: 0;
+    margin-top: 8px;
     width: 100%;
-    height: 70px;
+    height: 10%;
     border: 1px solid rgb(12, 9, 34);
     text-shadow: 1px 1px 1px black;
 }
@@ -176,10 +166,10 @@ body {
     position: relative;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(8, 1fr);
     gap: 10px;
     padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: scroll;
     margin: 10px 10px;
 }
 
