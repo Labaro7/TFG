@@ -328,8 +328,8 @@ function moveTable() {
     const current_n_table = parseInt(n_table.textContent.substr(7));
     const new_n_table = parseInt(document.getElementById("tableInput").value);
 
-    const api_currentTables = "/api/currentTables";
-    const api_moveTable = "/api/moveTable";
+    const api_currentTables = "/currentTables";
+    const api_moveTable = "/moveTable";
 
     fetch(api_currentTables)
         .then(response => response.json())
@@ -365,15 +365,17 @@ function moveTable() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Set-Cookie': getCookie("session_token"),
+                    'Set-Cookie': getCookie("employee_name")
                 },
                 body: JSON.stringify(data),
             })
                 .then(response => response.text())
                 .then(data => {
-                    //console.log('Response:', data);
+                    console.log('Responsaal:', data);
                 })
                 .catch(error => {
-                    //console.error('Error:', error);
+                    console.error('Errool:', error);
                 });
 
             setTimeout(() => { window.location.href = "/"; }, 100);
@@ -388,9 +390,11 @@ function payTable() {
         n_table: n_table.textContent.substr(7), //substr to delete "Table: "
         ticket : current_ticket,
         price: price.textContent,
-        employee: getCookie("employee_name"),
         date: new Date(),
         //method: cash or card
+    }
+    if (getCookie("employee_name") != null) {
+        data.employee = getCookie("employee_name")
     }
 
     console.log(data);

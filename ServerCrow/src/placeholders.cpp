@@ -223,6 +223,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
             std::string product_name = p.first.name;
             double product_price = p.first.price;
             int product_deployable = p.first.deployable;
+            std::string product_color = p.first.color;
 
             // Is product
             if (p.first.deployable == 0 && p.second.empty()) {
@@ -237,11 +238,11 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
                 if (p.first.deployable == 0 && p.first.price == 0) {
                     int product_id = server.getProductIdByName(product_name);
 
-                    ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)'>" << product_name << "</li>";
+                    ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)' style='background-color: " << product_color << "'>" << product_name << "</li>";
 
                     for (const auto& q : p.second) {
                         if (q.price) {
-                            ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                            ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' style='background-color: " << q.color << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
                         }
                     }
 

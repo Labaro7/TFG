@@ -799,7 +799,7 @@ std::vector<Product> Database::getProducts() {
 Product Database::getProductByName(const std::string name) {
     Product product;
     try {
-        std::unique_lock<std::mutex> lock(mutex);
+        //std::unique_lock<std::mutex> lock(mutex);
         
         std::stringstream query;
         query << "SELECT * FROM products WHERE name = '" << name << "'";

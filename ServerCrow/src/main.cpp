@@ -6,13 +6,21 @@
 #include <tuple>
 #include <chrono>
 #include <iomanip>
+#include <type_traits>
+
+// Made with conditional macros to not restrict the scope of the app variable to the if scope.
+#if MIDDLEWARE_ACTIVATED 
+using App_T = crow::App<AuthMiddleware>;
+#else 
+using App_T = crow::SimpleApp;
+#endif
 
 int main() {
-    crow::App<AuthMiddleware> app;
+    App_T app;
     Server server;
 
-    // Here we can set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
-    crow::logger::setLogLevel(crow::LogLevel::Warning);
+    // Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
+    crow::logger::setLogLevel(crow::LogLevel::Info);
 
     std::cout << "Server running on: " << SERVER_IP << ":" << SERVER_PORT << std::endl;
 
@@ -21,11 +29,9 @@ int main() {
 
     CROW_ROUTE(app, "/")
         ([&server](const crow::request& req, crow::response& res) {
-            // TODO: Put relative path
             std::ifstream file(INDEX_HTML_FILE_PATH);
             std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
 
-            // TODO: Change error handling
             if (modifiedHTML == "") {
                 res.code = 500; // Internal Server Error
                 res.body = "Error reading HTML template", "text/plain";
@@ -92,11 +98,9 @@ int main() {
             Table t(stoi(n_table));
             std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 
-            // TODO: Put relative path
             std::ifstream file(TABLE_HTML_FILE_PATH);
             std:: string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
 
-            // TODO: Change error handling
             if (modifiedHTML == "") {
                 res.code = 500; // Internal Server Error
                 res.body = "Error reading HTML template", "text/plain";
@@ -110,7 +114,6 @@ int main() {
     CROW_ROUTE(app, "/order")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
-            // TODO: Put relative path
             std::ifstream file(INDEX_HTML_FILE_PATH);
             std::stringstream ss;
             ss << file.rdbuf();
@@ -138,14 +141,6 @@ int main() {
 
                 server.saveTableProduct(t, p, times);
             }
-
-            // TODO: saveOrder();
-            // TODO: send signal to arduino to make a sound and print the order
-
-            // TODO: Change the response to the client
-            //res.set_header("Content-Type", "text/html");
-            //res.write(index);
-            //res.end();
         });
 
     CROW_ROUTE(app, "/payTable")
@@ -153,9 +148,13 @@ int main() {
         ([&server](const crow::request& req, crow::response& res) {
             auto json_data = crow::json::load(req.body);
             const int n_table = json_data["n_table"].i();
-            const std::string employee = json_data["employee"].s();
             const std::string date = json_data["date"].s();
+            std::string employee = "";
 
+            if (MIDDLEWARE_ACTIVATED && AUTH_NEEDED) {
+                employee = json_data["employee"].s();
+            }
+            
             server.payTable(n_table, employee, date);
         });
 
@@ -169,7 +168,7 @@ int main() {
             server.removeTable(t);
         });
 
-    CROW_ROUTE(app, "/api/currentTables")
+    CROW_ROUTE(app, "/currentTables")
         ([&server]() {
             std::vector<Table> tables = server.getTables();
             std::vector<int> n_tables;
@@ -181,15 +180,14 @@ int main() {
 
             response["tables"] = n_tables;
 
-
             return crow::response(response);
         });
 
-    CROW_ROUTE(app, "/api/moveTable")
+    CROW_ROUTE(app, "/moveTable")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
-
+            
             int current_n_table = json_data["current_n_table"].i();
             int new_n_table = json_data["new_n_table"].i();
 
@@ -200,7 +198,7 @@ int main() {
     CROW_ROUTE(app, "/api/stats")
         ([&server]() {
             std::vector<Order> orders = server.getOrders();
-            // TODO: There are orders that do not show any products, fix it.
+
             return server.prepareOrdersJSON(orders);
         });
 
@@ -231,6 +229,7 @@ int main() {
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
+
             std::string name = json_data["name"].s();
             double price = std::stod(json_data["price"].s());
             std::string color = json_data["color"].s();

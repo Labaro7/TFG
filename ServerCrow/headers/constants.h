@@ -10,6 +10,7 @@ extern const int SERVER_PORT;
 extern const std::string SERVER_NAME;
 extern const std::string CRT_FILE_PATH;
 extern const std::string KEY_FILE_PATH;
+#define MIDDLEWARE_ACTIVATED true  // It needs to be a macro
 extern const bool AUTH_NEEDED;
 extern const std::string SESSION_TOKEN_NAME;
 const std::string SERVER_PORT_STRING = std::to_string(SERVER_PORT);
