@@ -271,6 +271,9 @@ numTable {
 
 .productNames{
     flex: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .productPrices, .productTotalPrices {
@@ -325,15 +328,12 @@ numTable {
     display: none;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: relative;
     text-align: center;
-    right: 8px;
-    margin-left: auto;
-    margin-right: auto;
     max-height: 50px;
     max-width: 100px;
-    transform: scale(0.9);
     border: 1px solid black;
+    left: 6px;
 }
 
 #modifyProductAmountButton {

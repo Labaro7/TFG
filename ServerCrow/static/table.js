@@ -67,7 +67,7 @@ function addProductToTicket(clickedProduct) {
     secondRow.classList.toggle('clicked');
     setTimeout(function () {
         secondRow.classList.remove('clicked');
-    }, 125); // Glow animation
+    }, 125);
 
     // Add the product to the list of products of the table
     const price = document.getElementById("price");
@@ -505,6 +505,8 @@ function cancelPayTableWarningMenu() {
 function openModifyProductMenu(clickedProduct) {
     let modifyProductMenu = document.getElementById("modifyProductMenu");
 
+    clickedProduct.appendChild(document.getElementById("modifyProductMenu"));
+
     if (modifyingProduct == clickedProduct) {
         modifyingProduct = null;
         clickedProduct.className == "ticketProduct" ? clickedProduct.style.backgroundColor = "white" : clickedProduct.style.backgroundColor = "#D7FCDA";
@@ -525,8 +527,8 @@ function openModifyProductMenu(clickedProduct) {
 
     let clickedProductPos = clickedProduct.getBoundingClientRect();
 
-    modifyProductMenu.style.setProperty("top", clickedProductPos.top + window.scrollY);
-    modifyProductMenu.style.transform = 'translateY(' + clickedProductPos.top + 'px';
+    //modifyProductMenu.style.setProperty("top", clickedProductPos.top + window.scrollY);
+    //modifyProductMenu.style.transform = 'translateY(' + clickedProductPos.top + 'px';
 }
 
 function openModifyProductAmountMenu() {
