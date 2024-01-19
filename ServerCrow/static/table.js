@@ -52,7 +52,8 @@ function deleteLastOrder() {
         last = added_ticket[added_ticket.length - 1];
 
         // Remove from ticket array
-        if (added_ticket.length > 0) lastProduct.textContent = last.name + " | " + last.price;
+        let found = added_ticket.find(prod => prod.name === last.name);
+        if (added_ticket.length > 0) lastProduct.textContent = "x" + found["times"] + " " + last.name + " | " + last.price;
         else lastProduct.textContent = "-";
     }
     else {
@@ -522,14 +523,10 @@ function openModifyProductMenu(clickedProduct) {
         modifyingProduct = clickedProduct;
     }
 
-    var rect = clickedProduct.getBoundingClientRect();
+    let clickedProductPos = clickedProduct.getBoundingClientRect();
 
-    console.log('Absolute Position:');
-    console.log('Top:', rect.top + window.scrollY);
-    console.log('Left:', rect.left + window.scrollX);
-
-    modifyProductMenu.style.setProperty("top", rect.top + window.scrollY);
-    modifyProductMenu.style.transform = 'translateY(' + rect.top + 'px';
+    modifyProductMenu.style.setProperty("top", clickedProductPos.top + window.scrollY);
+    modifyProductMenu.style.transform = 'translateY(' + clickedProductPos.top + 'px';
 }
 
 function openModifyProductAmountMenu() {
