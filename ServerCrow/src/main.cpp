@@ -143,6 +143,12 @@ int main() {
             }
         });
 
+    CROW_ROUTE(app, "/modifyTable")
+        .methods("POST"_method)
+        ([&server](const crow::request& req, crow::response& res) {
+            std::cout << "modify " << std::endl;
+        });
+
     CROW_ROUTE(app, "/payTable")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
@@ -210,13 +216,10 @@ int main() {
     CROW_ROUTE(app, "/add")
         ([&server](const crow::request& req, crow::response& res) {
             std::ifstream file(ADD_HTML_FILE_PATH);
-
-            // TODO: Put relative path
             std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
 
-            // TODO: Change error handling
             if (modifiedHTML == "") {
-                res.code = 500; // Internal Server Error
+                res.code = 500;
                 res.body = "Error reading HTML template", "text/plain";
             }
 

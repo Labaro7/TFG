@@ -33,9 +33,6 @@ for (let i = 0; i < ticketProducts.length; i++) {
 //if (current_ticket.length > 0) lastProduct.textContent = current_ticket[added_ticket.length - 1];
 lastProduct.textContent = "-";
 
-// Ticket
-let modifyingProduct;
-
 function goBack() {
     setTimeout(() => { window.location.href = "/"; }, 10);
 }
@@ -100,9 +97,6 @@ function addProductToTicket(clickedProduct) {
         let child = document.createElement("li");
         child.className = "addedTicketProduct";
         child.backgroundColor = "green";
-        child.onclick = function () {
-            openModifyProductMenu(this);
-        };
 
         let child_times = document.createElement("div");
         child_times.className = "productTimes";
@@ -147,10 +141,8 @@ function openDeployable(clickedDeployable) {
 function changeToProductsTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");
-    const modifyProductMenu = document.getElementById("modifyProductMenu");
     ProductsTab.style.visibility = 'visible';
     TicketTab.style.visibility = 'hidden';
-    modifyProductMenu.style.visibility = 'hidden';
 
     const productsMenu = document.getElementById("productsMenu");
     const ticketMenu = document.getElementById("ticketMenu");
@@ -162,10 +154,8 @@ function changeToProductsTab() {
 function changeToTicketTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");
-    const modifyProductMenu = document.getElementById("modifyProductMenu");
     ProductsTab.style.visibility = 'hidden';
     TicketTab.style.visibility = 'visible';
-    modifyProductMenu.style.visibility = 'visible';
 
     const productsMenu = document.getElementById("productsMenu");
     const ticketMenu = document.getElementById("ticketMenu");
@@ -502,46 +492,11 @@ function cancelPayTableWarningMenu() {
 }
 
 function openModifyProductMenu(clickedProduct) {
-    let modifyProductMenu = document.getElementById("modifyProductMenu");
-
-    if (modifyingProduct == clickedProduct) {
-        modifyingProduct = null;
-        clickedProduct.className == "ticketProduct" ? clickedProduct.style.backgroundColor = "white" : clickedProduct.style.backgroundColor = "#D7FCDA";
-        modifyProductMenu.style.display = "none";
-    }
-    else {
-        clickedProduct.className == "ticketProduct" ? clickedProduct.style.backgroundColor = "yellow" : clickedProduct.style.backgroundColor = "#e9fe6d";
-        if (modifyingProduct == null) {
-            modifyProductMenu.style.display = "flex";
-        }
-        else {
-            modifyingProduct.className == "ticketProduct" ? modifyingProduct.style.backgroundColor = "white" : modifyingProduct.style.backgroundColor = "#D7FCDA";
-            modifyProductMenu.style.display = "flex";
-        }
-
-        modifyingProduct = clickedProduct;
-    }
-
-    var rect = clickedProduct.getBoundingClientRect();
-
-    console.log('Absolute Position:');
-    console.log('Top:', rect.top + window.scrollY);
-    console.log('Left:', rect.left + window.scrollX);
-
-    modifyProductMenu.style.setProperty("top", rect.top + window.scrollY);
-    modifyProductMenu.style.transform = 'translateY(' + rect.top + 'px';
-}
-
-function openModifyProductAmountMenu() {
-    
+    console.log(clickedProduct.children[0].textContent);
 }
 
 function modifyTable() {
 
-}
-
-function openDeleteProductMenu() {
-    
 }
 
 

@@ -42,7 +42,6 @@ public:
 
 
     // Get
-    //page_t getDataFromPage(const int n_page);
     std::vector<page_t> getDataFromPages();
     int getRestaurantPagesSize() const;
 
@@ -84,8 +83,6 @@ private:
     std::unique_ptr<Database> _database;
 public:
     std::unique_ptr<Restaurant> restaurant;
-
-    //std::mutex mutex;
 
 }; // class Server
 #endif

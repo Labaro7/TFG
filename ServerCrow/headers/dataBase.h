@@ -136,7 +136,7 @@ private:
     sql::Statement* stmt;
     sql::PreparedStatement* pstmt;
 
-    std::mutex mutex; // It is supposed to be asynchronous so it is needed.
+    std::mutex mutex;
 
 }; // class Database
 
