@@ -72,7 +72,7 @@ function addProductToTicket(clickedProduct) {
     const price = document.getElementById("price");
     const discount = document.getElementById("discountValue").textContent;
 
-    let last = added_ticket[added_ticket.length - 1];
+    let last = "x" +  + added_ticket[added_ticket.length - 1];
     let found = added_ticket.find(prod => prod.name === (clickedProduct.children)[0].textContent);
 
     if (found) {
@@ -85,7 +85,7 @@ function addProductToTicket(clickedProduct) {
         f.children[0].textContent = "x" + found.times;
         f.children[3].textContent = (found.times * found.price).toFixed(2);
 
-        lastProduct.textContent = found.name + " | " + found.price;
+        lastProduct.textContent = "x" + found["times"] + " " + found.name + " | " + found.price;
 
         price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
@@ -94,7 +94,7 @@ function addProductToTicket(clickedProduct) {
         added_ticket.push(product);
 
         last = added_ticket[added_ticket.length - 1];
-        lastProduct.textContent = last.name + " | " + last.price;
+        lastProduct.textContent = "x1 " + last.name + " | " + last.price;
 
         // Add the product in the ticket of the table
         let child = document.createElement("li");
