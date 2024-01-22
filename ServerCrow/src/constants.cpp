@@ -14,7 +14,7 @@ const bool AUTH_NEEDED = true;
 extern const std::string LOGIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html";
 extern const std::string INDEX_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html";
 extern const std::string TABLE_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html";
-extern const std::string ADD_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\add.html";
+extern const std::string EDIT_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\edit.html";
 
 
 // HTML constants

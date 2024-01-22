@@ -105,7 +105,7 @@ function addProduct() {
             deployable: deployable,
         };
 
-        const url = "/add/product";
+        const url = "/edit/add/product";
         fetch(url, {
             method: 'POST',
             headers: {
@@ -121,7 +121,7 @@ function addProduct() {
                 console.error('Error:', error);
             });
 
-        setTimeout(() => { window.location.href = "/add"; }, 100);
+        setTimeout(() => { window.location.href = "/edit"; }, 100);
     }
     else {
         alert("Complete the necessary fields");
@@ -129,7 +129,6 @@ function addProduct() {
 }
 
 function selectElement(clickedElement) {
-    //console.log(clickedElement);
     const clonedElement = clickedElement.cloneNode(true);
     clonedElement.id = "selected-product";
     clonedElement.className = "";
@@ -137,8 +136,6 @@ function selectElement(clickedElement) {
 
     selectedElement.innerHTML = "";
     selectedElement.appendChild(clonedElement);
-    //console.log(selectedElement);
-    //target.appendChild(clonedElement);
 }
 
 function modifyProduct() {
@@ -157,7 +154,6 @@ function modifyProduct() {
         newPrice = "0";
     }
     else {
-        console.log("hey");
         selectedElementName = selectedElement.children[0].textContent;
         selectedElementPrice = selectedElement.children[1].textContent;
     }
@@ -173,7 +169,7 @@ function modifyProduct() {
         };
 
         // TODO: Load page when response is received
-        const url = "/modify/product";
+        const url = "/edit/modify/product";
         fetch(url, {
             method: 'POST',
             headers: {
@@ -182,7 +178,7 @@ function modifyProduct() {
             body: JSON.stringify(data),
         })
             .then(response => {
-                if (response.ok) setTimeout(() => { window.location.href = "/add"; }, 100);
+                if (response.ok) setTimeout(() => { window.location.href = "/edit"; }, 100);
             })
             .then(data => {
                 console.log('Response:', data);

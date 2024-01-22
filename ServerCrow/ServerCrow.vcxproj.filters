@@ -60,13 +60,13 @@
     <None Include="ssl\server.key">
       <Filter>ssl</Filter>
     </None>
-    <None Include="templates\add.html">
+    <None Include="templates\edit.html">
       <Filter>Archivos de recursos\html</Filter>
     </None>
-    <None Include="static\add.css">
+    <None Include="static\edit.css">
       <Filter>Archivos de recursos\css</Filter>
     </None>
-    <None Include="static\add.js">
+    <None Include="static\edit.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
     <None Include="templates\login.html">

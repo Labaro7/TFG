@@ -21,7 +21,7 @@ const std::string TABLE_NUMBER_HREF = SERVER_DOMAIN + "table?tableInput=";
 extern const std::string LOGIN_HTML_FILE_PATH;
 extern const std::string INDEX_HTML_FILE_PATH;
 extern const std::string TABLE_HTML_FILE_PATH;
-extern const std::string ADD_HTML_FILE_PATH;
+extern const std::string EDIT_HTML_FILE_PATH;
 
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;

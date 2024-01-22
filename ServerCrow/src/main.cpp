@@ -213,9 +213,9 @@ int main() {
         return "Wrong Route";
             });
 
-    CROW_ROUTE(app, "/add")
+    CROW_ROUTE(app, "/edit")
         ([&server](const crow::request& req, crow::response& res) {
-            std::ifstream file(ADD_HTML_FILE_PATH);
+            std::ifstream file(EDIT_HTML_FILE_PATH);
             std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
 
             if (modifiedHTML == "") {
@@ -228,7 +228,7 @@ int main() {
             res.end();
         });
 
-    CROW_ROUTE(app, "/add/product")
+    CROW_ROUTE(app, "/edit/add/product")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
@@ -265,7 +265,7 @@ int main() {
             }
         });
 
-    CROW_ROUTE(app, "/modify/product")
+    CROW_ROUTE(app, "/edit/modify/product")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
@@ -282,24 +282,23 @@ int main() {
             Product newProduct(newName, newPrice, newColor, selectedElementPage, 0);
 
             server.modifyProduct(oldProduct, newProduct);
-            std::cout << "updated" << std::endl;
         });
 
-    CROW_ROUTE(app, "/add/employee")
+    CROW_ROUTE(app, "/edit/add/employee")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
 
 
         });
 
-    CROW_ROUTE(app, "/add/ingredient")
+    CROW_ROUTE(app, "/edit/add/ingredient")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
 
 
         });
 
-    CROW_ROUTE(app, "/add/allergen")
+    CROW_ROUTE(app, "/edit/add/allergen")
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
 
