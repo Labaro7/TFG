@@ -111,13 +111,47 @@
                         </div>
 
                         <button type="reset" id="resetInput">Reset</button>
-                        <button type="submit" id="acceptInput" onclick="addProduct()">Accept</button>
+                        <button id="acceptInput" onclick="addProduct()">Accept</button>
                     </div>
 
                     <form id="modifyProductForm">
-                    </form>
+                        <div id="selectedElementText">
+                            SELECTED ELEMENT
+                        </div>
+                        <div id="selectedElement">
 
-                    <form id="deleteProductForm">
+                        </div>
+
+                        <div id="newName">
+                            <div>NEW NAME</div>
+                            <input id="newNameInput" name="newNameInput" maxlength="30" size="30" />
+                        </div>
+
+                        <div id="newPrice">
+                            <div>NEW PRICE</div>
+                            <input type="number" maxlength="5" size="5" id="newPriceInput" name="priceInput" min="0" max="9999.999" step="0.01" value="0.0" />
+                        </div>
+
+                        <div id="newColor">
+                            <div>NEW COLOR</div>
+                            <input type="color" list="redColors" id="newColorInput" name="newColorInput" value="#FFFFFF" />
+                            <datalist id="redColors">
+                                <option value="#FFFFFF"></option>
+                                <option value="#EDEDED"></option>
+                                <option value="#DBDBDB"></option>
+                                <option value="#C4C4C4"></option>
+                                <option value="#A8A8A8"></option>
+                                <option value="#FF7070"></option>
+                                <option value="#FFD06B"></option>
+                                <option value="#FEF95D"></option>
+                                <option value="#7AFF83"></option>
+                                <option value="#85F1FF"></option>
+                                <option value="#B190FE"></option>
+                                <option value="#FF80EE"></option>
+                            </datalist>
+                        </div>
+                        <button type="reset" id="resetModifyInput">Reset</button>
+                        <button id="acceptModifyInput" onclick="modifyProduct()">Accept</button>
                     </form>
                 </div>
             </div>

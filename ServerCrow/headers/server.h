@@ -29,6 +29,7 @@ public:
     std::string prepareOrdersJSON(const std::vector<Order>& orders) const;
     std::string hash(const std::string& s);
     std::string generateSessionToken(Employee e);
+    void modifyProduct(Product oldProduct, Product newProduct);
 
 
     // Save

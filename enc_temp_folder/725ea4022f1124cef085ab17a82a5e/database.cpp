@@ -1502,6 +1502,14 @@ void Database::modifyProduct(Product oldProduct, Product newProduct) {
         pstmt->setString(1, newName);
         pstmt->setDouble(2, newPrice);
         pstmt->setString(3, newColor);
+        bool result = pstmt->execute();
+
+        if (result) {
+            std::cout << "Bien" << std::endl;
+        }
+        else {
+            std::cout << "Mal" << std::endl;
+        }
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not modify product. Error message: " << e.what();

@@ -127,6 +127,9 @@ public:
     void removeIngredient(const Ingredient& ingredient);
     void removeAllergen(const Allergen& allergen);
 
+    // Modify
+    void modifyProduct(Product oldProduct, Product newProduct);
+
 
 private:
     sql::ConnectOptionsMap connection_properties;

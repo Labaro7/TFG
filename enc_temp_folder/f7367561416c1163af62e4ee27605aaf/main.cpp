@@ -269,6 +269,7 @@ int main() {
         .methods("POST"_method)
         ([&server](const crow::request& req, crow::response& res) {
             const auto& json_data = crow::json::load(req.body);
+            std::cout << json_data << std::endl;
 
             std::string selectedElementName = json_data["selectedElementName"].s();
             double selectedElementPrice = std::stod(json_data["selectedElementPrice"].s());

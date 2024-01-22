@@ -242,7 +242,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 
                     for (const auto& q : p.second) {
                         if (q.price) {
-                            ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' style='background-color: " << q.color << "'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
+                            ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' style='background-color: " << q.color << "' onclick='selectElement(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div></li>";
                         }
                     }
 

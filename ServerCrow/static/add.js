@@ -73,6 +73,8 @@ function selectButton(number) {
 }
 
 function openDeployable(clickedDeployable) {
+    selectElement(clickedDeployable);
+
     selectedDeployable = clickedDeployable.dataset.id;
     const grid = "grid" + page_number;
     const grid_products = document.getElementById(grid).querySelectorAll("li");
@@ -91,32 +93,105 @@ function addProduct() {
     let price = document.getElementById("priceInput").value;
     const color = document.getElementById("colorInput").value;
     let deployable = document.getElementById("deployableInput").value;
+    
+    if (( (name && price != 0) && (name && price != 0.0)) || (name && deployable == "Deployable")) {
+        deployable == "Deployable" ? (deployable = 0, price = "0") : deployable = selectedDeployable;
 
-    deployable == "Deployable" ? (deployable = 0, price = "0") : deployable = selectedDeployable;
+        const data = {
+            name: name,
+            price: price,
+            color: color,
+            page: selectedPage,
+            deployable: deployable,
+        };
 
-    const data = {
-        name: name,
-        price: price,
-        color: color,
-        page: selectedPage,
-        deployable: deployable,
-    };
-
-    const url = "/add/product";
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-        .then(response => response.text())
-        .then(data => {
-            console.log('Response:', data);
+        const url = "/add/product";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
         })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            .then(response => response.text())
+            .then(data => {
+                console.log('Response:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
 
-    setTimeout(() => { window.location.href = "/add"; }, 100);
+        setTimeout(() => { window.location.href = "/add"; }, 100);
+    }
+    else {
+        alert("Complete the necessary fields");
+    }
+}
+
+function selectElement(clickedElement) {
+    //console.log(clickedElement);
+    const clonedElement = clickedElement.cloneNode(true);
+    clonedElement.id = "selected-product";
+    clonedElement.className = "";
+    let selectedElement = document.getElementById("selectedElement");
+
+    selectedElement.innerHTML = "";
+    selectedElement.appendChild(clonedElement);
+    //console.log(selectedElement);
+    //target.appendChild(clonedElement);
+}
+
+function modifyProduct() {
+    const newName = document.getElementById("newNameInput").value;
+    let newPrice = document.getElementById("newPriceInput").value;
+    const newColor = document.getElementById("newColorInput").value;
+
+    const selectedElement = document.getElementById("selected-product");
+    let selectedElementName;
+    let selectedElementPrice;
+    const selectedElementPage = selectedPage;
+
+    if (selectedElement.hasAttribute("data-id")) {
+        selectedElementName = selectedElement.textContent;
+        selectedElementPrice = "0";
+        newPrice = "0";
+    }
+    else {
+        console.log("hey");
+        selectedElementName = selectedElement.children[0].textContent;
+        selectedElementPrice = selectedElement.children[1].textContent;
+    }
+
+    if (newName !== "") {
+        const data = {
+            selectedElementName: selectedElementName,
+            selectedElementPrice: selectedElementPrice,
+            selectedElementPage: selectedElementPage,
+            newName: newName,
+            newPrice: newPrice,
+            newColor: newColor
+        };
+
+        // TODO: Load page when response is received
+        const url = "/modify/product";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (response.ok) setTimeout(() => { window.location.href = "/add"; }, 100);
+            })
+            .then(data => {
+                console.log('Response:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    else {
+        alert("Complete the necessary fields");
+    }
 }
