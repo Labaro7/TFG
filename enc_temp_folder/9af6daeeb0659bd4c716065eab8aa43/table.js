@@ -283,12 +283,13 @@ function openMoveTableMenu() {
 
 function appendNumber(number) {
     const display = document.getElementById('tableInput');
-    display.value += number;
+    
+    if (display.value <= 999) display.value += number;
 }
 
 function clearDisplay() {
     const display = document.getElementById('tableInput');
-    display.value = '';
+    display.value = "0";
 }
 
 function acceptMoveTableMenu() {

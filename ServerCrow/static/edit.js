@@ -9,10 +9,7 @@ let selectedDeployable = 0;
 let selectedPage = 1;
 
 // Modify
-const newName = document.getElementById("newNameInput").value;
-let newPrice = document.getElementById("newPriceInput").value;
-const newColor = document.getElementById("newColorInput").value;
-const selectedElement = document.getElementById("selected-product");
+let selectedElement; document.getElementById("selected-product");
 let selectedElementName;
 let selectedElementPrice;
 const selectedElementPage = selectedPage;
@@ -141,7 +138,8 @@ function selectElement(clickedElement) {
     const clonedElement = clickedElement.cloneNode(true);
     clonedElement.id = "selected-product";
     clonedElement.className = "";
-    let selectedElement = document.getElementById("selectedElement");
+
+    selectedElement = document.getElementById("selectedElement");
 
     selectedElement.innerHTML = "";
     selectedElement.appendChild(clonedElement);
@@ -158,6 +156,10 @@ function selectElement(clickedElement) {
 }
 
 function modifyProduct() {
+    let newName = document.getElementById("newNameInput").value;
+    let newPrice = document.getElementById("newPriceInput").value;
+    const newColor = document.getElementById("newColorInput").value;
+
     if (newName !== "") {
         const data = {
             selectedElementName: selectedElementName,

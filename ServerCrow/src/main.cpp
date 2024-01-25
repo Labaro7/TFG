@@ -98,6 +98,7 @@ int main() {
         ([&server](const crow::request& req, crow::response& res) {
             auto page = crow::mustache::load_text("table.html");
             std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
+            if (n_table == "") n_table = "0";
             Table t(stoi(n_table));
             std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 

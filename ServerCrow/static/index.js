@@ -48,7 +48,7 @@ function appendDot() {
 // Function to clear the display
 function clearDisplay() {
     const display = document.getElementById('tableInput');
-    display.value = "0";
+    display.value = "";
 }
 
 function goToTable(clickedTable) {

@@ -289,7 +289,7 @@ function appendNumber(number) {
 
 function clearDisplay() {
     const display = document.getElementById('tableInput');
-    display.value = "0";
+    display.value = "";
 }
 
 function acceptMoveTableMenu() {
