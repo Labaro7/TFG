@@ -94,6 +94,7 @@ int main() {
             res.end();
         });
 
+    // TODO: Fix the 505 error when not inputting table and accepting
     CROW_ROUTE(app, "/table")
         ([&server](const crow::request& req, crow::response& res) {
             auto page = crow::mustache::load_text("table.html");

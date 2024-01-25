@@ -33,9 +33,6 @@ function showPage(pageId) {
 // Function to append a number to the display
 function appendNumber(number) {
     const display = document.getElementById('tableInput');
-
-    if (display.value === "0") display.value = "";
-
     display.value += number;
 }
 
@@ -52,7 +49,8 @@ function clearDisplay() {
 }
 
 function goToTable(clickedTable) {
-    let n_table = (clickedTable.children)[1].textContent.substring(1);
+    const n_table = (clickedTable.children)[1].textContent.substring(1);
+    console.log(n_table);
 
     let url = "/table?tableInput=" + n_table;
 
