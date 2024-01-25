@@ -63,6 +63,8 @@ int main() {
             std::string username = json_data["username"].s();
             std::string password = server.hash(json_data["password"].s());
 
+            std::cout << "login" << std::endl;
+
             CROW_LOG_INFO << "Employee logged in with username: " << username << " and password hash:" << password;
 
             Employee e = server.getEmployeeByAccount(username, password);
@@ -81,6 +83,8 @@ int main() {
                 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
                 res.add_header("Set-Cookie", "employee_name=" + e.name + "; Path=/");
                 res.redirect("/");
+
+                std::cout << "redir " << res.body << std::endl;
             }
             else {
                 res.redirect("/login");

@@ -38,16 +38,15 @@ function login() {
 
             if (cookieHeader) {
                 document.cookie = cookieHeader;
+
+                console.log("a1");
+                setTimeout(() => { window.location.href = "/"; }, 100);
+                console.log("a2");
             } else {
                 console.log("No 'Set-Cookie' header in the response");
             }
 
-            console.log("a1");
-            setTimeout(() => { window.location.href = "/"; }, 100);
-            console.log("a2");
-        })
-        .then(data => {
-            console.log("b");
+
         })
         .catch(error => {
             console.error('Error:', error);
