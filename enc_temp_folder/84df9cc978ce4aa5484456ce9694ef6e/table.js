@@ -283,8 +283,7 @@ function openMoveTableMenu() {
 
 function appendNumber(number) {
     const display = document.getElementById('tableInput');
-    
-    if (display.value <= 999) display.value += number;
+    display.value += number;
 }
 
 function clearDisplay() {

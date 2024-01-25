@@ -36,7 +36,7 @@ function appendNumber(number) {
 
     if (display.value === "0") display.value = "";
 
-    display.value += number;
+    if (display.value <= 999) display.value += number;
 }
 
 // Function to append a dot to the display
