@@ -366,11 +366,13 @@ void Server::removeAllergen(const Allergen& allergen) { _database->removeAllerge
 void Server::payTable(const int& n_table, const std::string& employee, const std::string& date) {
     Order o;
     Table t = getTableByNumber(n_table);
+    std::cout << "a1" << std::endl;
 
     o.copyDataFromTable(t);
     o.employee = employee;
     o.date = date;
     saveOrder(o);
-
+    std::cout << "a2" << std::endl;
     removeTable(t);
+    std::cout << "a3" << std::endl;
 }

@@ -298,7 +298,8 @@ void Database::saveEmployee(const Employee& employee) {
 
             CROW_LOG_INFO << "[ADDED] Employee " << name <<
                 " with level " << level <<
-                " starting at " << start;
+                " starting at " << start <<
+                " inserted into employees.";
         }
         else {
             CROW_LOG_WARNING << "[EXCEPTION] Employee is already in the database.";
@@ -452,7 +453,8 @@ void Database::saveAllergen(const Allergen& allergen) {
             pstmt->setString(1, name);
             pstmt->execute();
 
-            CROW_LOG_INFO << "[ADDED] Allergen with name " << name;
+            CROW_LOG_INFO << "[ADDED] Allergen with name " << name <<
+                " inserted into allergens.";
         }
         else {
             CROW_LOG_WARNING << "[EXCEPTION] Allergen is already in the database.";
@@ -524,7 +526,7 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
                     pstmt->execute();
 
                     CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
-                        " and product_id " << product_id << " and amount " << times;
+                        " and product_id " << product_id << " and amount " << times << " inserted into tableproduct.";
                 }
             }
         }
@@ -627,6 +629,9 @@ Table Database::getTableByNumber(const int n_table) {
             table.n_table = n;
             table.n_clients = n_clients;
             table.products = products;
+            //for (auto i : products) {
+                //std::cout << i.first << std::endl;
+            //}
             table.bill = bill;
             table.discount = discount;
         }
@@ -1372,7 +1377,8 @@ void Database::removeTable(const Table& table) {
 
             CROW_LOG_INFO << "[REMOVED] Table with n_table " << n_table <<
                 ", bill " << bill <<
-                " and discount " << discount;
+                " and discount " << discount <<
+                " has been deleted.";
         }
     }
     catch (const sql::SQLException& e) {
@@ -1399,7 +1405,8 @@ void Database::removeEmployee(const Employee& employee) {
         CROW_LOG_INFO << "[REMOVED] Employee with name " << name <<
             ", level " << level <<
             ", start " << start <<
-            ", and finish " << finish;
+            ", and finish " << finish <<
+            " has been deleted.";
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not remove employee. Error message: " << e.what();
@@ -1422,7 +1429,8 @@ void Database::removeProduct(const Product& product) {
 
         CROW_LOG_INFO << "[REMOVED] Product with name " << name <<
             " price " << price <<
-            " on page " << page;
+            " on page " << page <<
+            " has been deleted.";
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not remove product. Error message: " << e.what();
@@ -1458,7 +1466,8 @@ void Database::removeIngredient(const Ingredient& ingredient) {
         pstmt->setString(1, name);
         pstmt->execute();
 
-        CROW_LOG_INFO << "[REMOVED] Ingredient with name " << name;
+        CROW_LOG_INFO << "[REMOVED] Ingredient with name " << name <<
+            " has been deleted.";
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not remove ingredient. Error message: " << e.what();
@@ -1475,7 +1484,8 @@ void Database::removeAllergen(const Allergen& allergen) {
         pstmt->setString(1, name);
         pstmt->execute();
 
-        CROW_LOG_INFO << "[REMOVED] Allergen with name " << name;
+        CROW_LOG_INFO << "[REMOVED] Allergen with name " << name <<
+            " has been deleted.";
     }
     catch (const sql::SQLException& e) {
         CROW_LOG_WARNING << "[EXCEPTION] Could not remove allergen. Error message: " << e.what();
