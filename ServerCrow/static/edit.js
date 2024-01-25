@@ -8,6 +8,15 @@ currentButton.style.border = "1px solid black";
 let selectedDeployable = 0;
 let selectedPage = 1;
 
+// Modify
+const newName = document.getElementById("newNameInput").value;
+let newPrice = document.getElementById("newPriceInput").value;
+const newColor = document.getElementById("newColorInput").value;
+const selectedElement = document.getElementById("selected-product");
+let selectedElementName;
+let selectedElementPrice;
+const selectedElementPage = selectedPage;
+
 // Fourth row
 let page_number = 1;
 
@@ -136,28 +145,19 @@ function selectElement(clickedElement) {
 
     selectedElement.innerHTML = "";
     selectedElement.appendChild(clonedElement);
-}
 
-function modifyProduct() {
-    const newName = document.getElementById("newNameInput").value;
-    let newPrice = document.getElementById("newPriceInput").value;
-    const newColor = document.getElementById("newColorInput").value;
-
-    const selectedElement = document.getElementById("selected-product");
-    let selectedElementName;
-    let selectedElementPrice;
-    const selectedElementPage = selectedPage;
-
-    if (selectedElement.hasAttribute("data-id")) {
+    if (selectedElement.children[0].hasAttribute("data-id")) {
         selectedElementName = selectedElement.textContent;
         selectedElementPrice = "0";
         newPrice = "0";
     }
     else {
-        selectedElementName = selectedElement.children[0].textContent;
-        selectedElementPrice = selectedElement.children[1].textContent;
+        selectedElementName = selectedElement.children[0].children[0].textContent;
+        selectedElementPrice = selectedElement.children[0].children[1].textContent;
     }
+}
 
+function modifyProduct() {
     if (newName !== "") {
         const data = {
             selectedElementName: selectedElementName,
@@ -190,4 +190,30 @@ function modifyProduct() {
     else {
         alert("Complete the necessary fields");
     }
+}
+
+function deleteProduct() {
+    let data = {
+        selectedElementName: selectedElementName,
+        selectedElementPrice: selectedElementPrice,
+        selectedElementPage: selectedElementPage
+    }
+
+    const url = "/edit/delete/product";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            if (response.ok) setTimeout(() => { window.location.href = "/edit"; }, 100);
+        })
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }

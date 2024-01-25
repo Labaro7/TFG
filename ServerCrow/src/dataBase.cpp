@@ -1351,6 +1351,8 @@ void Database::moveTable(int current_n_table, const int new_n_table) {
 // Remove
 void Database::removeTable(const Table& table) {
     try {
+        std::unique_lock<std::mutex> lock(mutex);
+
         int n_table = table.n_table;
         double bill = table.bill;
         double discount = table.discount;
@@ -1386,6 +1388,8 @@ void Database::removeTable(const Table& table) {
 
 void Database::removeEmployee(const Employee& employee) {
     try {
+        std::unique_lock<std::mutex> lock(mutex);
+
         std::string name = employee.name;
         int level = employee.level;
         std::string start = employee.start;
@@ -1411,16 +1415,21 @@ void Database::removeEmployee(const Employee& employee) {
 
 void Database::removeProduct(const Product& product) {
     try {
+        std::unique_lock<std::mutex> lock(mutex);
+
         std::string name = product.name;
         double price = product.price;
+        int page = product.page;
 
-        pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ?");
+        pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ? AND page = ?");
         pstmt->setString(1, name);
         pstmt->setDouble(2, price);
+        pstmt->setDouble(3, page);
         pstmt->execute();
 
         CROW_LOG_INFO << "[REMOVED] Product with name " << name <<
-            " and price " << price <<
+            " price " << price <<
+            " on page " << page <<
             " has been deleted.";
     }
     catch (const sql::SQLException& e) {
@@ -1449,6 +1458,8 @@ void Database::removeOrder(const Order& order) {
 
 void Database::removeIngredient(const Ingredient& ingredient) {
     try {
+        std::unique_lock<std::mutex> lock(mutex);
+
         std::string name = ingredient.name;
 
         pstmt = con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
@@ -1465,6 +1476,8 @@ void Database::removeIngredient(const Ingredient& ingredient) {
 
 void Database::removeAllergen(const Allergen& allergen) {
     try {
+        std::unique_lock<std::mutex> lock(mutex);
+
         std::string name = allergen.name;
 
         pstmt = con->prepareStatement("DELETE FROM allergens WHERE name = ?");

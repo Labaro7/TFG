@@ -168,7 +168,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
     return contentHTML;
 }
 
-// add.html
+// edit.html
 std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& productListPlaceHolder, Server& server) {
     // Data to insert into HTML
     // 1. Current products

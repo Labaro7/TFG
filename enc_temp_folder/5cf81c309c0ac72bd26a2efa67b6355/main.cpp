@@ -294,6 +294,8 @@ int main() {
             double selectedElementPrice = std::stod(json_data["selectedElementPrice"].s());
             int selectedElementPage = json_data["selectedElementPage"].i();
 
+            std::cout << json_data << std::endl;
+
             Product p(selectedElementName, selectedElementPrice, "#FFFFFF", selectedElementPage, 0);
 
             server.removeProduct(p);
