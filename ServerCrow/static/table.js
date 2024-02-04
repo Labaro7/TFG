@@ -8,6 +8,10 @@ currentButton.style.border = "1px solid black";
 // First row
 const n_table = document.getElementById("numTable");
 
+// Third row
+const multiplier_array = [1, 2, 5];
+let multiplier_index = 0;
+
 // Fourth row
 const li = document.getElementsByClassName("grid-product");
 let page_number = 1;
@@ -18,6 +22,7 @@ const ticketList = document.getElementById("ticketList");
 const ticketProducts = document.getElementsByClassName("ticketProduct");
 let current_ticket = [];
 let added_ticket = [];
+let deleted_ticket = [];
 const lastProduct = document.getElementById("lastOrder");
 const price = document.getElementById("price");
 let price_val = parseFloat(price.textContent);
@@ -46,6 +51,11 @@ function deleteLastOrder() {
         price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * parseInt(last.times) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
 
         // Remove the li item
+        let modifyProductMenu = document.getElementById("modifyProductMenu");
+        if (ticketList.lastElementChild.contains(modifyProductMenu)) {
+            modifyProductMenu.style.display = "none";
+            document.body.appendChild(modifyProductMenu);
+        }
         ticketList.removeChild(ticketList.lastElementChild);
 
         added_ticket.pop();
@@ -59,7 +69,15 @@ function deleteLastOrder() {
     else {
         lastProduct.textContent = "-";
     }
+}
 
+function toggleMultiplier() {
+    let current_multiplier = document.getElementById(multiplier_array[multiplier_index].toString());
+    multiplier_index = (multiplier_index + 1) % multiplier_array.length;
+    let next_multiplier = document.getElementById((multiplier_array[multiplier_index]).toString());
+
+    current_multiplier.style.display = "none";
+    next_multiplier.style.display = "flex";
 }
 
 function addProductToTicket(clickedProduct) {
@@ -69,7 +87,6 @@ function addProductToTicket(clickedProduct) {
         secondRow.classList.remove('clicked');
     }, 125);
 
-    // Add the product to the list of products of the table
     const price = document.getElementById("price");
     const discount = document.getElementById("discountValue").textContent;
 
@@ -77,7 +94,7 @@ function addProductToTicket(clickedProduct) {
     let found = added_ticket.find(prod => prod.name === (clickedProduct.children)[0].textContent);
 
     if (found) {
-        found["times"]++;
+        found["times"] += multiplier_array[multiplier_index];
 
         const text = found.name;
 
@@ -88,14 +105,14 @@ function addProductToTicket(clickedProduct) {
 
         lastProduct.textContent = "x" + found["times"] + " " + found.name + " | " + found.price;
 
-        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
     else {
-        let product = { times: 1, name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent).toFixed(2) };
+        let product = { times: multiplier_array[multiplier_index], name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent).toFixed(2) };
         added_ticket.push(product);
 
         last = added_ticket[added_ticket.length - 1];
-        lastProduct.textContent = "x1 " + last.name + " | " + last.price;
+        lastProduct.textContent = "x" + multiplier_array[multiplier_index] + " " + last.name + " | " + last.price;
 
         // Add the product in the ticket of the table
         let child = document.createElement("li");
@@ -107,7 +124,7 @@ function addProductToTicket(clickedProduct) {
 
         let child_times = document.createElement("div");
         child_times.className = "productTimes";
-        child_times.textContent = "x" + 1;
+        child_times.textContent = "x" + multiplier_array[multiplier_index];
         child.appendChild(child_times);
 
         let child_name = document.createElement("div");
@@ -127,7 +144,7 @@ function addProductToTicket(clickedProduct) {
         
         ticketList.appendChild(child);
 
-        price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
 }
 
@@ -239,9 +256,11 @@ function saveOrder() {
     const n_table = parseInt((document.getElementById("numTable").textContent).substr(7)); // Use substr(7) to eliminate "Table: "
     const order = current_ticket;
     const added = added_ticket;
+    const deleted = deleted_ticket;
     const data = {
         order: order,
         added: added,
+        deleted: deleted,
         n_table: n_table,
         employee: getCookie("employee_name")
     };
@@ -508,28 +527,49 @@ function openModifyProductMenu(clickedProduct) {
 
     clickedProduct.appendChild(document.getElementById("modifyProductMenu"));
 
-    if (modifyingProduct == clickedProduct) {
+    if (modifyingProduct == clickedProduct) { // First selected item?
         modifyingProduct = null;
-        clickedProduct.className == "ticketProduct" ? clickedProduct.style.backgroundColor = "white" : clickedProduct.style.backgroundColor = "#D7FCDA";
+
+        if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
+            if (clickedProduct.className == "ticketProduct") {
+                clickedProduct.style.backgroundColor = "white";
+            }
+            else {
+                clickedProduct.style.backgroundColor = "#D7FCDA";
+            }
+        }
+        else {
+            clickedProduct.style.backgroundColor = "rgb(255, 120, 151)";
+        }
+
         modifyProductMenu.style.display = "none";
     }
     else {
-        clickedProduct.className == "ticketProduct" ? clickedProduct.style.backgroundColor = "yellow" : clickedProduct.style.backgroundColor = "#e9fe6d";
+        if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") { // Not deleted item?
+            if (clickedProduct.className == "ticketProduct") {
+                clickedProduct.style.backgroundColor = "yellow"
+            }
+            else {
+                clickedProduct.style.backgroundColor = "#e9fe6d";
+            }
+        }
+        else {
+
+        }
+
         if (modifyingProduct == null) {
             modifyProductMenu.style.display = "flex";
         }
         else {
-            modifyingProduct.className == "ticketProduct" ? modifyingProduct.style.backgroundColor = "white" : modifyingProduct.style.backgroundColor = "#D7FCDA";
+            if (modifyingProduct.style.backgroundColor !== "rgb(255, 120, 151)") modifyingProduct.className == "ticketProduct" ? modifyingProduct.style.backgroundColor = "white" : modifyingProduct.style.backgroundColor = "#D7FCDA";
+            else {
+                modifyingProduct.style.backgroundColor = "rgb(255, 120, 151)";
+            }
             modifyProductMenu.style.display = "flex";
         }
 
         modifyingProduct = clickedProduct;
     }
-
-    let clickedProductPos = clickedProduct.getBoundingClientRect();
-
-    //modifyProductMenu.style.setProperty("top", clickedProductPos.top + window.scrollY);
-    //modifyProductMenu.style.transform = 'translateY(' + clickedProductPos.top + 'px';
 }
 
 function openModifyProductAmountMenu() {
@@ -540,8 +580,50 @@ function modifyTable() {
 
 }
 
-function openDeleteProductMenu() {
-    
+function openDeleteProductMenu(clickedElement) {
+    event.stopPropagation(); // So the child onclick is on top of the parents'
+
+    let a = document.getElementById("modifyProductMenu").parentNode;
+    a.style.backgroundColor === "rgb(255, 120, 151)" ? a.className === "ticketProduct" ? a.style.backgroundColor = "white" : a.style.backgroundColor = "#e9fe6d" : a.style.backgroundColor = "#ff7897";
+
+    if (a.className === "ticketProduct") {
+        let index = deleted_ticket.findIndex(prod => prod.name === a.children[1].textContent);
+        if (index === -1) {
+            let prod = {
+                times: a.children[0].textContent.substr(1),
+                name: a.children[1].textContent,
+                price: a.children[2].textContent
+            }
+
+            deleted_ticket.push(prod);
+        }
+        else {
+            deleted_ticket.splice(index, 1);
+        }
+    }
+    else {
+        let index = added_ticket.findIndex(prod => prod.name === a.children[1].textContent);
+        if (index !== -1) {
+            let last = added_ticket[added_ticket.length - 1];
+            const price = document.getElementById("price");
+            const discount = document.getElementById("discount").textContent;
+            price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+
+            added_ticket.splice(index, 1);
+
+            if (added_ticket.length > 0) {
+                last = added_ticket[added_ticket.length - 1];
+                lastProduct.textContent = "x" + last.times + " " + last.name + " | " + last.price;
+            }
+            else lastProduct.textContent = "-";
+
+            let modifyProductMenu = document.getElementById("modifyProductMenu");
+            modifyProductMenu.style.display = "none";
+            document.body.appendChild(modifyProductMenu);
+
+            a.remove();
+        }
+    }
 }
 
 

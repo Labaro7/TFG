@@ -131,6 +131,7 @@ int main() {
             int n_table = json_data["n_table"].i();
             auto order = json_data["order"];
             auto added = json_data["added"];
+            auto deleted = json_data["deleted"];
             Table t = server.getTableByNumber(n_table);
 
             // If a table with that number doesnt exist
@@ -144,6 +145,13 @@ int main() {
                 Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
 
                 server.saveTableProduct(t, p, times);
+            }
+
+            for (const auto& object : deleted) {
+                Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
+                int times = std::stoi(object["times"].s());
+
+                server.removeTableProduct(n_table, p, times);
             }
         });
 

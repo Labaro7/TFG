@@ -123,6 +123,7 @@ public:
     void removeTable(const Table& table);
     void removeEmployee(const Employee& employee);
     void removeProduct(const Product& product);
+    void removeTableProduct(const int& n_table, const Product& product, const int& times);
     void removeOrder(const Order& order);
     void removeIngredient(const Ingredient& ingredient);
     void removeAllergen(const Allergen& allergen);

@@ -39,19 +39,9 @@
                     <path d="M16 12H8M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="rgb(12, 9, 34)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </div>
-            <div class="thirdRowButton" id="multiplier" onclick="toggleMultiplier()">
-                <svg id="x" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="30px" height="30px" viewBox="-3.5 0 19 19" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z" /></svg>
-                
-                <svg class="number" id="1" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="35px" height="35px" viewBox="0 0 256 256" id="Flat">
-                    <path d="M144,32V224a12,12,0,0,1-24,0V54.417L90.6543,73.97168A11.99986,11.99986,0,1,1,77.3457,54l48-31.98584A11.99993,11.99993,0,0,1,144,32Z" />
-                </svg>
-
-                <svg class="number" id="2" style="display: none" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="35px" height="35px" viewBox="0 0 256 256" id="Flat">
-                    <path d="M188,223.98828a12,12,0,0,1-12,12H80.53906c-.17969.0083-.36035.0127-.541.0127a12.00426,12.00426,0,0,1-9.4336-19.41993L158.01074,99.89258A36.00778,36.00778,0,1,0,94.82422,65.99023,11.99951,11.99951,0,1,1,72.7207,56.64209,60.00755,60.00755,0,1,1,177.74707,113.5542c-.11035.1626-.22363.32275-.3418.47949l-73.4082,97.95459H176A12.0006,12.0006,0,0,1,188,223.98828Z" />
-                </svg>
-
-                <svg class="number" id="5" style="display: none" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="35px" height="35px" viewBox="0 0 256 256" id="Flat">
-                    <path d="M167.99609,119.90137a68.1173,68.1173,0,0,1-96.46386,96.20019,12.0003,12.0003,0,0,1,16.93554-17.00635,44.4032,44.4032,0,0,0,62.59375,0,43.83148,43.83148,0,0,0,0-62.1875,44.4038,44.4038,0,0,0-62.59472.00049,12,12,0,0,1-20.31153-10.42871L83.8252,30.07471A12,12,0,0,1,95.66992,20H176a12,12,0,0,1,0,24H105.877l-9.7832,60.1875a68.59461,68.59461,0,0,1,71.90234,15.71387Z"/>
+            <div class="thirdRowButton" id="nOrderButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="45px" height="45px" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 8H16M8 12H13M7 16V21L12 16H20V4H4V16H7Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </div>
             <div class="thirdRowButton" id="saveButton" onclick="saveOrder()">
@@ -132,41 +122,37 @@
 
     <div id="ticketMenu">
         <ul id="ticketList">
-            <div id="division">
-                <div class="horizontal-line"></div>
-                CURRENT
-                <div class="horizontal-line"></div>
-            </div>
             <!--
-    <li class='ticketProduct'>
-        <div class='productTimes'>x3</div>
-        <div class='productNames'>Water</div>
-        <div class='productPrices'>1.00</div>
-        <div class='productTotalPrices'>3.00</div>
-    </li> -->
+            <li class='ticketProduct'>
+                <div class='productTimes'>x3</div>
+                <div class='productNames'>Water</div>
+                <div class='productPrices'>1.00</div>
+                <div class='productTotalPrices'>3.00</div>
+            </li> -->
             <!-- PLACEHOLDER: TICKET PRODUCTS -->
-            <div id="division">
+            <div id="addedDivision">
                 <div class="horizontal-line"></div>
                 ADDED
                 <div class="horizontal-line"></div>
             </div>
 
             <!--
-    <li class='addedTicketProduct'>
-        <div class='productTimes'>x3</div>
-        <div class='productNames'>Water</div>
-        <div class='productPrices'>1.00</div>
-        <div class='productTotalPrices'>3.00</div>
-    </li>
-    -->
+            <li class='addedTicketProduct'>
+                <div class='productTimes'>x3</div>
+                <div class='productNames'>Water</div>
+                <div class='productPrices'>1.00</div>
+                <div class='productTotalPrices'>3.00</div>
+            </li>
+            -->
+
             <!--
-    <li class='addedTicketProduct'>
-        <div class='productTimes'>x3</div>
-        <div class='productNames'>Water</div>
-        <div class='productPrices'>1.00</div>
-        <div class='productTotalPrices'>3.00</div>
-    </li>
-    -->
+            <li class='addedTicketProduct'>
+                <div class='productTimes'>x3</div>
+                <div class='productNames'>Water</div>
+                <div class='productPrices'>1.00</div>
+                <div class='productTotalPrices'>3.00</div>
+            </li>
+            -->
         </ul>
 
         <!--

@@ -136,21 +136,6 @@ numTable {
     border: 1px solid #0a3677;
 }
 
-#multiplier {
-
-}
-
-#x {
-    position: relative;
-    left: 6px;
-    top: 5px;
-}
-
-.number {
-    right: 6px;
-    position: relative;
-}
-
 
 .fourthRow {
     display: flex;
@@ -277,7 +262,7 @@ numTable {
     flex: 1;
 }
 
-#division {
+#addedDivision {
     text-align: center;
     display: flex;
     gap: 5px;

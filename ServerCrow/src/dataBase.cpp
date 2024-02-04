@@ -1429,6 +1429,52 @@ void Database::removeProduct(const Product& product) {
     }
 }
 
+void Database::removeTableProduct(const int& n_table, const Product& product, const int& times) {
+    try {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        std::stringstream query;
+
+        query << "SELECT * FROM tables WHERE n_table = " << n_table;
+        sql::ResultSet* res = stmt->executeQuery(query.str());
+        query.str("");
+
+        if (res->next()) {
+            int table_id = res->getInt("table_id");
+            double bill = res->getDouble("bill");
+            double discount = res->getDouble("discount");
+
+            query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = " << product.price;
+            res = stmt->executeQuery(query.str());
+            query.str("");
+
+            if (res->next()) {
+                int product_id = res->getInt("product_id");
+
+                pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ?");
+                pstmt->setInt(1, table_id);
+                pstmt->setInt(2, product_id);
+                pstmt->execute();
+
+                double new_bill = bill - (product.price * times * (1.0 - discount));
+                if (new_bill < 0) new_bill = 0;
+
+                pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+                pstmt->setDouble(1, new_bill);
+                pstmt->setInt(2, table_id);
+                pstmt->execute();
+            }
+        }
+
+        CROW_LOG_INFO << "[REMOVED] Product(s) from table " << n_table <<
+            " with name " << product.name <<
+            " and price " << product.price;
+    }
+    catch (const sql::SQLException& e) {
+        CROW_LOG_WARNING << "[EXCEPTION] Could not remove tableproduct. Error message: " << e.what();
+    }
+}
+
 void Database::removeOrder(const Order& order) {
     /*try {
         std::string time = order.time;

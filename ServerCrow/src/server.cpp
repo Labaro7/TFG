@@ -356,6 +356,8 @@ void Server::removeEmployee(const Employee& employee) { _database->removeEmploye
 
 void Server::removeProduct(const Product& product) { _database->removeProduct(product); }
 
+void Server::removeTableProduct(const int& n_table, const Product& product, const int& times) { _database->removeTableProduct(n_table, product, times); }
+
 void Server::removeOrder(const Order& order) { _database->removeOrder(order); }
 
 void Server::removeIngredient(const Ingredient& ingredient) { _database->removeIngredient(ingredient); }

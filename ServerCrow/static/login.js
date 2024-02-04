@@ -24,7 +24,7 @@ function login() {
         password: password.value,
     }
 
-    const url = 'https://192.168.1.66:18080/login';
+    const url = '/login';
     console.log("c");
     fetch(url, {
         method: 'POST',
