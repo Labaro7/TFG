@@ -69,6 +69,7 @@ public:
 
     // Change
     void moveTable(int current_n_table, const int new_n_table);
+    void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount);
 
 
     // Remove

@@ -1372,6 +1372,8 @@ void Database::changeTableProductAmount(const Table& table, const Product& produ
                     int amount = res->getInt("amount");
                     double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
 
+                    std::cout << new_amount << " " << amount << " " << new_bill << std::endl;
+
                     pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE n_table = ?");
                     pstmt->setDouble(1, new_bill);
                     pstmt->setInt(2, table.n_table);

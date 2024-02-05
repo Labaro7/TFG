@@ -131,6 +131,7 @@ int main() {
             int n_table = json_data["n_table"].i();
             auto order = json_data["order"];
             auto added = json_data["added"];
+            auto modified = json_data["modified"];
             auto deleted = json_data["deleted"];
             Table t = server.getTableByNumber(n_table);
 
@@ -145,6 +146,14 @@ int main() {
                 Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
 
                 server.saveTableProduct(t, p, times);
+            }
+
+            for (const auto& object : modified) {
+                int new_times = object["new_amount"].i();
+                Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
+
+                server.changeTableProductAmount(t, p, new_times);
+
             }
 
             for (const auto& object : deleted) {

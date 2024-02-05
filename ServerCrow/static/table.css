@@ -266,7 +266,7 @@ numTable {
     flex: 1;
 }
 
-.ticketProduct, .addedTicketProduct {
+.ticketProduct, .addedTicketProduct, .modifiedProduct {
     background-color: white;
     border: 1px solid rgb(12, 9, 34);
     height: 30px;
@@ -277,10 +277,11 @@ numTable {
     flex: 1;
 }
 
-#division {
+#divisionCurrentProducts, #divisionAddedProducts {
     text-align: center;
     display: flex;
     gap: 5px;
+    display: none;
 }
 
 .horizontal-line {
@@ -296,12 +297,12 @@ numTable {
     background-color: #d7fcda;
 }
 
-.productTimes {
+.times, .productTimes, .newProductTimes {
     width: 7%;
     font-size: 13px;
 }
 
-.productNames{
+.productNames {
     flex: 1;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -355,7 +356,7 @@ numTable {
     align-self: flex-end;
 }
 
-#modifyProductMenu {
+#modifyDeleteMenu {
     background-color: white;
     display: none;
     justify-content: center;
@@ -367,6 +368,62 @@ numTable {
     border: 1px solid black;
     left: 6px;
     z-index: 5;
+}
+
+#modifyProductMenu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    z-index: 6;
+    background-color: #aaccff;
+    border: 3px solid #0a3677;
+    flex-wrap: wrap;
+}
+
+#amountInput {
+    background-color: #0a3677;
+    border: 1px solid rgb(12, 9, 34);
+    height: 10%;
+    width: 83%;
+    margin-top: 5%;
+    text-align: center;
+    font-size: 40px;
+    color: white;
+    pointer-events: none;
+}
+
+#modifyProductMenuButtons {
+    display: flex;
+    width: 100%;
+    height: 10%;
+}
+
+#modifyProductMenuAcceptButton, #modifyProductMenuCancelButton {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    height: 100%;
+    text-shadow: 2px 2px 2px black;
+    font-size: 30px;
+}
+
+#modifyProductMenuAcceptButton {
+    background-color: green;
+    border-top: 1px solid black;
+}
+
+#modifyProductMenuCancelButton {
+    background-color: red;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
 }
 
 #modifyProductAmountButton {
@@ -389,12 +446,17 @@ numTable {
     flex-direction: column;
 }
 
-    #binSVG {
-        padding: 5px;
-    }
+#modifyProductMenu {
+    display: none;
+    position: absolute;
+}
+
+#binSVG {
+    padding: 5px;
+}
 
 /* Move table menu */
-#moveTableMenu {
+#moveTableMenu, #modifyProductMenu {
     display: none;
     flex-direction: column;
     align-items: center;
@@ -564,7 +626,7 @@ numTable {
     text-align: center;
     font-size: 25px;
     color: white;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, 0.7);
     height: 50px;
     bottom: 0;
     text-shadow: 2px 2px 2px black;
@@ -672,3 +734,4 @@ numTable {
     background-color: red;
     border-top: 1px solid black;
 }
+

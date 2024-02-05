@@ -348,6 +348,8 @@ void Server::moveTable(int current_n_table, const int new_n_table) {
     database()->moveTable(current_n_table, new_n_table);
 }
 
+void Server::changeTableProductAmount(const Table& table, const Product& product, const int& new_amount) { _database->changeTableProductAmount(table, product, new_amount); }
+
 
 // Remove
 void Server::removeTable(const Table& table) { _database->removeTable(table); }

@@ -22,10 +22,14 @@ const ticketList = document.getElementById("ticketList");
 const ticketProducts = document.getElementsByClassName("ticketProduct");
 let current_ticket = [];
 let added_ticket = [];
+let modified_ticket = [];
 let deleted_ticket = [];
 const lastProduct = document.getElementById("lastOrder");
 const price = document.getElementById("price");
 let price_val = parseFloat(price.textContent);
+
+// Hide the current products division if there are no products in the ticket
+if (ticketProducts.length > 0) document.getElementById("divisionCurrentProducts").style.display = "flex";
 
 for (let i = 0; i < ticketProducts.length; i++) {
     const t = parseInt(((ticketProducts[i].children)[0].textContent).substr(1));
@@ -51,10 +55,10 @@ function deleteLastOrder() {
         price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * parseInt(last.times) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
 
         // Remove the li item
-        let modifyProductMenu = document.getElementById("modifyProductMenu");
-        if (ticketList.lastElementChild.contains(modifyProductMenu)) {
-            modifyProductMenu.style.display = "none";
-            document.body.appendChild(modifyProductMenu);
+        let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
+        if (ticketList.lastElementChild.contains(modifyDeleteMenu)) {
+            modifyDeleteMenu.style.display = "none";
+            document.body.appendChild(modifyDeleteMenu);
         }
         ticketList.removeChild(ticketList.lastElementChild);
 
@@ -93,6 +97,8 @@ function addProductToTicket(clickedProduct) {
     let last = "x" +  + added_ticket[added_ticket.length - 1];
     let found = added_ticket.find(prod => prod.name === (clickedProduct.children)[0].textContent);
 
+    if (added_ticket.length === 0) document.getElementById("divisionAddedProducts").style.display = "flex";
+
     if (found) {
         found["times"] += multiplier_array[multiplier_index];
 
@@ -100,7 +106,7 @@ function addProductToTicket(clickedProduct) {
 
         let f = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.children[1].textContent.includes(text));
 
-        f.children[0].textContent = "x" + found.times;
+        f.children[0].children[0].textContent = "x" + found.times;
         f.children[3].textContent = (found.times * found.price).toFixed(2);
 
         lastProduct.textContent = "x" + found["times"] + " " + found.name + " | " + found.price;
@@ -119,13 +125,22 @@ function addProductToTicket(clickedProduct) {
         child.className = "addedTicketProduct";
         child.backgroundColor = "green";
         child.onclick = function () {
-            openModifyProductMenu(this);
+            openModifyDeleteMenu(this);
         };
 
+        let child_product_times = document.createElement("div");
+        child_product_times.className = "productTimes";
+        child_product_times.textContent = "x" + multiplier_array[multiplier_index];
+
+        let child_old_times = document.createElement("div");
+        child_old_times.className = "oldProductTimes";
+
         let child_times = document.createElement("div");
-        child_times.className = "productTimes";
-        child_times.textContent = "x" + multiplier_array[multiplier_index];
+        child_times.className = "times";
+        child_times.appendChild(child_product_times);
+        child_times.appendChild(child_old_times);
         child.appendChild(child_times);
+
 
         let child_name = document.createElement("div");
         child_name.className = "productNames";
@@ -165,10 +180,10 @@ function openDeployable(clickedDeployable) {
 function changeToProductsTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");
-    const modifyProductMenu = document.getElementById("modifyProductMenu");
+    const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
     ProductsTab.style.visibility = 'visible';
     TicketTab.style.visibility = 'hidden';
-    modifyProductMenu.style.visibility = 'hidden';
+    modifyDeleteMenu.style.visibility = 'hidden';
 
     const productsMenu = document.getElementById("productsMenu");
     const ticketMenu = document.getElementById("ticketMenu");
@@ -180,10 +195,10 @@ function changeToProductsTab() {
 function changeToTicketTab() {
     const ProductsTab = document.getElementById("tab-buttonProducts");
     const TicketTab = document.getElementById("tab-buttonTicket");
-    const modifyProductMenu = document.getElementById("modifyProductMenu");
+    const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
     ProductsTab.style.visibility = 'hidden';
     TicketTab.style.visibility = 'visible';
-    modifyProductMenu.style.visibility = 'visible';
+    modifyDeleteMenu.style.visibility = 'visible';
 
     const productsMenu = document.getElementById("productsMenu");
     const ticketMenu = document.getElementById("ticketMenu");
@@ -254,13 +269,12 @@ function displayMenu(clickedButton) {
 
 function saveOrder() {
     const n_table = parseInt((document.getElementById("numTable").textContent).substr(7)); // Use substr(7) to eliminate "Table: "
-    const order = current_ticket;
-    const added = added_ticket;
-    const deleted = deleted_ticket;
+
     const data = {
-        order: order,
-        added: added,
-        deleted: deleted,
+        order: current_ticket,
+        added: added_ticket,
+        modified: modified_ticket, 
+        deleted: deleted_ticket,
         n_table: n_table,
         employee: getCookie("employee_name")
     };
@@ -302,13 +316,18 @@ function openMoveTableMenu() {
 
 function appendNumber(number) {
     const display = document.getElementById('tableInput');
+    const display2 = document.getElementById('amountInput');
     
     if (display.value <= 999) display.value += number;
+    if (display2.value <= 999) display2.value += number;
 }
 
 function clearDisplay() {
     const display = document.getElementById('tableInput');
+    const display2 = document.getElementById('amountInput');
+
     display.value = "";
+    display2.value = "";
 }
 
 function acceptMoveTableMenu() {
@@ -428,8 +447,6 @@ function payTable() {
         data.employee = getCookie("employee_name")
     }
 
-    console.log(data);
-
     const url = "/payTable";
     fetch(url, {
         method: 'POST',
@@ -522,10 +539,10 @@ function cancelPayTableWarningMenu() {
     ticketMenu.style.filter = "blur(0px)";
 }
 
-function openModifyProductMenu(clickedProduct) {
-    let modifyProductMenu = document.getElementById("modifyProductMenu");
+function openModifyDeleteMenu(clickedProduct) {
+    let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    clickedProduct.appendChild(document.getElementById("modifyProductMenu"));
+    clickedProduct.appendChild(document.getElementById("modifyDeleteMenu"));
 
     if (modifyingProduct == clickedProduct) { // First selected item?
         modifyingProduct = null;
@@ -534,23 +551,29 @@ function openModifyProductMenu(clickedProduct) {
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "white";
             }
-            else {
+            else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#D7FCDA";
+            }
+            else {
+                clickedProduct.style.backgroundColor = "orange";
             }
         }
         else {
             clickedProduct.style.backgroundColor = "rgb(255, 120, 151)";
         }
 
-        modifyProductMenu.style.display = "none";
+        modifyDeleteMenu.style.display = "none";
     }
     else {
         if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") { // Not deleted item?
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "yellow"
             }
-            else {
+            else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#e9fe6d";
+            }
+            else {
+                clickedProduct.style.backgroundColor = "orange";
             }
         }
         else {
@@ -558,32 +581,109 @@ function openModifyProductMenu(clickedProduct) {
         }
 
         if (modifyingProduct == null) {
-            modifyProductMenu.style.display = "flex";
+            modifyDeleteMenu.style.display = "flex";
         }
         else {
-            if (modifyingProduct.style.backgroundColor !== "rgb(255, 120, 151)") modifyingProduct.className == "ticketProduct" ? modifyingProduct.style.backgroundColor = "white" : modifyingProduct.style.backgroundColor = "#D7FCDA";
+            if (modifyingProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
+                if (modifyingProduct.className == "ticketProduct") {
+                    modifyingProduct.style.backgroundColor = "white";
+                }
+                else if (modifyingProduct.className == "addedTicketProduct") {
+                    modifyingProduct.style.backgroundColor = "#D7FCDA";
+                }
+                else {
+                    modifyingProduct.style.backgroundColor = "orange";
+                }
+            }
             else {
                 modifyingProduct.style.backgroundColor = "rgb(255, 120, 151)";
             }
-            modifyProductMenu.style.display = "flex";
+            modifyDeleteMenu.style.display = "flex";
         }
 
         modifyingProduct = clickedProduct;
     }
 }
 
-function openModifyProductAmountMenu() {
-    
-}
-
-function modifyTable() {
-
-}
-
-function openDeleteProductMenu(clickedElement) {
+function selectProductToModify() {
     event.stopPropagation(); // So the child onclick is on top of the parents'
 
-    let a = document.getElementById("modifyProductMenu").parentNode;
+    const modifyProductMenu = document.getElementById("modifyProductMenu");
+
+    modifyProductMenu.style.display = "flex";
+    modifyProductMenu.style.zIndex = "6";
+
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
+
+    tab[0].style.pointerEvents = "none";
+    tab[0].style.filter = "blur(5px)";
+    ticketMenu.style.pointerEvents = "none";
+    ticketMenu.style.filter = "blur(5px)";
+}
+function modifyProduct() {
+    let amountInput = document.getElementById("amountInput");
+    let productTimes = modifyingProduct.children[0].children[0];
+    let oldProductTimes = modifyingProduct.children[0].children[1];
+
+    if (modifyingProduct.children[0].children[1].textContent === "") {
+        oldProductTimes.textContent = productTimes.textContent;
+        oldProductTimes.style.textDecoration = "line-through";
+
+        productTimes.style.textDecoration = "none";
+        productTimes.textContent = "x" + amountInput.value;
+    }
+    else {
+        productTimes.textContent = "x" + amountInput.value;
+    }
+
+    modifyingProduct.style.backgroundColor = "orange";
+    modifyingProduct.className = "modifiedProduct";
+    amountInput.value = "";
+
+    const discount = document.getElementById("discountValue").textContent;
+    price.textContent = (parseFloat(price.textContent) - (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+
+    modifyingProduct.children[3].textContent = (parseFloat(modifyingProduct.children[2].textContent) * parseFloat(productTimes.textContent.substr(1))).toFixed(2);  
+    price.textContent = (parseFloat(price.textContent) + (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+
+    if (modifyingProduct.parentNode.id !== "ticketList") {
+        let index = added_ticket.findIndex(prod => prod.name === modifyingProduct.children[1].textContent);
+        added_ticket[index].times = modifyingProduct.children[0].children[0].textContent.substr(1);
+    }
+
+    let modified_prod = {
+        new_amount: modifyingProduct.children[0].children[0].textContent.substr(1),
+        name: modifyingProduct.children[1].textContent,
+        price: modifyingProduct.children[2].textContent
+    };
+
+    modified_ticket.push(modified_prod);
+
+    cancelModifyDeleteMenu();
+}
+
+function cancelModifyDeleteMenu() {
+    const modifyProductMenu = document.getElementById("modifyProductMenu");
+    const amountInput = document.getElementById("amountInput");
+
+    modifyProductMenu.style.display = "none";
+
+    let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
+
+    tab[0].style.pointerEvents = "auto"
+    tab[0].style.filter = "blur(0px)";
+    ticketMenu.style.pointerEvents = "auto";
+    ticketMenu.style.filter = "blur(0px)";
+
+    amountInput.value = "";
+}
+
+function selectProductToDelete(clickedElement) {
+    event.stopPropagation(); // So the child onclick is on top of the parents'
+
+    let a = document.getElementById("modifyDeleteMenu").parentNode;
     a.style.backgroundColor === "rgb(255, 120, 151)" ? a.className === "ticketProduct" ? a.style.backgroundColor = "white" : a.style.backgroundColor = "#e9fe6d" : a.style.backgroundColor = "#ff7897";
 
     if (a.className === "ticketProduct") {
@@ -607,8 +707,8 @@ function openDeleteProductMenu(clickedElement) {
             let last = added_ticket[added_ticket.length - 1];
             const price = document.getElementById("price");
             const discount = document.getElementById("discount").textContent;
-            price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
 
+            price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
             added_ticket.splice(index, 1);
 
             if (added_ticket.length > 0) {
@@ -617,9 +717,9 @@ function openDeleteProductMenu(clickedElement) {
             }
             else lastProduct.textContent = "-";
 
-            let modifyProductMenu = document.getElementById("modifyProductMenu");
-            modifyProductMenu.style.display = "none";
-            document.body.appendChild(modifyProductMenu);
+            let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
+            modifyDeleteMenu.style.display = "none";
+            document.body.appendChild(modifyDeleteMenu);
 
             a.remove();
         }
