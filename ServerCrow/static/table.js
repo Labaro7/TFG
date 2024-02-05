@@ -647,8 +647,8 @@ function modifyProduct() {
     modifyingProduct.children[3].textContent = (parseFloat(modifyingProduct.children[2].textContent) * parseFloat(productTimes.textContent.substr(1))).toFixed(2);  
     price.textContent = (parseFloat(price.textContent) + (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
 
-    if (modifyingProduct.parentNode.id !== "ticketList") {
-        let index = added_ticket.findIndex(prod => prod.name === modifyingProduct.children[1].textContent);
+    let index = added_ticket.findIndex(prod => prod.name === modifyingProduct.children[1].textContent);
+    if (index !== -1) {
         added_ticket[index].times = modifyingProduct.children[0].children[0].textContent.substr(1);
     }
 
@@ -709,6 +709,7 @@ function selectProductToDelete(clickedElement) {
             const discount = document.getElementById("discount").textContent;
 
             price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+            console.log("b", added_ticket[index].times);
             added_ticket.splice(index, 1);
 
             if (added_ticket.length > 0) {
