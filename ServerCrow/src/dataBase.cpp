@@ -1370,18 +1370,24 @@ void Database::changeTableProductAmount(const Table& table, const Product& produ
 
                 if (res->next()) {
                     int amount = res->getInt("amount");
-                    double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
 
-                    pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE n_table = ?");
-                    pstmt->setDouble(1, new_bill);
-                    pstmt->setInt(2, table.n_table);
-                    pstmt->execute();
+                    if (new_amount > 0) {
+                        double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
 
-                    pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
-                    pstmt->setInt(1, new_amount);
-                    pstmt->setInt(2, table_id);
-                    pstmt->setInt(3, product_id);
-                    pstmt->execute();
+                        pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE n_table = ?");
+                        pstmt->setDouble(1, new_bill);
+                        pstmt->setInt(2, table.n_table);
+                        pstmt->execute();
+
+                        pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+                        pstmt->setInt(1, new_amount);
+                        pstmt->setInt(2, table_id);
+                        pstmt->setInt(3, product_id);
+                        pstmt->execute();
+                    }
+                    else {
+                        removeTableProduct(table.n_table, product, amount);
+                    }
                 }
             }
         }
@@ -1480,8 +1486,6 @@ void Database::removeProduct(const Product& product) {
 
 void Database::removeTableProduct(const int& n_table, const Product& product, const int& times) {
     try {
-        std::unique_lock<std::mutex> lock(mutex);
-
         std::stringstream query;
 
         query << "SELECT * FROM tables WHERE n_table = " << n_table;
