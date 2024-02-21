@@ -7,16 +7,18 @@
 #include "server.h"
 #include "database.h"
 
-class AuthMiddleware {
+class AuthMiddleware
+{
 public:
-    struct context {
-    };
+	struct context
+	{
+	};
 
-    Database database;
+	Database database;
 
-    void before_handle(crow::request& req, crow::response& res, context& ctx);
+	void before_handle(crow::request& req, crow::response& res, context& ctx);
 
-    void after_handle(crow::request& req, crow::response& res, context& ctx);
+	void after_handle(crow::request& req, crow::response& res, context& ctx);
 };
 
 #endif // !_AUTHMIDDLEWARE_HPP_
