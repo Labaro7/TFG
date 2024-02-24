@@ -8,7 +8,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	file->close();
 	std::string contentHTML = ssHTML.str();
 
-	std::vector<Table> tables = server.database()->getTables();
+	std::vector<Table> tables = server.db().getTables();
 
 	// Make a HTML with the tables prices
 	std::ostringstream ss;
@@ -194,10 +194,6 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	// 1. Current products
 	// 1.1 Pages buttons
 	// 1.2 Current products
-	// 2. 
-	// 3. 
-	// 4. 
-	// 5. 
 
 	// Read the content of the HTML into contentHTML
 	if (!file->is_open())

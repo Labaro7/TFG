@@ -1,21 +1,27 @@
 #include "..\headers\server.h"
 #include "..\headers\crow_all.h"
+#include "..\headers\domain.h"
 #include <sstream>
 
 Server::Server()
 {
-	_database = std::make_unique<Database>();
+	database = std::make_unique<Database>();
 	restaurant = std::make_unique<Restaurant>();
 }
 
-Server::~Server() {}
+Server::~Server()
+{
+}
 
 
-std::unique_ptr<Database>& Server::database() { return _database; }
+Database& Server::db()
+{
+	return *database;
+}
 
 void Server::initialize()
 {
-	_database->initialize();
+	database->initialize();
 
 	// Make the restaurant instances that store different cfigs of products
 	using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
@@ -166,16 +172,21 @@ void Server::initialize()
 	//restaurant->pages = pages;
 }
 
+std::vector<Product> Server::getProductsByDeployableId(const int& deployable_id)
+{
+	return database->getProductsByDeployableId(deployable_id);
+}
+
 void Server::getDataFromDatabase()
 {
-	auto ps = _database->getProducts();
+	auto ps = database->getProducts();
 	int id = 1;
 
 	for (auto& p : ps)
 	{
 		if (p.deployable == 0)
 		{
-			std::vector<Product> deployable_products = _database->getProductsByDeployableId(id);
+			std::vector<Product> deployable_products = getProductsByDeployableId(id);
 			if (deployable_products.empty()) deployable_products = { Product("", 0.0, "#FFFFFF", 0, 0) };
 			restaurant->pages[p.page - 1].push_back({ p, deployable_products });
 		}
@@ -189,9 +200,12 @@ void Server::getDataFromDatabase()
 	}
 }
 
-void Server::dropAllTables() { _database->dropAllTables(); }
+void Server::dropAllTables()
+{
+	database->dropAllTables();
+}
 
-std::string Server::prepareOrdersJSON(const std::vector<Order>& orders) const
+std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
 {
 	std::stringstream ss;
 
@@ -253,7 +267,6 @@ std::string Server::hash(const std::string& s)
 
 	std::uniform_int_distribution<int> distribution(0, ASCII_CHARACTERS.size() - 1);
 
-	// Generate the random hash
 	std::stringstream ss;
 	for (int i = 0; i < HASH_LENGTH; ++i)
 	{
@@ -263,9 +276,16 @@ std::string Server::hash(const std::string& s)
 	return ss.str();
 }
 
-std::string Server::generateSessionToken(Employee e) { return _database->generateSessionToken(e); }
+std::string Server::generateSessionToken(Employee e)
+{
+	return database->generateSessionToken(e);
+}
 
-void Server::modifyProduct(Product oldProduct, Product newProduct) { _database->modifyProduct(oldProduct, newProduct); }
+void Server::modifyProduct(const Product& oldProduct,
+						   const Product& newProduct)
+{
+	database->modifyProduct(oldProduct, newProduct);
+}
 
 // Save
 void Server::saveTable(const Table& table)
@@ -275,7 +295,7 @@ void Server::saveTable(const Table& table)
 	if (t.isEmpty())
 	{ // If this table is not saved
 		restaurant->current_tables[table.n_table] = table; // We first store it in server instance
-		_database->saveTable(table); // And the in the database
+		database->saveTable(table); // And the in the database
 	}
 	else
 	{
@@ -284,64 +304,152 @@ void Server::saveTable(const Table& table)
 }
 
 // TODO: The same as in saveTable but for the rest
-void Server::saveEmployee(const Employee& employee) { _database->saveEmployee(employee); }
-
-void Server::saveProduct(const Product& product) { _database->saveProduct(product); }
-
-void Server::saveOrder(const Order& order) { _database->saveOrder(order); }
-
-void Server::saveIngredient(const Ingredient& ingredient) { _database->saveIngredient(ingredient); }
-
-void Server::saveAllergen(const Allergen& allergen) { _database->saveAllergen(allergen); }
-
-void Server::saveTableProduct(Table& table, const Product& product, const int& times)
+void Server::saveEmployee(const Employee& employee)
 {
-	table.bill += product.price;
-	restaurant->current_tables[table.n_table] = table;
+	database->saveEmployee(employee);
+}
 
-	_database->saveTableProduct(table, product, times);
+void Server::saveProduct(const Product& product)
+{
+	database->saveProduct(product);
+}
+
+void Server::saveOrder(const Order& order)
+{
+	database->saveOrder(order);
+}
+
+void Server::saveOrderProduct(const Order& order,
+							  const int& product_id,
+							  const int& amount)
+{
+	database->saveOrderProduct(order, product_id, amount);
+}
+
+void Server::saveProductIngredient(const Product& product,
+								   const Ingredient& ingredient)
+{
+	database->saveProductIngredient(product, ingredient);
+}
+
+void Server::saveIngredient(const Ingredient& ingredient)
+{
+	database->saveIngredient(ingredient);
+}
+
+void Server::saveAllergen(const Allergen& allergen)
+{
+	database->saveAllergen(allergen);
+}
+
+void Server::saveTableProduct(Table& table,
+							  const Product& product,
+							  const int& times)
+{
+	Table aux(table);
+	aux.bill += product.price;
+	//restaurant->current_tables[table.n_table] = table;
+
+	database->saveTableProduct(aux, product, times);
 }
 
 
 // Get
-//productsMenus_t Server::getDataFromPage(int n_page) { return _database->getDataFromPage(n_page); }
+std::vector<page_t> Server::getDataFromPages()
+{
+	return database->getDataFromPages();
+}
 
-std::vector<page_t> Server::getDataFromPages() { return _database->getDataFromPages(); }
+std::pair<int, std::vector<Product>> Server::getProductsAndIds()
+{
+	return database->getProductsAndIds();
+}
 
-int Server::getRestaurantPagesSize() const { return restaurant->pages.size(); }
+int Server::getRestaurantPagesSize()
+{
+	return restaurant->pages.size();
+}
 
-std::vector<Table> Server::getTables() const { return _database->getTables(); }
+std::vector<Table> Server::getTables()
+{
+	return database->getTables();
+}
 
-Table Server::getTableByNumber(int n_table) const { return _database->getTableByNumber(n_table); }
+Table Server::getTableByNumber(int n_table)
+{
+	return database->getTableByNumber(n_table);
+}
 
-std::vector<Employee> Server::getEmployees() const { return _database->getEmployees(); }
+std::vector<Employee> Server::getEmployees()
+{
+	return database->getEmployees();
+}
 
-Employee Server::getEmployeeByName(std::string name) const { return _database->getEmployeeByName(name); }
+Employee Server::getEmployeeByName(std::string name)
+{
+	return database->getEmployeeByName(name);
+}
 
-Employee Server::getEmployeeByAccount(const std::string& username, const std::string& password_hash) const { return _database->getEmployeeByAccount(username, password_hash); }
+Employee Server::getEmployeeByAccount(const std::string& username,
+									  const std::string& password_hash)
+{
+	return database->getEmployeeByAccount(username, password_hash);
+}
 
-Employee Server::getEmployeeBySessionToken(const std::string& session_token) { return _database->getEmployeeBySessionToken(session_token); }
+Employee Server::getEmployeeBySessionToken(const std::string& session_token)
+{
+	return database->getEmployeeBySessionToken(session_token);
+}
 
-std::vector<Product> Server::getProducts() const { return _database->getProducts(); }
+std::vector<Product> Server::getProducts()
+{
+	return database->getProducts();
+}
 
-Product Server::getProductByName(std::string name) const { return _database->getProductByName(name); }
+Product Server::getProductByName(std::string name)
+{
+	return database->getProductByName(name);
+}
 
-int Server::getProductIdByName(const std::string name) const { return _database->getProductIdByName(name); }
+int Server::getProductIdByName(const std::string name)
+{
+	return database->getProductIdByName(name);
+}
 
-std::vector<Order> Server::getOrders() const { return _database->getOrders(); };
+std::vector<Order> Server::getOrders()
+{
+	return database->getOrders();
+}
 
-std::vector<Ingredient> Server::getIngredients() const { return _database->getIngredients(); }
+/*Order Server::getOrderByTime(const std::string time)
+{
+	return database->getOrderByTime(time);
+}*/
 
-Ingredient Server::getIngredientByName(std::string name) const { return _database->getIngredientByName(name); }
+std::vector<Ingredient> Server::getIngredients()
+{
+	return database->getIngredients();
+}
 
-std::vector<Allergen> Server::getAllergens() const { return _database->getAllergens(); }
+Ingredient Server::getIngredientByName(std::string name)
+{
+	return database->getIngredientByName(name);
+}
 
-Allergen Server::getAllergenByName(std::string name) const { return _database->getAllergenByName(name); }
+std::vector<Allergen> Server::getAllergens()
+{
+	return database->getAllergens();
+}
 
+Allergen Server::getAllergenByName(std::string name)
+{
+	return database->getAllergenByName(name);
+}
 
 
 // Change
-void Server::moveTable(int current_n_table, const int new_n_table)
+void Server::moveTable(const int& current_n_table,
+					   const int& new_n_table)
 {
 	Table current_table = restaurant->current_tables[current_n_table];
 	Table new_table = restaurant->current_tables[new_n_table];
@@ -371,29 +479,59 @@ void Server::moveTable(int current_n_table, const int new_n_table)
 		}
 	}
 
-	database()->moveTable(current_n_table, new_n_table);
+	database->moveTable(current_n_table, new_n_table);
 }
 
-void Server::changeTableProductAmount(const Table& table, const Product& product, const int& new_amount) { _database->changeTableProductAmount(table, product, new_amount); }
+void Server::changeTableProductAmount(const Table& table,
+									  const Product& product,
+									  const int& new_amount)
+{
+	database->changeTableProductAmount(table, product, new_amount);
+}
 
 
 // Remove
-void Server::removeTable(const Table& table) { _database->removeTable(table); }
+void Server::removeTable(const Table& table)
+{
+	database->removeTable(table);
+}
 
-void Server::removeEmployee(const Employee& employee) { _database->removeEmployee(employee); }
+void Server::removeEmployee(const Employee& employee)
+{
+	database->removeEmployee(employee);
+}
 
-void Server::removeProduct(const Product& product) { _database->removeProduct(product); }
+void Server::removeProduct(const Product& product)
+{
+	database->removeProduct(product);
+}
 
-void Server::removeTableProduct(const int& n_table, const Product& product, const int& times) { _database->removeTableProduct(n_table, product, times); }
+void Server::removeTableProduct(const int& n_table,
+								const Product& product,
+								const int& times)
+{
+	database->removeTableProduct(n_table, product, times);
+}
 
-void Server::removeOrder(const Order& order) { _database->removeOrder(order); }
+void Server::removeOrder(const Order& order)
+{
+	database->removeOrder(order);
+}
 
-void Server::removeIngredient(const Ingredient& ingredient) { _database->removeIngredient(ingredient); }
+void Server::removeIngredient(const Ingredient& ingredient)
+{
+	database->removeIngredient(ingredient);
+}
 
-void Server::removeAllergen(const Allergen& allergen) { _database->removeAllergen(allergen); }
+void Server::removeAllergen(const Allergen& allergen)
+{
+	database->removeAllergen(allergen);
+}
 
 
-void Server::payTable(const int& n_table, const std::string& employee, const std::string& date)
+void Server::payTable(const int& n_table,
+					  const std::string& employee,
+					  const std::string& date)
 {
 	Order o;
 	Table t = getTableByNumber(n_table);
@@ -404,4 +542,36 @@ void Server::payTable(const int& n_table, const std::string& employee, const std
 	saveOrder(o);
 
 	removeTable(t);
+}
+
+
+// Print
+void Server::printTables()
+{
+	database->printTables();
+}
+
+void Server::printEmployees()
+{
+	database->printEmployees();
+}
+
+void Server::printProducts()
+{
+	database->printProducts();
+}
+
+void Server::printOrders()
+{
+	database->printOrders();
+}
+
+void Server::printIngredients()
+{
+	database->printIngredients();
+}
+
+void Server::printAllergens()
+{
+	database->printAllergens();
 }

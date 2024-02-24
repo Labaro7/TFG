@@ -94,7 +94,10 @@ Product::Product(const std::string& name, double price, std::string color, int p
 {
 }
 
-bool Product::isEmpty() { return name.empty() && price == 0.0; }
+bool Product::isEmpty()
+{
+	return name.empty() && price == 0.0;
+}
 
 /*Products::Products() :
 	products() {}

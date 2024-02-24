@@ -17,8 +17,9 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include "interface.h"
 
-class Database
+class Database : public Interface
 {
 public:
 	Database();
@@ -26,112 +27,99 @@ public:
 	~Database();
 
 
-	// ------------------------------- MySQL queries ------------------------------- //
-	// These are methods to create, update or remove databases and tables 
-
 	// Database
 	void MySqlCreateDatabase(const std::string name);
 	void MySqlDropDatabase(const std::string name);
 	void MySqlUseDatabase(const std::string name);
-	void MySqlSaveChangesToDataBase(); // COMMIT    
+	void MySqlSaveChangesToDataBase();
 
-	// Table
+
+	// Tables
 	void MySqlCreateTable(const std::string name, std::string definition);
 	void MySqlDropTable(const std::string name);
 	void MySqlModifyTable(const std::string name, std::string modifications);
 	void MySqlEmptyTable(const std::string name);
-	// ------------------------------- /MySQL queries ------------------------------- //
 
 
+	// Init
+	void initialize() override;
+	void dropAllTables() override;
 	void initializeEmployeesTable();
 	void initializeProductsTable();
 	void initializeIngredientsTable();
 	void initializeAllergensTable();
 	void initializeOrdersTable();
-	void initialize(); // Makes the corresponding database and tables with their corresponding columns.
-	void dropAllTables();
 
 
 	// ALL THE METHODS BELOW MUST USE THE MUTEX ATTRIBUTE
-	// Save
-	void saveTable(const Table& table);
-	void saveEmployee(const Employee& employee);
-	void saveProduct(const Product& product);
-	void saveOrder(const Order& order);
-	void saveOrderProduct(const Order& order, const int& product_id, const int& amount);
-	void saveIngredient(const Ingredient& ingredient);
-	void saveAllergen(const Allergen& allergen);
 
-	void saveTableProduct(Table& table, const Product& product, const int& times);
-	void saveProductIngredient(const Product& product, const Ingredient& ingredient);
-	void saveProductOrder(const Product& product, const Order& order);
+	// Save
+	void saveTable(const Table& table) override;
+	void saveEmployee(const Employee& employee) override;
+	void saveProduct(const Product& product) override;
+	void saveOrder(const Order& order) override;
+	void saveIngredient(const Ingredient& ingredient) override;
+	void saveAllergen(const Allergen& allergen) override;
+
+	void saveTableProduct(Table& table, const Product& product, const int& amount) override;
+	void saveOrderProduct(const Order& order, const int& product_id, const int& amount) override;
+	void saveProductIngredient(const Product& product, const Ingredient& ingredient) override;
 
 
 	// Get
-	std::vector<Table> getTables();
-	Table getTableByNumber(const int n_table);
+	std::vector<Product> getProductsByDeployableId(const int& deployable_id) override;
+	std::pair<int, std::vector<Product>> getProductsAndIds() override;
+	std::vector<page_t> getDataFromPages() override;
 
-	std::vector<Employee> getEmployees();
-	Employee getEmployeeByName(const std::string name);
-	Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash);
-	Employee getEmployeeBySessionToken(const std::string& session_token);
+	std::vector<Table> getTables() override;
+	Table getTableByNumber(const int n_table) override;
 
-	std::vector<Product> getProducts();
-	Product getProductByName(const std::string name);
-	int getProductIdByName(const std::string name);
-	std::vector<Product> getProductsByDeployableId(int id);
-	std::pair<int, std::vector<Product>> getProductsAndIds();
+	std::vector<Employee> getEmployees() override;
+	Employee getEmployeeByName(const std::string name) override;
+	Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) override;
+	Employee getEmployeeBySessionToken(const std::string& session_token) override;
 
-	std::vector<Order> getOrders();
-	Order getOrderByTime(const std::string time);
+	std::vector<Product> getProducts() override;
+	Product getProductByName(const std::string name) override;
+	int getProductIdByName(const std::string name) override;
 
-	std::vector<Ingredient> getIngredients();
-	Ingredient getIngredientByName(const std::string name);
+	std::vector<Order> getOrders() override;
+	//Order getOrderByTime(const std::string time) override;
 
-	std::vector<Allergen> getAllergens();
-	Allergen getAllergenByName(const std::string name);
+	std::vector<Ingredient> getIngredients() override;
+	Ingredient getIngredientByName(const std::string name) override;
 
-	std::vector<page_t> getDataFromPages();
-	std::string generateSessionToken(Employee e);
-
-
-	// Print
-	void printTables();
-	void printEmployees();
-	void printProducts();
-	void printOrders();
-	void printIngredients();
-	void printAllergens();
-
-
-	// Set
-	void setTable_NTable();
-	void setTable_NClients();
-	void setTable_Products(const Table table, const std::unordered_map<std::string, int> products);
-	void setTable_Bill();
-	void setTable_Discount();
-	void setEmployee_Name();
-	void setEmployee_Level();
-	void setEmployee_Start();
-	void setEmployee_Finish();
+	std::vector<Allergen> getAllergens() override;
+	Allergen getAllergenByName(const std::string name) override;
 
 
 	// Change
-	void moveTable(int current_n_table, const int new_n_table);
-	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount);
+	void moveTable(const int& current_n_table, const int& new_n_table)  override;
+	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount)  override;
+	void modifyProduct(const Product& oldProduct, const Product& newProduct) override;
 
 
 	// Remove
-	void removeTable(const Table& table);
-	void removeEmployee(const Employee& employee);
-	void removeProduct(const Product& product);
-	void removeTableProduct(const int& n_table, const Product& product, const int& times);
-	void removeOrder(const Order& order);
-	void removeIngredient(const Ingredient& ingredient);
-	void removeAllergen(const Allergen& allergen);
+	void removeTable(const Table& table)  override;
+	void removeEmployee(const Employee& employee)  override;
+	void removeProduct(const Product& product)  override;
+	void removeTableProduct(const int& n_table, const Product& product, const int& times)  override;
+	void removeOrder(const Order& order)  override;
+	void removeIngredient(const Ingredient& ingredient)  override;
+	void removeAllergen(const Allergen& allergen)  override;
 
-	// Modify
-	void modifyProduct(Product oldProduct, Product newProduct);
+
+	// Various
+	std::string generateSessionToken(Employee e) override;
+
+
+	// Print
+	void printTables() override;
+	void printEmployees() override;
+	void printProducts() override;
+	void printOrders() override;
+	void printIngredients() override;
+	void printAllergens() override;
 
 
 private:

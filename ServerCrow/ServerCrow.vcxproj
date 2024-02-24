@@ -155,6 +155,7 @@
     <ClInclude Include="headers\crow_all.h" />
     <ClInclude Include="headers\database.h" />
     <ClInclude Include="headers\domain.h" />
+    <ClInclude Include="headers\interface.h" />
     <ClInclude Include="headers\placeholders.h" />
     <ClInclude Include="headers\server.h" />
   </ItemGroup>

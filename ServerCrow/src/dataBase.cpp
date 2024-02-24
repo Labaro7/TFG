@@ -1,6 +1,6 @@
-#include "../headers/dataBase.h"
-#include "../headers/crow_all.h"
-#include "../headers/domain.h"
+#include "..\headers\database.h"
+#include "..\headers\crow_all.h"
+#include "..\headers\domain.h"
 
 Database::Database() : pstmt()
 {
@@ -118,7 +118,8 @@ void Database::MySqlSaveChangesToDataBase()
 }
 
 // Table
-void Database::MySqlCreateTable(std::string name, std::string definition)
+void Database::MySqlCreateTable(std::string name,
+								std::string definition)
 {
 	try
 	{
@@ -145,7 +146,8 @@ void Database::MySqlDropTable(std::string name)
 	}
 }
 
-void Database::MySqlModifyTable(std::string name, std::string modification)
+void Database::MySqlModifyTable(std::string name,
+								std::string modification)
 {
 	try
 	{
@@ -541,7 +543,9 @@ void Database::saveAllergen(const Allergen& allergen)
 }
 
 // Do not use the mutex here!. This function is called from another one that uses it.
-void Database::saveTableProduct(Table& table, const Product& product, const int& times)
+void Database::saveTableProduct(Table& table,
+								const Product& product,
+								const int& amount)
 {
 	try
 	{
@@ -563,7 +567,7 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
 		if (res->next())
 		{
 			table_id = res->getInt("table_id");
-			double new_bill = res->getDouble("bill") + (product.price * times);
+			double new_bill = res->getDouble("bill") + (product.price * amount);
 
 			pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
 			pstmt->setDouble(1, new_bill);
@@ -587,7 +591,7 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
 
 				if (res->next())
 				{
-					int new_amount = res->getInt("amount") + times;
+					int new_amount = res->getInt("amount") + amount;
 
 					pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
 					pstmt->setInt(1, new_amount);
@@ -603,11 +607,11 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
 					pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
 					pstmt->setInt(1, table_id);
 					pstmt->setInt(2, product_id);
-					pstmt->setInt(3, times);
+					pstmt->setInt(3, amount);
 					pstmt->execute();
 
 					CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
-						" and product_id " << product_id << " and amount " << times;
+						" and product_id " << product_id << " and amount " << amount;
 				}
 			}
 		}
@@ -618,19 +622,8 @@ void Database::saveTableProduct(Table& table, const Product& product, const int&
 	}
 }
 
-void Database::saveProductIngredient(const Product& product, const Ingredient& ingredient)
-{
-	try
-	{
-		std::unique_lock<std::mutex> lock(mutex);
-	}
-	catch (const sql::SQLException& e)
-	{
-
-	}
-}
-
-void Database::saveProductOrder(const Product& product, const Order& order)
+void Database::saveProductIngredient(const Product& product,
+									 const Ingredient& ingredient)
 {
 	try
 	{
@@ -668,7 +661,10 @@ std::vector<Table> Database::getTables()
 		}
 
 		// Sort the tables in ascending order
-		std::sort(tables.begin(), tables.end(), [](Table a, Table b) { return a.n_table < b.n_table; });
+		std::sort(tables.begin(), tables.end(), [](Table a, Table b)
+				  {
+					  return a.n_table < b.n_table;
+				  });
 
 		return tables;
 	}
@@ -806,7 +802,8 @@ Employee Database::getEmployeeByName(const std::string name)
 	}
 }
 
-Employee Database::getEmployeeByAccount(const std::string& username, const std::string& password_hash)
+Employee Database::getEmployeeByAccount(const std::string& username,
+										const std::string& password_hash)
 {
 	Employee employee;
 
@@ -965,7 +962,7 @@ int Database::getProductIdByName(const std::string name)
 	}
 }
 
-std::vector<Product> Database::getProductsByDeployableId(int deployable_id)
+std::vector<Product> Database::getProductsByDeployableId(const int& deployable_id)
 {
 	std::vector<Product> products;
 
@@ -1072,7 +1069,7 @@ std::vector<Order> Database::getOrders()
 	}
 }
 
-Order Database::getOrderByTime(const std::string time)
+/*Order Database::getOrderByTime(const std::string time)
 {
 	/*Order order;
 
@@ -1095,8 +1092,8 @@ Order Database::getOrderByTime(const std::string time)
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get order by time. Error message: " << e.what();
 	}
 
-	return order;*/
-}
+	return order;
+}*/
 
 std::vector<Ingredient> Database::getIngredients()
 {
@@ -1370,52 +1367,9 @@ void Database::printAllergens()
 }
 
 
-// Set
-void Database::setTable_NTable()
-{
-}
-
-void Database::setTable_NClients()
-{
-}
-
-void Database::setTable_Products(const Table table, const std::unordered_map<std::string, int> products)
-{
-	int n_table = table.n_table;
-
-	std::stringstream query;
-	query << "SELECT * FROM tables WHERE n_table = '" << n_table << "'";
-	sql::ResultSet* res = stmt->executeQuery(query.str());
-}
-
-void Database::setTable_Bill()
-{
-}
-
-void Database::setTable_Discount()
-{
-}
-
-void Database::setEmployee_Name()
-{
-}
-
-void Database::setEmployee_Level()
-{
-}
-
-void Database::setEmployee_Start()
-{
-}
-
-void Database::setEmployee_Finish()
-{
-}
-
-
-
 // Change
-void Database::moveTable(int current_n_table, const int new_n_table)
+void Database::moveTable(const int& current_n_table,
+						 const int& new_n_table)
 {
 	try
 	{
@@ -1540,7 +1494,9 @@ void Database::moveTable(int current_n_table, const int new_n_table)
 	}
 }
 
-void Database::changeTableProductAmount(const Table& table, const Product& product, const int& new_amount)
+void Database::changeTableProductAmount(const Table& table,
+										const Product& product,
+										const int& new_amount)
 {
 	try
 	{
@@ -1700,7 +1656,9 @@ void Database::removeProduct(const Product& product)
 	}
 }
 
-void Database::removeTableProduct(const int& n_table, const Product& product, const int& times)
+void Database::removeTableProduct(const int& n_table,
+								  const Product& product,
+								  const int& times)
 {
 	try
 	{
@@ -1811,7 +1769,8 @@ void Database::removeAllergen(const Allergen& allergen)
 
 
 // Modify
-void Database::modifyProduct(Product oldProduct, Product newProduct)
+void Database::modifyProduct(const Product& oldProduct,
+							 const Product& newProduct)
 {
 	try
 	{

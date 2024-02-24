@@ -14,11 +14,16 @@ public:
 	{
 	};
 
+	void before_handle(crow::request& req,
+					   crow::response& res,
+					   context& ctx);
+
+	void after_handle(crow::request& req,
+					  crow::response& res,
+					  context& ctx);
+
+private:
 	Database database;
-
-	void before_handle(crow::request& req, crow::response& res, context& ctx);
-
-	void after_handle(crow::request& req, crow::response& res, context& ctx);
 };
 
 #endif // !_AUTHMIDDLEWARE_HPP_
