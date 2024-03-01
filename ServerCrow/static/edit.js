@@ -12,7 +12,7 @@ let selectedPage = 1;
 let selectedElement; document.getElementById("selected-product");
 let selectedElementName;
 let selectedElementPrice;
-const selectedElementPage = selectedPage;
+let selectedElementPage = selectedPage;
 
 // Fourth row
 let page_number = 1;
@@ -60,6 +60,7 @@ function changeTab(clickedTab) {
 function displayMenu(clickedButton) {
     selectedDeployable = 0;
     selectedPage = clickedButton.textContent;
+    selectedElementPage = selectedPage;
     const number = clickedButton.getAttribute("data-number");
     page_number = number;
     currentGrid = document.getElementById("grid" + currentGridNumber);
@@ -247,8 +248,10 @@ function deleteProduct() {
 
 
 /* EMPLOYEE */
-const SELECTED_COLOR = "yellow";
-const UNSELECTED_COLOR = "white"
+const SELECTED_BACKGROUND_COLOR = "#0a3677";
+const SELECTED_TEXT_COLOR = "white";
+const UNSELECTED_BACKGROUND_COLOR = "white"
+const UNSELECTED_TEXT_COLOR = "rgb(20, 20, 51)";
 function selectEmployee(clickedEmployee) {
     let detailsInputArray = [
         document.getElementById("firstName"),
@@ -263,11 +266,13 @@ function selectEmployee(clickedEmployee) {
     ];
 
     if (selectedEmployeeElement) {
-        selectedEmployeeElement.style.backgroundColor = UNSELECTED_COLOR;
+        selectedEmployeeElement.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
+        selectedEmployeeElement.style.color = UNSELECTED_TEXT_COLOR;
     }
 
     if (selectedEmployeeElement === clickedEmployee) {
-        selectedEmployeeElement.style.backgroundColor = UNSELECTED_COLOR;
+        selectedEmployeeElement.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
+        selectedEmployeeElement.style.color = UNSELECTED_TEXT_COLOR;
         selectedEmployeeElement = null;
 
         for (let input of detailsInputArray) input.value = "";
@@ -275,7 +280,8 @@ function selectEmployee(clickedEmployee) {
     }
     else {
         selectedEmployeeElement = clickedEmployee;
-        selectedEmployeeElement.style.backgroundColor = SELECTED_COLOR;
+        selectedEmployeeElement.style.backgroundColor = SELECTED_BACKGROUND_COLOR;
+        selectedEmployeeElement.style.color = SELECTED_TEXT_COLOR;
 
         let i = 0;
         if (clickedEmployee.children[0].children[1]) {

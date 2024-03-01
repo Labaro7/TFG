@@ -333,7 +333,7 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 
 		if (getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
+			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password) VALUES(?,?,?,?,?,?,?,?)");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -342,15 +342,16 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setInt(6, newEmployee.level);
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
-			pstmt->setString(9, newEmployee.session_token);
 			pstmt->execute();
+
+			generateSessionToken({ newEmployee.firstName, newEmployee.lastName, newEmployee.email, newEmployee.id, newEmployee.mobileNumber, newEmployee.level, newEmployee.username, newEmployee.password_hash, "" });
 
 			CROW_LOG_INFO << "[ADDED] Employee " << newEmployee.firstName << " " << newEmployee.lastName <<
 				" with level " << newEmployee.level;
 		}
-		else if (!getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
+		else if (!getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty())
 		{
-			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ?, session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
+			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ? WHERE firstName = ? AND lastName = ? AND level = ?");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -359,12 +360,13 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setInt(6, newEmployee.level);
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
-			pstmt->setString(9, newEmployee.session_token);
 
-			pstmt->setString(10, oldEmployee.firstName);
-			pstmt->setString(11, oldEmployee.lastName);
-			pstmt->setInt(12, oldEmployee.level);
+			pstmt->setString(9, oldEmployee.firstName);
+			pstmt->setString(10, oldEmployee.lastName);
+			pstmt->setInt(11, oldEmployee.level);
 			pstmt->execute();
+
+			generateSessionToken({ newEmployee.firstName, newEmployee.lastName, newEmployee.email, newEmployee.id, newEmployee.mobileNumber, newEmployee.level, newEmployee.username, newEmployee.password_hash, "" });
 
 			CROW_LOG_INFO << "[UPDDATED] Employee " << oldEmployee.firstName << " " << oldEmployee.lastName <<
 				" with level " << oldEmployee.level <<

@@ -383,7 +383,7 @@ int main()
 				 json_data["oldEmployee"]["mobileNumber"].s(),
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["oldEmployee"]["username"].s(),
-				 json_data["oldEmployee"]["password"].s(),
+				 server.hash(json_data["oldEmployee"]["password"].s()),
 				 json_data["oldEmployee"]["session_token"].s()
 			 };
 
@@ -396,7 +396,7 @@ int main()
 				 json_data["newEmployee"]["mobileNumber"].s(),
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["newEmployee"]["username"].s(),
-				 json_data["newEmployee"]["password"].s(),
+				 server.hash(json_data["newEmployee"]["password"].s()),
 				 json_data["newEmployee"]["session_token"].s()
 			 };
 
@@ -421,7 +421,7 @@ int main()
 				 json_data["oldEmployee"]["mobileNumber"].s(),
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["oldEmployee"]["username"].s(),
-				 json_data["oldEmployee"]["password"].s(),
+				 server.hash(json_data["oldEmployee"]["password"].s()),
 				 json_data["oldEmployee"]["session_token"].s()
 			 };
 

@@ -1,4 +1,5 @@
 #include "..\headers\placeholders.h"
+#include "..\headers\constants.h"
 
 // index.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server)
@@ -15,7 +16,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 	for (const auto& t : tables)
 	{
-		ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>$" << t.bill * (1 - (t.discount / 100)) << "</div></li>" << std::endl;
+		ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY << "</div></li>" << std::endl;
 	}
 
 	std::string tablesPricesHTML = ss.str();
@@ -175,7 +176,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	}
 
 	// 5. Generate HTML piece with the ticket bill
-	ss << "<div id='bill'><div id='currency'>$</div><div id='price'>" << bill * (1 - (discount / 100));
+	ss << "<div id='bill'><div id='currency'></div><div id='price'>" << bill * (1 - (discount / 100)) << CURRENCY;
 	ss << "</div><div id='discount'><div id='minus'>-</div><div id='discountValue'>" << discount << "</div><div id='percentage'>%</div></div></div>" << std::endl;
 
 	std::string ticketBillHTML = ss.str();
@@ -298,13 +299,13 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	// 1.3
 	std::string employeesListHTML;
 
-	ss << "<li class='employee'>";
-	ss << "<div class='employeeName'>NAME</div></li>";
-
 	std::vector<Employee> employees = server.getEmployees();
-	std::sort(employees.begin(), employees.end(), [](const auto& a, const auto& b)
+	std::sort(employees.begin(), employees.end(), [](auto& a, auto& b)
 			  {
-				  return a.firstName < b.firstName && a.lastName < b.lastName;
+				  if (a.firstName != b.firstName) return a.firstName < b.firstName;
+				  else return a.lastName < b.lastName;
+
+				  return true;
 			  });
 
 	i = 0;
