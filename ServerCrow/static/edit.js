@@ -17,6 +17,31 @@ const selectedElementPage = selectedPage;
 // Fourth row
 let page_number = 1;
 
+// Employee
+let selectedEmployee = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    id: "",
+    mobileNumber: "",
+    level: "",
+    username: "",
+    password_hash: "",
+    session_token: ""
+};
+let selectedEmployeeElement;
+let oldEmployee_firstName;
+let oldEmployee_lastName;
+let oldEmployee_email;
+let oldEmployee_id;
+let oldEmployee_mobile;
+let oldEmployee_level;
+let oldEmployee_username;
+let oldEmployee_password;
+let oldEmployee_session_token;
+
+
+
 function changeTab(clickedTab) {
     const currentPage = document.querySelector('div[data-page="' + tabNumber + '"]');
     let currentTab = document.querySelector("div[data-tab='" + tabNumber + "']");
@@ -28,7 +53,7 @@ function changeTab(clickedTab) {
     const newPage = document.querySelector('div[data-page="' + tabNumber + '"]');
     currentTab = document.querySelector("div[data-tab='" + tabNumber + "']");
     newPage.style.display = "flex";
-    currentTab.children[1].style.visibility = "visible"; 
+    currentTab.children[1].style.visibility = "visible";
 }
 
 // TODO: It cannot display 6 or more menus
@@ -99,8 +124,8 @@ function addProduct() {
     let price = document.getElementById("priceInput").value;
     const color = document.getElementById("colorInput").value;
     let deployable = document.getElementById("deployableInput").value;
-    
-    if (( (name && price != 0) && (name && price != 0.0)) || (name && deployable == "Deployable")) {
+
+    if (((name && price != 0) && (name && price != 0.0)) || (name && deployable == "Deployable")) {
         deployable == "Deployable" ? (deployable = 0, price = "0") : deployable = selectedDeployable;
 
         const data = {
@@ -211,6 +236,169 @@ function deleteProduct() {
     })
         .then(response => {
             if (response.ok) setTimeout(() => { window.location.href = "/edit"; }, 100);
+        })
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+
+/* EMPLOYEE */
+const SELECTED_COLOR = "yellow";
+const UNSELECTED_COLOR = "white"
+function selectEmployee(clickedEmployee) {
+    let detailsInputArray = [
+        document.getElementById("firstName"),
+        document.getElementById("lastName"),
+        document.getElementById("email"),
+        document.getElementById("id"),
+        document.getElementById("mobileNumber"),
+        document.getElementById("level"),
+        document.getElementById("username"),
+        document.getElementById("password_hash"),
+        document.getElementById("session_token")
+    ];
+
+    if (selectedEmployeeElement) {
+        selectedEmployeeElement.style.backgroundColor = UNSELECTED_COLOR;
+    }
+
+    if (selectedEmployeeElement === clickedEmployee) {
+        selectedEmployeeElement.style.backgroundColor = UNSELECTED_COLOR;
+        selectedEmployeeElement = null;
+
+        for (let input of detailsInputArray) input.value = "";
+        for (let prop in selectedEmployee) selectedEmployee[prop] = "";
+    }
+    else {
+        selectedEmployeeElement = clickedEmployee;
+        selectedEmployeeElement.style.backgroundColor = SELECTED_COLOR;
+
+        let i = 0;
+        if (clickedEmployee.children[0].children[1]) {
+            for (let input of detailsInputArray) {
+                input.value = clickedEmployee.children[0].children[1].children[i].textContent;
+                i++;
+            }
+
+            i = 0;
+            for (let prop in selectedEmployee) {
+                selectedEmployee[prop] = clickedEmployee.children[0].children[1].children[i].textContent;
+                i++;
+            }
+        }
+        else {
+            for (let input of detailsInputArray) input.value = "";
+        }
+    }
+
+    const selectedEmployeeDetails = document.getElementById("selectedEmployeeDetails").children;
+    let i = 0;
+    for (let div of selectedEmployeeDetails) {
+        div.children[0].value = selectedEmployee[div.children[0].id];
+        i++;
+    }
+}
+function addEmployee() {
+    let employeeList = document.getElementById("employeeList");
+    let newEmployee = document.createElement("li");
+    let ul = document.createElement("ul");
+    let employeeName = document.createElement("li");
+    let employeeDetails = document.createElement("ul");
+
+    newEmployee.appendChild(ul);
+
+    employeeName.className = "employeeName";
+    newEmployee.appendChild(employeeName);
+
+    employeeDetails.className = "employeeDetails";
+    newEmployee.appendChild(employeeDetails);
+
+    newEmployee.className = "employee";
+    newEmployee.onclick = function () { selectEmployee(newEmployee); };
+
+    employeeList.appendChild(newEmployee);
+}
+
+function addEmployeeDetails() {
+    let oldEmployee = {
+        firstName: selectedEmployee.firstName ? selectedEmployee.firstName : "",
+        lastName: selectedEmployee.lastName ? selectedEmployee.lastName : "",
+        email: selectedEmployee.email ? selectedEmployee.email : "",
+        id: selectedEmployee.id ? selectedEmployee.id : "",
+        mobileNumber: selectedEmployee.mobileNumber ? selectedEmployee.mobileNumber : "",
+        level: selectedEmployee.level ? selectedEmployee.level : 0,
+        username: selectedEmployee.username ? selectedEmployee.username : "",
+        password: selectedEmployee.password_hash ? selectedEmployee.password_hash : "",
+        session_token: selectedEmployee.session_token ? selectedEmployee.session_token : ""
+    }
+
+    let newEmployee = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        email: document.getElementById("email").value,
+        id: document.getElementById("id").value,
+        mobileNumber: document.getElementById("mobileNumber").value,
+        level: parseInt(document.getElementById("level").value),
+        username: document.getElementById("username").value,
+        password: document.getElementById("password_hash").value,
+        session_token: document.getElementById("session_token").value
+    }
+
+    let data = {
+        oldEmployee: oldEmployee,
+        newEmployee: newEmployee
+    }
+
+    const url = "/edit/add/employee";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            setTimeout(() => { window.location.href = "/edit"; }, 100);
+        })
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function deleteEmployeeDetails() {
+    let oldEmployee = {
+        firstName: selectedEmployee.firstName ? selectedEmployee.firstName : "",
+        lastName: selectedEmployee.lastName ? selectedEmployee.lastName : "",
+        email: selectedEmployee.email ? selectedEmployee.email : "",
+        id: selectedEmployee.id ? selectedEmployee.id : "",
+        mobileNumber: selectedEmployee.mobileNumber ? selectedEmployee.mobileNumber : "",
+        level: selectedEmployee.level ? selectedEmployee.level : 0,
+        username: selectedEmployee.username ? selectedEmployee.username : "",
+        password: selectedEmployee.password_hash ? selectedEmployee.password_hash : "",
+        session_token: selectedEmployee.session_token ? selectedEmployee.session_token : ""
+    }
+
+    let data = {
+        oldEmployee: oldEmployee
+    }
+
+    const url = "/edit/delete/employee";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            setTimeout(() => { window.location.href = "/edit"; }, 100);
         })
         .then(data => {
             console.log('Response:', data);

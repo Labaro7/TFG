@@ -32,15 +32,16 @@ public:
 
 	// Save
 	void saveTable(const Table& table) override;
-	void saveEmployee(const Employee& employee) override;
+	void saveEmployee(const Employee& oldEmployee, const Employee& newEmployee) override;
 	void saveProduct(const Product& product) override;
 	void saveOrder(const Order& order) override;
 	void saveIngredient(const Ingredient& ingredient) override;
 	void saveAllergen(const Allergen& allergen) override;
 
-	void saveTableProduct(Table& table, const Product& product, const int& amount) override;
+	void saveTableProduct(Table& table, const Product& product, const int& amount, const std::string& details) override;
 	void saveOrderProduct(const Order& order, const int& product_id, const int& amount) override;
 	void saveProductIngredient(const Product& product, const Ingredient& ingredient) override;
+	void saveProductAllergen(const Product& product, const Allergen& allergen) override;
 
 
 	// Get
@@ -54,7 +55,7 @@ public:
 	Table getTableByNumber(const int n_table) override;
 
 	std::vector<Employee> getEmployees() override;
-	Employee getEmployeeByName(const std::string name) override;
+	Employee getEmployeeByName(const std::string& firstName, const std::string& lastName) override;
 	Employee getEmployeeByAccount(const std::string& usernname, const std::string& password_hash) override;
 	Employee getEmployeeBySessionToken(const std::string& session_token) override;
 
@@ -66,7 +67,8 @@ public:
 	//Order getOrderByTime(const std::string time) override;
 
 	std::vector<Ingredient> getIngredients() override;
-	Ingredient getIngredientByName(const std::string name) override;
+	Ingredient getIngredientByName(const std::string& name) override;
+	std::vector<Ingredient> getIngredientsFromProduct(const Product& product) override;
 
 	std::vector<Allergen> getAllergens() override;
 	Allergen getAllergenByName(const std::string name) override;
@@ -82,10 +84,12 @@ public:
 	void removeTable(const Table& table) override;
 	void removeEmployee(const Employee& employee) override;
 	void removeProduct(const Product& product) override;
-	void removeTableProduct(const int& n_table, const Product& product, const int& times) override;
 	void removeOrder(const Order& order) override;
 	void removeIngredient(const Ingredient& ingredient) override;
 	void removeAllergen(const Allergen& allergen) override;
+
+	void removeTableProduct(const int& n_table, const Product& product, const int& times) override;
+	void removeProductIngredient(const Product& product, const Ingredient& ingredient) override;
 
 
 	// Various

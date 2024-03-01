@@ -87,7 +87,7 @@ int main()
 
 				 res.set_header("Content-Type", "text/html");
 				 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
-				 res.add_header("Set-Cookie", "employee_name=" + e.name + "; Path=/");
+				 res.add_header("Set-Cookie", "employee_name=" + e.firstName + " " + e.lastName + "; Path=/");
 				 res.redirect("/");
 
 				 std::cout << "redir " << res.body << std::endl;
@@ -155,24 +155,39 @@ int main()
 			 for (const auto& object : added)
 			 {
 				 int times = object["times"].i();
-				 Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
+				 std::string details = object["details"].s();
+				 Product p(object["name"].s(),
+						   std::stod(object["price"].s()),
+						   "#FFFFFF",
+						   0,
+						   false,
+						   object["details"].s());
 
-				 server.saveTableProduct(t, p, times);
+				 server.saveTableProduct(t, p, times, details);
 			 }
 
 			 for (const auto& object : modified)
 			 {
 				 int new_times = object["new_amount"].i();
-				 Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
+				 Product p(object["name"].s(),
+						   std::stod(object["price"].s()),
+						   "#FFFFFF",
+						   0,
+						   false,
+						   object["details"].s());
 
 				 server.changeTableProductAmount(t, p, new_times);
-
 			 }
 
 			 for (const auto& object : deleted)
 			 {
-				 Product p(object["name"].s(), std::stod(object["price"].s()), "#FFFFFF", 0, false);
 				 int times = std::stoi(object["times"].s());
+				 Product p(object["name"].s(),
+						   std::stod(object["price"].s()),
+						   "#FFFFFF",
+						   0,
+						   false,
+						   object["details"].s());
 
 				 server.removeTableProduct(n_table, p, times);
 			 }
@@ -357,8 +372,63 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 const auto& json_data = crow::json::load(req.body);
 
+			 Employee oldEmployee =
+			 {
+				 json_data["oldEmployee"]["firstName"].s(),
+				 json_data["oldEmployee"]["lastName"].s(),
+				 json_data["oldEmployee"]["email"].s(),
+				 json_data["oldEmployee"]["id"].s(),
+				 json_data["oldEmployee"]["mobileNumber"].s(),
+				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
+				 json_data["oldEmployee"]["username"].s(),
+				 json_data["oldEmployee"]["password"].s(),
+				 json_data["oldEmployee"]["session_token"].s()
+			 };
 
+			 Employee newEmployee =
+			 {
+				 json_data["newEmployee"]["firstName"].s(),
+				 json_data["newEmployee"]["lastName"].s(),
+				 json_data["newEmployee"]["email"].s(),
+				 json_data["newEmployee"]["id"].s(),
+				 json_data["newEmployee"]["mobileNumber"].s(),
+				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
+				 json_data["newEmployee"]["username"].s(),
+				 json_data["newEmployee"]["password"].s(),
+				 json_data["newEmployee"]["session_token"].s()
+			 };
+
+			 server.saveEmployee(oldEmployee, newEmployee);
+
+			 res.code = 200;
+			 res.end();
+		 });
+
+	CROW_ROUTE(app, "/edit/delete/employee")
+		.methods("POST"_method)
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 const auto& json_data = crow::json::load(req.body);
+
+			 Employee employee =
+			 {
+				 json_data["oldEmployee"]["firstName"].s(),
+				 json_data["oldEmployee"]["lastName"].s(),
+				 json_data["oldEmployee"]["email"].s(),
+				 json_data["oldEmployee"]["id"].s(),
+				 json_data["oldEmployee"]["mobileNumber"].s(),
+				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
+				 json_data["oldEmployee"]["username"].s(),
+				 json_data["oldEmployee"]["password"].s(),
+				 json_data["oldEmployee"]["session_token"].s()
+			 };
+
+			 server.removeEmployee(employee);
+
+			 res.code = 200;
+			 res.end();
 		 });
 
 	CROW_ROUTE(app, "/edit/add/ingredient")

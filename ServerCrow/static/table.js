@@ -35,8 +35,9 @@ for (let i = 0; i < ticketProducts.length; i++) {
     const t = parseInt(((ticketProducts[i].children)[0].textContent).substr(1));
     const n = (ticketProducts[i].children)[1].textContent;
     const p = parseFloat((ticketProducts[i].children)[2].textContent);
+    const d = "";
 
-    current_ticket.push({ times: t, name: n, price: p });
+    current_ticket.push({ times: t, name: n, price: p, details: d });
 }
 
 //if (current_ticket.length > 0) lastProduct.textContent = current_ticket[added_ticket.length - 1];
@@ -44,6 +45,35 @@ lastProduct.textContent = "-";
 
 // Ticket
 let modifyingProduct;
+
+sortTicketAlphabetically();
+
+function sortTicketAlphabetically() {
+    const ul = document.getElementById('ticketList');
+    const li = document.querySelectorAll('#ticketList li');
+    const li_array = Array.from(li);
+
+    li_array.sort((a, b) => {
+        const nameA = a.querySelector('.productNames').textContent.toLowerCase();
+        const nameB = b.querySelector('.productNames').textContent.toLowerCase();
+
+        if (nameA === nameB) {
+            const detailsA = a.querySelector('.details').textContent.toLowerCase();
+            const detailsB = b.querySelector('.details').textContent.toLowerCase();
+            return detailsA.localeCompare(detailsB);
+        }
+
+        return nameA.localeCompare(nameB);
+    });
+
+    ul.innerHTML = '';
+
+    li_array.forEach((item) => {
+        ticketList.appendChild(item);
+    });
+
+    ul.innerHTML += '<div id="divisionAddedProducts"><div class="horizontal-line"></div>ADDED<div class="horizontal-line"></div></div>'
+}
 
 function goBack() {
     setTimeout(() => { window.location.href = "/"; }, 10);
@@ -66,9 +96,10 @@ function deleteLastOrder() {
         last = added_ticket[added_ticket.length - 1];
 
         // Remove from ticket array
+        let addedDivision = document.getElementById("divisionAddedProducts");
         let found = added_ticket.find(prod => prod.name === last.name);
         if (added_ticket.length > 0) lastProduct.textContent = "x" + found["times"] + " " + last.name + " | " + last.price;
-        else lastProduct.textContent = "-";
+        else lastProduct.textContent = "-", addedDivision.style.display = "none";
     }
     else {
         lastProduct.textContent = "-";
@@ -94,27 +125,33 @@ function addProductToTicket(clickedProduct) {
     const price = document.getElementById("price");
     const discount = document.getElementById("discountValue").textContent;
 
-    let last = "x" +  + added_ticket[added_ticket.length - 1];
-    let found = added_ticket.find(prod => prod.name === (clickedProduct.children)[0].textContent);
+    let last = "x" + + added_ticket[added_ticket.length - 1];
+    let found = added_ticket.find(prod => (prod.name === (clickedProduct.children)[0].textContent && prod.details === ""));
+    console.log(found);
 
     if (added_ticket.length === 0) document.getElementById("divisionAddedProducts").style.display = "flex";
 
+    console.log(found);
     if (found) {
         found["times"] += multiplier_array[multiplier_index];
 
-        const text = found.name;
+        let foundAddedProduct = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.children[1].children[0].textContent === found.name && element.children[1].children[1].textContent === found.details);
 
-        let f = Array.from(document.getElementsByClassName("addedTicketProduct")).find(element => element.children[1].textContent.includes(text));
-
-        f.children[0].children[0].textContent = "x" + found.times;
-        f.children[3].textContent = (found.times * found.price).toFixed(2);
+        foundAddedProduct.children[0].children[0].textContent = "x" + found.times;
+        foundAddedProduct.children[3].textContent = (found.times * found.price).toFixed(2);
 
         lastProduct.textContent = "x" + found["times"] + " " + found.name + " | " + found.price;
 
         price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
     }
     else {
-        let product = { times: multiplier_array[multiplier_index], name: (clickedProduct.children)[0].textContent, price: parseFloat((clickedProduct.children)[1].textContent).toFixed(2) };
+        let product = {
+            times: multiplier_array[multiplier_index],
+            name: (clickedProduct.children)[0].textContent,
+            price: parseFloat((clickedProduct.children)[1].textContent).toFixed(2),
+            details: ""
+        };
+
         added_ticket.push(product);
 
         last = added_ticket[added_ticket.length - 1];
@@ -141,11 +178,20 @@ function addProductToTicket(clickedProduct) {
         child_times.appendChild(child_old_times);
         child.appendChild(child_times);
 
+        let child_container = document.createElement("div");
+        child_container.className = "container";
 
         let child_name = document.createElement("div");
         child_name.className = "productNames";
         child_name.textContent = product["name"];
-        child.appendChild(child_name);
+        child_container.appendChild(child_name);
+
+        let child_details = document.createElement("div");
+        child_details.className = "details";
+        child_details.textContent = product["details"];
+        child_container.appendChild(child_details);
+
+        child.appendChild(child_container);
 
         let child_price = document.createElement("div");
         child_price.className = "productPrices";
@@ -156,7 +202,7 @@ function addProductToTicket(clickedProduct) {
         child_total_price.className = "productTotalPrices";
         child_total_price.textContent = (product["times"] * product["price"]).toFixed(2);
         child.appendChild(child_total_price);
-        
+
         ticketList.appendChild(child);
 
         price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
@@ -238,8 +284,8 @@ function selectButton(number) {
 function displayMenu(clickedButton) {
     const number = clickedButton.getAttribute("data-number");
     page_number = number;
-    currentGrid = document.getElementById("grid"+currentGridNumber);
-    
+    currentGrid = document.getElementById("grid" + currentGridNumber);
+
     if (currentGrid) {
         currentGrid.style.display = 'none';
         currentGridNumber = number;
@@ -273,7 +319,7 @@ function saveOrder() {
     const data = {
         order: current_ticket,
         added: added_ticket,
-        modified: modified_ticket, 
+        modified: modified_ticket,
         deleted: deleted_ticket,
         n_table: n_table,
         employee: getCookie("employee_name")
@@ -311,13 +357,13 @@ function openMoveTableMenu() {
     tab[0].style.filter = "blur(5px)";
     productsMenu.style.pointerEvents = "none";
     productsMenu.style.filter = "blur(5px)";
-    moveTableMenu.style.display = "flex"; 
+    moveTableMenu.style.display = "flex";
 }
 
 function appendNumber(number) {
     const display = document.getElementById('tableInput');
     const display2 = document.getElementById('amountInput');
-    
+
     if (display.value <= 999) display.value += number;
     if (display2.value <= 999) display2.value += number;
 }
@@ -438,7 +484,7 @@ function moveTable() {
 function payTable() {
     let data = {
         n_table: n_table.textContent.substr(7), //substr to delete "Table: "
-        ticket : current_ticket,
+        ticket: current_ticket,
         price: price.textContent,
         date: new Date(),
         //method: cash or card
@@ -644,7 +690,7 @@ function modifyProduct() {
     const discount = document.getElementById("discountValue").textContent;
     price.textContent = (parseFloat(price.textContent) - (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
 
-    modifyingProduct.children[3].textContent = (parseFloat(modifyingProduct.children[2].textContent) * parseFloat(productTimes.textContent.substr(1))).toFixed(2);  
+    modifyingProduct.children[3].textContent = (parseFloat(modifyingProduct.children[2].textContent) * parseFloat(productTimes.textContent.substr(1))).toFixed(2);
     price.textContent = (parseFloat(price.textContent) + (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
 
     let index = added_ticket.findIndex(prod => prod.name === modifyingProduct.children[1].textContent);
@@ -654,13 +700,32 @@ function modifyProduct() {
 
     let modified_prod = {
         new_amount: modifyingProduct.children[0].children[0].textContent.substr(1),
-        name: modifyingProduct.children[1].textContent,
-        price: modifyingProduct.children[2].textContent
+        name: modifyingProduct.children[1].children[0].textContent,
+        price: modifyingProduct.children[2].textContent,
+        details: modifyingProduct.children[1].children[1].textContent
     };
 
     modified_ticket.push(modified_prod);
 
     cancelModifyDeleteMenu();
+}
+
+function openAddDetailsMenu() {
+    event.stopPropagation(); // So the child onclick is on top of the parents'
+
+    if (modifyingProduct.className === "addedTicketProduct" || modifyingProduct.className === "modifiedProduct") {
+        let previous_details = modifyingProduct.children[1].children[1].textContent
+        modifyingProduct.children[1].children[1].textContent = "Sample";
+
+        let found = added_ticket.find(prod => (prod.name === modifyingProduct.children[1].children[0].textContent) && (prod.details === previous_details));
+        if (found) {
+            found["details"] = "Sample";
+        }
+    }
+}
+
+function addDetails() {
+
 }
 
 function cancelModifyDeleteMenu() {
@@ -691,8 +756,9 @@ function selectProductToDelete(clickedElement) {
         if (index === -1) {
             let prod = {
                 times: a.children[0].textContent.substr(1),
-                name: a.children[1].textContent,
-                price: a.children[2].textContent
+                name: a.children[1].children[0].textContent,
+                price: a.children[2].textContent,
+                details: a.children[1].children[1].textContent
             }
 
             deleted_ticket.push(prod);
@@ -709,14 +775,14 @@ function selectProductToDelete(clickedElement) {
             const discount = document.getElementById("discount").textContent;
 
             price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
-            console.log("b", added_ticket[index].times);
             added_ticket.splice(index, 1);
 
+            let addedDivision = document.getElementById("divisionAddedProducts");
             if (added_ticket.length > 0) {
                 last = added_ticket[added_ticket.length - 1];
                 lastProduct.textContent = "x" + last.times + " " + last.name + " | " + last.price;
             }
-            else lastProduct.textContent = "-";
+            else lastProduct.textContent = "-", addedDivision.style.display = "none";
 
             let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
             modifyDeleteMenu.style.display = "none";

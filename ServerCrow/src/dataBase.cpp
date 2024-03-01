@@ -179,7 +179,7 @@ void Database::MySqlEmptyTable(std::string name)
 
 void Database::initializeEmployeesTable()
 {
-	std::vector<std::string> names = { "Adrian", "Pepe", "Ana", "Nati", "Fermin", "Pablo", "Cristian" };
+	/*std::vector<std::string> firstNames = {"Herrera", "Escribano", "Peinado", "Trillo", "Herrera", "Herrera", "Zapata"};
 	std::vector<int> levels = { 3, 2, 2, 4, 4, 2, 1 };
 	std::vector<std::string> starts = { "2023 - 10 - 04 15:30 : 45" };
 	std::vector<std::string> finishes = { "2023-10-04 15:30:45" };
@@ -188,7 +188,7 @@ void Database::initializeEmployeesTable()
 	{
 		Employee e = { names[i], levels[i], starts[0], finishes[0] };
 		saveEmployee(e);
-	}
+	}*/
 }
 
 void Database::initializeProductsTable()
@@ -248,7 +248,7 @@ void Database::initialize()
 	// Create the tables to define the domain
 	// TODO: Make n_table primary key so there are no duplicate tables
 	MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
-	MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), level INT, start VARCHAR(45), finish VARCHAR(45), username VARCHAR(45), password VARCHAR(45), session_token VARCHAR(45)");
+	MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, firstName VARCHAR(45), lastName VARCHAR(45), email VARCHAR(45), id VARCHAR(45), mobileNumber VARCHAR(45), level INT, username VARCHAR(45), password VARCHAR(45), session_token VARCHAR(45)");
 	MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
 	MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, employee VARCHAR(45), date VARCHAR(45)");
 	MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -257,11 +257,11 @@ void Database::initialize()
 
 	// TODO: Create Junction tables
 	// Create the junction tables to the ManyToMany relationships
-	MySqlCreateTable("tableproduct", "table_id INT, product_id INT, amount INT, PRIMARY KEY(table_id, product_id), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
+	MySqlCreateTable("tableproduct", "table_id INT, product_id INT, amount INT, details VARCHAR(45), PRIMARY KEY(table_id, product_id, details), FOREIGN KEY(table_id) REFERENCES tables(table_id), FOREIGN KEY(product_id) REFERENCES products(product_id)");
 	MySqlCreateTable("orderproduct", "order_id INT, product_id INT, amount INT, PRIMARY KEY(order_id, product_id)");
-	MySqlCreateTable("productorder", "product_id INT, order_id INT, PRIMARY KEY(product_id, order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(order_id) REFERENCES orders(order_id)");
 	MySqlCreateTable("productingredient", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
-	//MySqlCreateDatabase("ingredientallergen, product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+	MySqlCreateTable("ingredientallergen", "product_id INT, ingredient_id INT, PRIMARY KEY(product_id, ingredient_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(ingredient_id)");
+	MySqlCreateTable("productallergen", "product_id INT, allergen_id INT, PRIMARY KEY(product_id, allergen_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(allergen_id) REFERENCES allergens(allergen_id)");
 
 	// Populate the tables
 	initializeEmployeesTable();
@@ -325,37 +325,55 @@ void Database::saveTable(const Table& table)
 	}
 }
 
-void Database::saveEmployee(const Employee& employee)
+void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
 {
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		std::string name = employee.name;
-		int level = employee.level;
-		std::string start = employee.start;
-		std::string finish = employee.finish;
-
-		if (getEmployeeByName(name).isEmpty())
+		if (getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
 		{
-			std::ostringstream oss;
-			oss << name << "," << level << "," << start << "," << finish;
-			std::string values = oss.str();
-
-			pstmt = con->prepareStatement("INSERT INTO employees(name, level, start, finish) VALUES(?,?,?,?)");
-			pstmt->setString(1, name);
-			pstmt->setInt(2, level);
-			pstmt->setString(3, start);
-			pstmt->setString(4, finish);
+			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
+			pstmt->setString(1, newEmployee.firstName);
+			pstmt->setString(2, newEmployee.lastName);
+			pstmt->setString(3, newEmployee.email);
+			pstmt->setString(4, newEmployee.id);
+			pstmt->setString(5, newEmployee.mobileNumber);
+			pstmt->setInt(6, newEmployee.level);
+			pstmt->setString(7, newEmployee.username);
+			pstmt->setString(8, newEmployee.password_hash);
+			pstmt->setString(9, newEmployee.session_token);
 			pstmt->execute();
 
-			CROW_LOG_INFO << "[ADDED] Employee " << name <<
-				" with level " << level <<
-				" starting at " << start;
+			CROW_LOG_INFO << "[ADDED] Employee " << newEmployee.firstName << " " << newEmployee.lastName <<
+				" with level " << newEmployee.level;
+		}
+		else if (!getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
+		{
+			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ?, session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
+			pstmt->setString(1, newEmployee.firstName);
+			pstmt->setString(2, newEmployee.lastName);
+			pstmt->setString(3, newEmployee.email);
+			pstmt->setString(4, newEmployee.id);
+			pstmt->setString(5, newEmployee.mobileNumber);
+			pstmt->setInt(6, newEmployee.level);
+			pstmt->setString(7, newEmployee.username);
+			pstmt->setString(8, newEmployee.password_hash);
+			pstmt->setString(9, newEmployee.session_token);
+
+			pstmt->setString(10, oldEmployee.firstName);
+			pstmt->setString(11, oldEmployee.lastName);
+			pstmt->setInt(12, oldEmployee.level);
+			pstmt->execute();
+
+			CROW_LOG_INFO << "[UPDDATED] Employee " << oldEmployee.firstName << " " << oldEmployee.lastName <<
+				" with level " << oldEmployee.level <<
+				" to employee " << newEmployee.firstName << " " << newEmployee.lastName <<
+				" with level " << newEmployee.level;
 		}
 		else
 		{
-			CROW_LOG_WARNING << "[EXCEPTION] Employee is already in the database.";
+			CROW_LOG_WARNING << "No employee was added.";
 		}
 	}
 	catch (const sql::SQLException& e)
@@ -545,7 +563,8 @@ void Database::saveAllergen(const Allergen& allergen)
 // Do not use the mutex here!. This function is called from another one that uses it.
 void Database::saveTableProduct(Table& table,
 								const Product& product,
-								const int& amount)
+								const int& amount,
+								const std::string& details)
 {
 	try
 	{
@@ -585,7 +604,7 @@ void Database::saveTableProduct(Table& table,
 			{
 				product_id = res->getInt("product_id");
 
-				query << "SELECT amount FROM tableproduct WHERE table_id = " << table_id << " AND product_id = " << product_id;
+				query << "SELECT amount FROM tableproduct WHERE table_id = '" << table_id << "' AND product_id = '" << product_id << "' AND details = '" << details << "'";
 				res = stmt->executeQuery(query.str());
 				query.str("");
 
@@ -593,25 +612,30 @@ void Database::saveTableProduct(Table& table,
 				{
 					int new_amount = res->getInt("amount") + amount;
 
-					pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+					pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ? AND details = ?");
 					pstmt->setInt(1, new_amount);
 					pstmt->setInt(2, table_id);
 					pstmt->setInt(3, product_id);
+					pstmt->setString(4, details);
+
 					pstmt->execute();
 
 					CROW_LOG_INFO << "[UPDATED] Tableproduct with table_id " << table_id <<
-						" and product_id " << product_id << " to amount " << new_amount;
+						" and product_id " << product_id <<
+						"and details " << details <<
+						" to amount " << new_amount;
 				}
 				else
 				{
-					pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount) VALUES(?,?, ?)");
+					pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount, details) VALUES(?,?,?,?)");
 					pstmt->setInt(1, table_id);
 					pstmt->setInt(2, product_id);
 					pstmt->setInt(3, amount);
+					pstmt->setString(4, details);
 					pstmt->execute();
 
 					CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
-						" and product_id " << product_id << " and amount " << amount;
+						" and product_id " << product_id << " and amount " << amount << " and details " << details;
 				}
 			}
 		}
@@ -627,11 +651,97 @@ void Database::saveProductIngredient(const Product& product,
 {
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+
+		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int product_id = 0;
+		int ingredient_id = 0;
+		if (res->next())
+		{
+			product_id = res->getInt("product_id");
+
+			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			if (res->next())
+			{
+				ingredient_id = res->getInt("ingredient_id");
+
+				query << "SELECT * FROM productingredient WHERE product_id = " << product_id << " AND ingredient_id = " << ingredient_id;
+				res = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (!res->next())
+				{
+					pstmt = con->prepareStatement("INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
+					pstmt->setInt(1, product_id);
+					pstmt->setInt(2, ingredient_id);
+					pstmt->execute();
+
+					CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
+						" and ingredient_id " << ingredient_id;
+				}
+			}
+		}
 	}
 	catch (const sql::SQLException& e)
 	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not save product/ingredient. Error message: " << e.what();
+	}
+}
 
+void Database::saveProductAllergen(const Product& product, const Allergen& allergen)
+{
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+
+		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int product_id = 0;
+		int allergen_id = 0;
+		if (res->next())
+		{
+			product_id = res->getInt("product_id");
+
+			query << "SELECT allergen_id FROM allergens WHERE name = '" << allergen.name << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			if (res->next())
+			{
+				allergen_id = res->getInt("allergen_id");
+
+				query << "SELECT * FROM productallergen WHERE product_id = " << product_id << " AND allergen_id = " << allergen_id;
+				res = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (!res->next())
+				{
+					pstmt = con->prepareStatement("INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
+					pstmt->setInt(1, product_id);
+					pstmt->setInt(2, allergen_id);
+					pstmt->execute();
+
+					CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
+						" and allergen_id " << allergen_id;
+				}
+			}
+		}
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not save product/allergen. Error message: " << e.what();
 	}
 }
 
@@ -697,7 +807,7 @@ Table Database::getTableByNumber(const int n_table)
 			double bill = res->getDouble("bill");
 			double discount = res->getDouble("discount");
 
-			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id; // TODO: change tables for a varible that corresponds to the table name
+			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
@@ -706,14 +816,15 @@ Table Database::getTableByNumber(const int n_table)
 			{
 				int product_id = res->getInt("product_id");
 				int amount = res->getInt("amount");
+				std::string details = res->getString("details");
 
-				query << "SELECT * FROM products WHERE product_id = " << product_id; // TODO: change tables for a varible that corresponds to the table name
+				query << "SELECT * FROM products WHERE product_id = " << product_id;
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
 				query.str("");
 
 				if (res2->next())
 				{
-					Product p(res2->getString("name"), res2->getDouble("price"), res2->getString("color"), res2->getInt("page"), res2->getBoolean("deployable"));
+					Product p(res2->getString("name"), res2->getDouble("price"), res2->getString("color"), res2->getInt("page"), res2->getBoolean("deployable"), details);
 
 					products[p] = amount;
 				}
@@ -747,13 +858,17 @@ std::vector<Employee> Database::getEmployees()
 
 		while (res->next())
 		{
-			int id = res->getInt("employee_id");
-			std::string name = res->getString("name");
+			std::string firstName = res->getString("firstName");
+			std::string lastName = res->getString("lastName");
+			std::string email = res->getString("email");
+			std::string id = res->getString("id");
+			std::string mobileNumber = res->getString("mobileNumber");
 			int level = res->getInt("level");
-			std::string start = res->getString("start");
-			std::string finish = res->getString("finish");
+			std::string username = res->getString("username");
+			std::string password_hash = res->getString("password");
+			std::string session_token = res->getString("session_token");
 
-			Employee employee = { name, level, start, finish };
+			Employee employee = { firstName, lastName, email, id, mobileNumber, level, username, password_hash, session_token };
 
 			//std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
 			employees.push_back(employee);
@@ -768,29 +883,31 @@ std::vector<Employee> Database::getEmployees()
 	}
 }
 
-Employee Database::getEmployeeByName(const std::string name)
+Employee Database::getEmployeeByName(const std::string& firstName,
+									 const std::string& lastName)
 {
 	Employee employee;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		query << "SELECT * FROM employees WHERE name = '" << name << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
+		query << "SELECT * FROM employees WHERE firstName = '" << firstName << "' AND lastName = '" << lastName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
 		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
-			int level = res->getInt("level");
-			std::string start = res->getString("start");
-			std::string finish = res->getString("finish");
-
-			employee.name = name;
-			employee.level = level;
-			employee.start = start;
-			employee.finish = finish;
+			employee.firstName = res->getString("firstName");
+			employee.lastName = res->getString("lastName");
+			employee.email = res->getString("email");
+			employee.id = res->getString("id");
+			employee.mobileNumber = res->getString("mobileNumber");
+			employee.level = res->getInt("level");
+			employee.username = res->getString("username");
+			employee.password_hash = res->getString("password");
+			employee.session_token = res->getString("session_token");
 		}
 
 		return employee;
@@ -817,17 +934,15 @@ Employee Database::getEmployeeByAccount(const std::string& username,
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
-			int level = res->getInt("level");
-			std::string start = res->getString("start");
-			std::string finish = res->getString("finish");
-			std::string session_token = res->getString("session_token");
-
-			employee.name = name;
-			employee.level = level;
-			employee.start = start;
-			employee.finish = finish;
-			employee.session_token = session_token;
+			employee.firstName = res->getString("firstName");
+			employee.lastName = res->getString("lastName");
+			employee.email = res->getString("email");
+			employee.id = res->getString("id");
+			employee.mobileNumber = res->getString("mobileNumber");
+			employee.level = res->getInt("level");
+			employee.username = res->getString("username");
+			employee.password_hash = res->getString("password");
+			employee.session_token = res->getString("session_token");
 		}
 
 		return employee;
@@ -854,15 +969,15 @@ Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
-			int level = res->getInt("level");
-			std::string start = res->getString("start");
-			std::string finish = res->getString("finish");
-
-			employee.name = name;
-			employee.level = level;
-			employee.start = start;
-			employee.finish = finish;
+			employee.firstName = res->getString("firstName");
+			employee.lastName = res->getString("lastName");
+			employee.email = res->getString("email");
+			employee.id = res->getString("id");
+			employee.mobileNumber = res->getString("mobileNumber");
+			employee.level = res->getInt("level");
+			employee.username = res->getString("username");
+			employee.password_hash = res->getString("password");
+			employee.session_token = res->getString("session_token");
 		}
 
 		return employee;
@@ -921,10 +1036,11 @@ Product Database::getProductByName(const std::string name)
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
-			double price = res->getDouble("price");
-			product.name = name;
-			product.price = price;
+			product.name = res->getString("name");
+			product.price = res->getDouble("price");
+			product.color = res->getString("color");
+			product.page = res->getInt("page");
+			product.deployable = res->getInt("deployable");
 		}
 
 		return product;
@@ -1121,22 +1237,25 @@ std::vector<Ingredient> Database::getIngredients()
 	}
 }
 
-Ingredient Database::getIngredientByName(const std::string name)
+Ingredient Database::getIngredientByName(const std::string& name)
 {
 	Ingredient ingredient;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
 		query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+		std::cout << "A " << name << std::endl;
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
-			ingredient.name = name;
+			ingredient.name = res->getString("name");
+			std::cout << "B " << ingredient.name << std::endl;
+
 		}
 
 		return ingredient;
@@ -1145,6 +1264,36 @@ Ingredient Database::getIngredientByName(const std::string name)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredient by name. Error message: " << e.what();
 		return ingredient; // Return an empty Ingredient on error
+	}
+}
+
+std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& product)
+{
+	std::vector<Ingredient> ingredients;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT * FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			std::string name = res->getString("name");
+
+			Ingredient i(name);
+			ingredients.push_back(i);
+		}
+
+		return ingredients;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredients of product. Error message: " << e.what();
+		return ingredients; // Return an empty vector on error
 	}
 }
 
@@ -1290,10 +1439,11 @@ std::string Database::generateSessionToken(Employee e)
 
 	std::string new_session_token = ss.str();
 
-	pstmt = con->prepareStatement("UPDATE employees SET session_token = ? WHERE name = ? AND level = ?");
+	pstmt = con->prepareStatement("UPDATE employees SET session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
 	pstmt->setString(1, new_session_token);
-	pstmt->setString(2, e.name);
-	pstmt->setInt(3, e.level);
+	pstmt->setString(2, e.firstName);
+	pstmt->setString(3, e.lastName);
+	pstmt->setInt(4, e.level);
 	pstmt->execute();
 
 	return new_session_token;
@@ -1319,7 +1469,7 @@ void Database::printEmployees()
 	CROW_LOG_INFO << "[LIST] Employees: ";
 	for (const auto employee : employees)
 	{
-		std::cout << "\t- Name: " << employee.name << ", Level: " << employee.level << ", Start: " << employee.start << ", Finish: " << employee.finish << std::endl;
+		std::cout << "\t- Name: " << employee.firstName << " " << employee.lastName << ", Level: " << employee.level;
 	}
 }
 
@@ -1607,22 +1757,14 @@ void Database::removeEmployee(const Employee& employee)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		std::string name = employee.name;
-		int level = employee.level;
-		std::string start = employee.start;
-		std::string finish = employee.finish;
-
-		pstmt = con->prepareStatement("DELETE FROM employees WHERE name = ? AND level = ? AND start = ? AND finish = ?");
-		pstmt->setString(1, name);
-		pstmt->setInt(2, level);
-		pstmt->setString(3, start);
-		pstmt->setString(4, finish);
+		pstmt = con->prepareStatement("DELETE FROM employees WHERE firstName = ? AND lastName = ? AND level = ?");
+		pstmt->setString(1, employee.firstName);
+		pstmt->setString(2, employee.lastName);
+		pstmt->setInt(3, employee.level);
 		pstmt->execute();
 
-		CROW_LOG_INFO << "[REMOVED] Employee with name " << name <<
-			", level " << level <<
-			", start " << start <<
-			", and finish " << finish;
+		CROW_LOG_INFO << "[REMOVED] Employee with name " << employee.firstName << " " << employee.lastName <<
+			"and level " << employee.level;
 	}
 	catch (const sql::SQLException& e)
 	{
@@ -1682,9 +1824,10 @@ void Database::removeTableProduct(const int& n_table,
 			{
 				int product_id = res->getInt("product_id");
 
-				pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ?");
+				pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ? AND details = ?");
 				pstmt->setInt(1, table_id);
 				pstmt->setInt(2, product_id);
+				pstmt->setString(3, product.details);
 				pstmt->execute();
 
 				double new_bill = bill - (product.price * times * (1.0 - discount));
@@ -1704,6 +1847,45 @@ void Database::removeTableProduct(const int& n_table,
 	catch (const sql::SQLException& e)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not remove tableproduct. Error message: " << e.what();
+	}
+}
+
+void Database::removeProductIngredient(const Product& product,
+									   const Ingredient& ingredient)
+{
+	try
+	{
+		std::stringstream query;
+
+		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		if (res->next())
+		{
+			int product_id = res->getInt("product_id");
+
+			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			if (res->next())
+			{
+				int ingredient_id = res->getInt("ingredient_id");
+
+				pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ? AND ingredient_id = ?");
+				pstmt->setInt(1, product_id);
+				pstmt->setInt(2, ingredient_id);
+				pstmt->execute();
+			}
+		}
+
+		CROW_LOG_INFO << "[REMOVED] Ingredient(s) from product " << product.name <<
+			" with price " << product.price;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not remove productingredient. Error message: " << e.what();
 	}
 }
 

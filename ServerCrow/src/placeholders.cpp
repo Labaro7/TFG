@@ -161,7 +161,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	for (const auto& p : ticketProducts)
 	{
 		ss << std::fixed << std::setprecision(2) <<
-			"<li class='ticketProduct' onclick='openModifyDeleteMenu(this)'>" << std::endl << "<div class='times'><div class='productTimes'>x" << p.second << "</div><div class='oldProductTimes'></div></div><div class='productNames'>" << p.first.name << "</div><div class='productPrices'>" << p.first.price << "</div><div class='productTotalPrices'>" << p.second * p.first.price << "</div></li>" << std::endl;
+			"<li class='ticketProduct' onclick='openModifyDeleteMenu(this)'>" << std::endl << "<div class='times'><div class='productTimes'>x" << p.second << "</div><div class='oldProductTimes'></div></div><div class='container'><div class='productNames'>" << p.first.name << "</div><div class='details'>" << p.first.details << "</div></div><div class='productPrices'>" << p.first.price << "</div><div class='productTotalPrices'>" << p.second * p.first.price << "</div></li>" << std::endl;
 	}
 
 	std::string ticketProductsHTML = ss.str();
@@ -194,6 +194,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	// 1. Current products
 	// 1.1 Pages buttons
 	// 1.2 Current products
+	// 1.3 Current employees
 
 	// Read the content of the HTML into contentHTML
 	if (!file->is_open())
@@ -292,6 +293,49 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 		}
 
 		i++;
+	}
+
+	// 1.3
+	std::string employeesListHTML;
+
+	ss << "<li class='employee'>";
+	ss << "<div class='employeeName'>NAME</div></li>";
+
+	std::vector<Employee> employees = server.getEmployees();
+	std::sort(employees.begin(), employees.end(), [](const auto& a, const auto& b)
+			  {
+				  return a.firstName < b.firstName && a.lastName < b.lastName;
+			  });
+
+	i = 0;
+	for (const auto& e : employees)
+	{
+		ss << "<li class='employee' onclick='selectEmployee(this)' data-n='" << i << "'>";
+		ss << "<ul>";
+		ss << "<li class='employeeName'>" << e.firstName + " " << e.lastName << "</li>";
+		ss << "<ul class='employeeDetails' id='" << e.firstName + " " << e.lastName << "'>";
+		ss << "<li class='employeeFirstName'>" << e.firstName << "</li>";
+		ss << "<li class='employeeLastName'>" << e.lastName << "</li>";
+		ss << "<li class='employeeEmail'>" << e.email << "</li>";
+		ss << "<li class='employeeId'>" << e.id << "</li>";
+		ss << "<li class='employeeMobileNumber'>" << e.mobileNumber << "</li>";
+		ss << "<li class='employeeLevel'>" << e.level << "</li>";
+		ss << "<li class='employeeUsername'>" << e.username << "</li>";
+		ss << "<li class='employeePassword'>" << e.password_hash << "</li>";
+		ss << "<li class='employeeSessionToken'>" << e.session_token << "</li></ul></ul></li>";
+		i++;
+	}
+
+	employeesListHTML = ss.str();
+	ss.str("");
+
+	// 1.3. Insert HTML piece with the employees into HTML
+	std::string employeesPlaceholder = CURRENT_EMPLOYEES_PLACEHOLDER;
+
+	size_t employeesListPlaceholderPos = contentHTML.find(employeesPlaceholder);
+	if (employeesListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(employeesListPlaceholderPos, employeesListHTML);
 	}
 
 	return contentHTML;

@@ -261,7 +261,7 @@ numTable {
 
 #ticketList {
     padding: 0;
-    margin: 10px 0px;
+    margin: 0;
     overflow: auto;
     flex: 1;
 }
@@ -282,6 +282,7 @@ numTable {
     display: flex;
     gap: 5px;
     display: none;
+    margin: 5px 0px;
 }
 
 .horizontal-line {
@@ -302,11 +303,17 @@ numTable {
     font-size: 13px;
 }
 
-.productNames {
+.productNames, .container {
     flex: 1;
     text-overflow: ellipsis;
     overflow: hidden;
     box-sizing: border-box;
+}
+
+.details {
+    color: slategray;
+    font-size: 10px;
+    font-weight: 100;
 }
 
 .productPrices, .productTotalPrices {
@@ -427,6 +434,12 @@ numTable {
 }
 
 #modifyProductAmountButton {
+    width: 115px;
+    max-width: 115px;
+    border-right: 1px solid black;
+}
+
+#addDetailsButton {
     width: 115px;
     max-width: 115px;
     border-right: 1px solid black;

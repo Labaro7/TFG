@@ -11,20 +11,21 @@
 /* ------------------------------------------- EMPLOYEE ------------------------------------------- */
 struct Employee
 {
-	std::string name;
+	std::string firstName;
+	std::string lastName;
+	std::string email;
+	std::string id;
+	std::string mobileNumber;
 	int level;
-	std::string start;
-	std::string finish;
+	std::string username;
 	std::string password_hash;
 	std::string session_token;
 
 	Employee();
-	Employee(const std::string& name, int level, const std::string& start, const std::string& finish);
-	Employee(const std::string& name, int level, const std::string& start, const std::string& finish, const std::string password_hash, const std::string session_token);
+	Employee(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& id, const std::string& mobileNumber, const int& level, const std::string& username, const std::string& password_hash, const std::string& session_token);
 
 	bool isEmpty();
 };
-
 
 
 /* ------------------------------------------- PRODUCT ------------------------------------------- */
@@ -35,15 +36,17 @@ struct Product
 	std::string color;
 	int page;
 	int deployable;
+	std::string details;
 
 	Product();
-	Product(const std::string& name, double price, std::string color, int page, int deployable);
+	Product(const std::string& name, const double& price, const std::string& color, const int& page, const int& deployable);
+	Product(const std::string& name, const double& price, const std::string& color, const int& page, const int& deployable, const std::string& details);
 
 	bool isEmpty();
 
 	bool operator==(const Product& p) const
 	{
-		return (name == p.name) && (price == p.price);
+		return (name == p.name) && (price == p.price) && (details == p.details);
 	}
 };
 
@@ -51,7 +54,7 @@ struct ProductHashFunction
 {
 	std::size_t operator()(const Product& p) const
 	{
-		return std::hash<std::string>()(p.name) ^ (std::hash<double>()(p.price) << 1);
+		return std::hash<std::string>()(p.name) ^ (std::hash<double>()(p.price) << 1) ^ (std::hash<std::string>()(p.details));
 	}
 };
 

@@ -2,7 +2,7 @@
 #include <string>
 
 // Crow constants
-const std::string SERVER_IP = "127.0.0.1";
+const std::string SERVER_IP = "192.168.1.66";
 constexpr int SERVER_PORT = 18080;
 const std::string SERVER_NAME = "DINET";
 const std::string CRT_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt"; // TODO: Put relative path

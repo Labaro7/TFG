@@ -153,7 +153,7 @@ void Server::initialize()
 	saveTable(t1);
 	for (auto const& p : order1)
 	{
-		saveTableProduct(t1, p.first, p.second);
+		saveTableProduct(t1, p.first, p.second, "");
 	}
 
 	product_unordered_map order2 = { {p31, 3}, {p26, 1} };
@@ -161,7 +161,7 @@ void Server::initialize()
 	saveTable(t2);
 	for (auto const& p : order2)
 	{
-		saveTableProduct(t2, p.first, p.second);
+		saveTableProduct(t2, p.first, p.second, "");
 	}
 
 	pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6, tup7 };
@@ -304,9 +304,9 @@ void Server::saveTable(const Table& table)
 }
 
 // TODO: The same as in saveTable but for the rest
-void Server::saveEmployee(const Employee& employee)
+void Server::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
 {
-	database->saveEmployee(employee);
+	database->saveEmployee(oldEmployee, newEmployee);
 }
 
 void Server::saveProduct(const Product& product)
@@ -344,13 +344,19 @@ void Server::saveAllergen(const Allergen& allergen)
 
 void Server::saveTableProduct(Table& table,
 							  const Product& product,
-							  const int& times)
+							  const int& times,
+							  const std::string& details)
 {
 	Table aux(table);
 	aux.bill += product.price;
 	//restaurant->current_tables[table.n_table] = table;
 
-	database->saveTableProduct(aux, product, times);
+	database->saveTableProduct(aux, product, times, details);
+}
+
+void Server::saveProductAllergen(const Product& product, const Allergen& allergen)
+{
+	database->saveProductAllergen(product, allergen);
 }
 
 
@@ -385,9 +391,9 @@ std::vector<Employee> Server::getEmployees()
 	return database->getEmployees();
 }
 
-Employee Server::getEmployeeByName(std::string name)
+Employee Server::getEmployeeByName(const std::string& firstName, const std::string& lastName)
 {
-	return database->getEmployeeByName(name);
+	return database->getEmployeeByName(firstName, lastName);
 }
 
 Employee Server::getEmployeeByAccount(const std::string& username,
@@ -431,9 +437,14 @@ std::vector<Ingredient> Server::getIngredients()
 	return database->getIngredients();
 }
 
-Ingredient Server::getIngredientByName(std::string name)
+Ingredient Server::getIngredientByName(const std::string& name)
 {
 	return database->getIngredientByName(name);
+}
+
+std::vector<Ingredient> Server::getIngredientsFromProduct(const Product& product)
+{
+	return database->getIngredientsFromProduct(product);
 }
 
 std::vector<Allergen> Server::getAllergens()
@@ -511,6 +522,12 @@ void Server::removeTableProduct(const int& n_table,
 								const int& times)
 {
 	database->removeTableProduct(n_table, product, times);
+}
+
+void Server::removeProductIngredient(const Product& product,
+									 const Ingredient& ingredient)
+{
+	database->removeProductIngredient(product, ingredient);
 }
 
 void Server::removeOrder(const Order& order)

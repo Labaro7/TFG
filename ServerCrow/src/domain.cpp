@@ -42,37 +42,35 @@ bool Table::isEmpty()
 
 /* ------------------------------------------- EMPLOYEE ------------------------------------------- */
 Employee::Employee() :
-	name(),
+	firstName(),
+	lastName(),
+	email(),
+	id(),
+	mobileNumber(),
 	level(0),
-	start(),
-	finish()
+	username(),
+	password_hash(),
+	session_token()
 {
 }
 
-Employee::Employee(const std::string& name, int level, const std::string& start, const std::string& finish) :
-	name(name),
+Employee::Employee(const std::string& firstName, const std::string& lastName, const std::string& email, const std::string& id, const std::string& mobileNumber, const int& level, const std::string& username, const std::string& password_hash, const std::string& session_token) :
+	firstName(firstName),
+	lastName(lastName),
+	email(email),
+	id(id),
+	mobileNumber(mobileNumber),
 	level(level),
-	start(start),
-	finish(finish)
-{
-}
-
-Employee::Employee(const std::string& name, int level, const std::string& start, const std::string& finish, std::string password_hash, std::string session_token) :
-	name(name),
-	level(level),
-	start(start),
-	finish(finish),
+	username(username),
 	password_hash(password_hash),
 	session_token(session_token)
 {
 }
 
-
 bool Employee::isEmpty()
 {
-	return name.empty();
+	return firstName.empty() && lastName.empty();
 }
-
 
 
 /* ------------------------------------------- PRODUCT ------------------------------------------- */
@@ -85,12 +83,31 @@ Product::Product() :
 {
 }
 
-Product::Product(const std::string& name, double price, std::string color, int page, int deployable) :
+Product::Product(const std::string& name,
+				 const double& price,
+				 const std::string& color,
+				 const int& page,
+				 const int& deployable) :
 	name(name),
 	price(price),
 	color(color),
 	page(page),
 	deployable(deployable)
+{
+}
+
+Product::Product(const std::string& name,
+				 const double& price,
+				 const std::string& color,
+				 const int& page,
+				 const int& deployable,
+				 const std::string& details) :
+	name(name),
+	price(price),
+	color(color),
+	page(page),
+	deployable(deployable),
+	details(details)
 {
 }
 

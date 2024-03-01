@@ -160,8 +160,90 @@
         </div>
 
         <div class="page" id="employeePage" data-page="2">
-            asd
-            <!-- PLACEHOLDER: CURRENT EMPLOYEES -->
+            <div id="employees">
+                <ul id="employeeList">
+                    <!-- PLACEHOLDER: CURRENT EMPLOYEES -->
+                </ul>
+
+                <div id="buttons">
+                    <svg id='addEmployee' onclick='addEmployee()' xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24">
+                        <title />
+                        <g id="Complete">
+                            <g data-name="add" id="add-2">
+                                <g>
+                                    <line fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="12" x2="12" y1="19" y2="5" />
+                                    <line fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="5" x2="19" y1="12" y2="12" />
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                    <svg id='removeEmployee'xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24">
+                        <title />
+                        <g id="Complete">
+                            <g id="minus">
+                                <line fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="4" x2="20" y1="12" y2="12" />
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <div id="selectedEmployeeDetails">
+                <div class="detailsRow">
+                    <div>
+                        <div class="detailsText">First Name</div>
+                        <input class="detailsInput" id="firstName" value="1" />
+                    </div>
+                    <div>
+                        <div class="detailsText">Last Name</div>
+                        <input class="detailsInput" id="lastName" value="2" />
+                    </div>
+                </div>
+                <div class="detailsRow">
+                    <div>
+                        <div class="detailsText">Email</div>
+                        <input class="detailsInput" id="email" value="3" />
+                    </div>
+                    <div>
+                        <div class="detailsText">ID</div>
+                        <input class="detailsInput" id="id" value="4" />
+                    </div>
+                </div>
+                <div>
+                    <div class="detailsText">Mobile Number</div>
+                    <input class="detailsInput" id="mobileNumber" value="5" />
+                </div>
+                <div>
+                    <div class="detailsText">Level</div>
+                    <input class="detailsInput" id="level" value="6" />
+                </div>
+                <div class="detailsRow">
+                    <div>
+                        <div class="detailsText">Username</div>
+                        <input class="detailsInput" id="username" value="7" />
+                    </div>
+                    <div>
+                        <div class="detailsText">Password</div>
+                        <input class="detailsInput" id="password_hash" value="8" />
+                    </div>
+                </div>
+                <div>
+                    <div class="detailsText">Session Token</div>
+                    <input class="detailsInput" id="session_token" value="9" />
+                </div>
+                <div class="detailsRow">
+                    <div id="saveEmployeeDetails" onclick="addEmployeeDetails()">
+                        Save Changes
+                    </div>
+                    <div id="resetEmployeeDetails" onclick="deleteEmployeeDetails()">
+                        Cancel Changes
+                    </div>
+                </div>
+            </div>
+
+            <div id="employeeData">
+
+            </div>
+
         </div>
 
         <div class="page" id="ingredientPage" data-page="3">
