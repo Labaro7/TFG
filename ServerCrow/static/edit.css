@@ -25,7 +25,7 @@ body {
     flex-direction: column;
     box-sizing: border-box;
     border: 0px solid red;
-    color: #0a3677;
+    color: rgb(9, 43, 92);
 }
 
 #tab-button1, #tab-button2, #tab-button3, #tab-button4 {
@@ -33,7 +33,7 @@ body {
     height: 5px;
     position: relative;
     bottom: 0;
-    background-color: #0a3677;
+    background-color: rgb(9, 43, 92);
     border: 0px solid yellow;
 }
 
@@ -43,7 +43,7 @@ body {
 
 
 #pages {
-    border: 0px solid #0a3677;
+    border: 0px solid rgb(9, 43, 92);
     height: 95%;
     font-size: 20px;
 }
@@ -66,7 +66,7 @@ body {
 .productsPagesButton {
     flex: 1;
     background-color: white;
-    border: 1px solid #0a3677;
+    border: 1px solid rgb(9, 43, 92);
 }
 
 .fifthRow {
@@ -86,10 +86,10 @@ body {
 
 .content {
     height: 400px;
-    border: 0px solid #0a3677;
+    border: 0px solid rgb(9, 43, 92);
     align-content: center;
     padding: 5px;
-    background-color: #0a3677;
+    background-color: rgb(9, 43, 92);
 }
 
 #grid1, #grid2, #grid3, #grid4, #grid5 {
@@ -157,7 +157,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
-    border: 4px solid #0a3677;
+    border: 4px solid rgb(9, 43, 92);
     width: 33%;
 }
 
@@ -169,7 +169,7 @@ body {
     height: 50px;
     flex-direction: column;
     font-size: 20px;
-    color: #0a3677;
+    color: rgb(9, 43, 92);
     margin: 10px;
 }
 
@@ -193,7 +193,7 @@ body {
 
 /* MODIFY PRODUCT */
 #modifyProductForm {
-    color: #0a3677;
+    color: rgb(9, 43, 92);
     margin-bottom: 0;
 }
 
@@ -250,15 +250,22 @@ ul {
 }
 
 .names {
-
+    background-color: rgb(9, 43, 92);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid black;
+    border-bottom: 0px;
 }
 
 #employeeList {
     overflow: auto;
     max-height: 95%;
     border-top: 1px solid black;
-    border-right: 0px solid black;
-    padding-bottom: 1px;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
 }
 
 .employee {
@@ -266,9 +273,13 @@ ul {
     display: flex;
     align-items: center;
     border: 1px solid black;
-    border-right: 1px solid black;
+    border-right: 0px solid black;
     margin-top: -1px;
     height: 50px;
+}
+
+.employee:last-child {
+    border-bottom: 0px;
 }
 
 .employeeLevel {
@@ -291,18 +302,18 @@ ul {
 #buttons {
     display: flex;
     float: right;
+    position: relative;
+    bottom: 1px;
 }
 
 
-#addEmployee, #removeEmployee {
+#addEmployee{
     background-color: white;
     border: 1px solid black;
     border-top: 1px solid black;
     margin: 0;
-}
-
-#addEmployee {
-    border-right: 0px;
+    position: relative;
+    margin-left: auto;
 }
 
 .employeeDetails {
@@ -312,12 +323,23 @@ ul {
 #selectedEmployeeDetails {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
+    border: 1px solid black;
+    background-color: white;
+}
+
+#selectedEmployeeDetailsText {
+    background-color: rgb(9, 43, 92);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
 }
 
 .detailsInput {
     border: 0px solid white;
-    border-bottom: 2px solid white;
+    border-bottom: 2px solid rgb(9, 43, 92);
     background: transparent;
     font-size: 25px;
     margin: 0;
@@ -326,13 +348,159 @@ ul {
 
 .detailsRow {
     display: flex;
-    gap: 20px;
+    gap: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.onlyRow {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .detailsText {
     font-size: 15px;
 }
 
-#saveEmployeeDetails, #resetEmployeeDetails {
+#saveEmployeeDetails, #deleteEmployeeDetails {
+    background-color: rgb(9, 43, 92);
+    color: white;
+    padding: 5px;
+}
+
+/* INGREDIENTS + ALLERGENS */
+#ingredientAndAllergensPage {
+    height: 100%;
+    gap: 100px;
+}
+
+#currentProducts, #currentIngredients, #currentAllergens {
+    width: 30%;
+}
+
+#currentProductsText, #currentIngredientsText, #currentAllergensText {
+    background-color: rgb(9, 43, 92);
+    border: 1px solid black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+#currentProductsList, #currentIngredientsList, #currentAllergensList, #ownedIngredientsList, #notOwnedIngredientsList {
+    border: 1px solid black;
+    overflow: auto;
+    max-height: 85%;
+}
+
+.currentProduct:last-child, .currentIngredient:last-child, .currentAllergen:last-child {
+    border-bottom: 0px;
+}
+
+#filteredProductsList, #filteredIngredientsList, #filteredAllergensList {
+    display: none;
+}
+
+.searchBar {
+    display: flex;
+    background-color: rgb(9, 43, 92);
+    color: white;
+    border: 1px solid black;
+    border-bottom: 0px;
+    border-top: 1px solid white;
+}
+
+.filter {
+    display: flex;
+    background-color: rgb(9, 43, 92);
+    color: white;
+    border-top: 1px solid white;
+}
+
+.filterText {
+    flex: 1;
+    font-size: 15px;
+    margin: 5px;
+}
+
+.allButton, .ownedButton, .notOwnedButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid white;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.searchIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.searchButton {
+    font-size: 15px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.inputFilter {
+    border: 0px;
+    border-right: 1px solid white;
+    background: transparent;
+    color: white;
+    padding: 0;
+    flex: 1;
+}
+
+.currentProduct, .currentIngredient, .currentAllergen {
     background-color: white;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+
+.currProductName {
+    margin-left: 5px;
+    font-size: 20px;
+
+}
+
+.currentProductIngredient, .currentProductAllergen {
+    display: none;
+}
+
+.currentIngredient, .currentAllergen {
+    padding-left: 5px;
+}
+
+.buttonsRow {
+    display: flex;
+}
+
+.saveAndDeleteButtons {
+    background-color: rgb(9, 43, 92);
+    color: white;
+    padding: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    position: relative;
+    bottom: 1px;
+}
+
+#saveIngredientsDetails, #saveAllergenDetails {
+    border-right: 1px solid white;
+}
+
+#deleteIngredientsDetails, #deleteAllergenDetails {
+    border-left: 0px;
+}
+
+#ownedIngredientsList, #ownedAllergensList {
+    display: none;
 }

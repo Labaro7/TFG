@@ -98,6 +98,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	int i = 0;
 	for (const auto& page : pages)
 	{
+		ss << "<ul class='contentGrid' id='grid" << i + 1 << "'>";
+
 		for (const auto& p : page)
 		{
 			std::string product_name = p.first.name;
@@ -134,25 +136,26 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 					}
 				}
 
-				ss << "</li>" << std::endl;
-			}
-
-			productListHTML = ss.str();
-			ss.str("");
-
-			// 3. Insert HTML piece with the products of the restaurant into HTML
-			std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
-			changedPlaceholder.replace(35, 1, std::to_string(i + 1));
-
-			size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
-			if (productListPlaceholderPos != std::string::npos)
-			{
-				contentHTML.insert(productListPlaceholderPos, productListHTML);
+				ss << "</li>";
 			}
 		}
 
+		ss << "</ul>";
 		i++;
 	}
+
+	productListHTML = ss.str();
+	ss.str("");
+
+	// 3. Insert HTML piece with the products of the restaurant into HTML
+	std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
+
+	size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
+	if (productListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(productListPlaceholderPos, productListHTML);
+	}
+
 
 	// 4. Get ticket products and ticket bill
 	const product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
@@ -194,8 +197,11 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	// Data to insert into HTML
 	// 1. Current products
 	// 1.1 Pages buttons
-	// 1.2 Current products
+	// 1.2 Current product list
 	// 1.3 Current employees
+	// 1.4 Current products
+	// 1.5 Current ingredients
+	// 1.6 Current allergens
 
 	// Read the content of the HTML into contentHTML
 	if (!file->is_open())
@@ -242,6 +248,8 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	int i = 0;
 	for (const auto& page : pages)
 	{
+		ss << "<ul class='contentGrid' id='grid" << i + 1 << "'>";
+
 		for (const auto& p : page)
 		{
 			std::string product_name = p.first.name;
@@ -278,23 +286,24 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 					ss << "</li>" << std::endl;
 				}
 			}
-
-			productListHTML = ss.str();
-			ss.str("");
-
-			// 1.2. Insert HTML piece with the products of the restaurant into HTML
-			std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
-			changedPlaceholder.replace(35, 1, std::to_string(i + 1));
-
-			size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
-			if (productListPlaceholderPos != std::string::npos)
-			{
-				contentHTML.insert(productListPlaceholderPos, productListHTML);
-			}
 		}
 
+		ss << "</ul>";
 		i++;
 	}
+
+	productListHTML = ss.str();
+	ss.str("");
+
+	// 1.2. Insert HTML piece with the products of the restaurant into HTML
+	std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
+
+	size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
+	if (productListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(productListPlaceholderPos, productListHTML);
+	}
+
 
 	// 1.3
 	std::string employeesListHTML;
@@ -338,6 +347,113 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 	{
 		contentHTML.insert(employeesListPlaceholderPos, employeesListHTML);
 	}
+
+
+	//1.4
+	std::string currentProductsHTML;
+	std::vector<Ingredient> productIngredients;
+	std::vector<Allergen> productAllergens;
+
+	std::sort(products.begin(), products.end(), [](auto& a, auto& b)
+			  {
+				  return a.name < b.name;
+			  });
+
+	for (const auto& product : products)
+	{
+		if (product.deployable)
+		{
+			ss << "<ul class='currentProduct' onclick='selectProduct(this)'><ul class='currentProductName'><li class='currProductName'>" << product.name << "</li></ul>";
+			ss << "<ul class='currentProductIngredients'>";
+
+			productIngredients = server.getIngredientsFromProduct(product);
+			if (!productIngredients.empty())
+			{
+				for (const auto& ingredient : productIngredients)
+				{
+					ss << "<li class='currentProductIngredient'>" << ingredient.name << "</li>";
+				}
+			}
+
+			ss << "</ul>";
+			ss << "<ul class='currentProductAllergens'>";
+
+			productAllergens = server.getAllergensFromProduct(product);
+			if (!productAllergens.empty())
+			{
+				for (const auto& allergen : productAllergens)
+				{
+					ss << "<li class='currentProductAllergen'>" << allergen.name << "</li>";
+				}
+			}
+
+			ss << "</ul></ul>";
+		}
+	}
+
+	currentProductsHTML = ss.str();
+	ss.str("");
+
+	std::string productsPlaceholder = CURRENT_PRODUCTS_PLACEHOLDER;
+
+	size_t productsListPlaceholderPos = contentHTML.find(productsPlaceholder);
+	if (productsListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(productsListPlaceholderPos, currentProductsHTML);
+	}
+
+
+	// 1.5
+	std::string currentIngredientsHTML;
+	std::vector<Ingredient> ingredients = server.getIngredients();
+
+	std::sort(ingredients.begin(), ingredients.end(), [](auto& a, auto& b)
+			  {
+				  return a.name < b.name;
+			  });
+
+	for (const auto& ingredient : ingredients)
+	{
+		ss << "<li class='currentIngredient' id='" << ingredient.name << "'>" << ingredient.name << "</li>";
+	}
+
+	currentIngredientsHTML = ss.str();
+	ss.str("");
+
+	std::string ingredientsPlaceholder = CURRENT_INGREDIENTS_PLACEHOLDER;
+
+	size_t ingredientsListPlaceholderPos = contentHTML.find(ingredientsPlaceholder);
+	if (ingredientsListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(ingredientsListPlaceholderPos, currentIngredientsHTML);
+	}
+
+
+	// 1.6
+	std::string currentAllergensHTML;
+	std::vector<Allergen> allergens = server.getAllergens();
+
+	std::sort(allergens.begin(), allergens.end(), [](auto& a, auto& b)
+			  {
+				  return a.name < b.name;
+			  });
+
+	for (const auto& allergen : allergens)
+	{
+		ss << "<li class='currentAllergen' id='" << allergen.name << "'>" << allergen.name << "</li>";
+	}
+
+	currentAllergensHTML = ss.str();
+	ss.str("");
+
+	std::string allergensPlaceholder = CURRENT_ALLERGENS_PLACEHOLDER;
+
+	size_t allergensListPlaceholderPos = contentHTML.find(allergensPlaceholder);
+	if (allergensListPlaceholderPos != std::string::npos)
+	{
+		contentHTML.insert(allergensListPlaceholderPos, currentAllergensHTML);
+	}
+
 
 	return contentHTML;
 }

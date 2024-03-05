@@ -1,5 +1,4 @@
 #include "..\headers\constants.h"
-#include <string>
 
 // Crow constants
 const std::string SERVER_IP = "192.168.1.66";
@@ -20,7 +19,7 @@ extern const std::string EDIT_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\S
 // HTML constants
 const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";
 const char* TABLE_NUMBER_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE NUMBER -->";
-const char* PRODUCT_LIST_PLACEHOLDER = "<!-- PLACEHOLDER: LIST OF PRODUCTS X -->";
+const char* PRODUCT_LIST_PLACEHOLDER = "<!-- PLACEHOLDER: LIST OF PRODUCTS -->";
 const char* TICKET_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: TICKET PRODUCTS -->";
 const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
 const char* PAGES_BUTTONS_PLACEHOLDER = "<!-- PLACEHOLDER: PRODUCTS PAGES BUTTONS -->";
@@ -30,6 +29,14 @@ const char* CURRENT_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT PRODUCTS -
 const char* CURRENT_EMPLOYEES_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT EMPLOYEES -->";
 const char* CURRENT_INGREDIENTS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT INGREDIENTS -->";
 const char* CURRENT_ALLERGENS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT ALLERGENS -->";
+
+const std::string EUR_CODE = "&#8364";
+const std::string USD_CODE = "&#36";
+const std::string GBP_CODE = "&#163";
+const std::string JPY_CODE = "&#165";
+const std::string SPACE_CODE = "&nbsp";
+std::string DEFAULT_CURRENCY = EUR_CODE;
+std::string CURRENCY = SPACE_CODE + DEFAULT_CURRENCY;
 
 // MySQL constants
 const std::string HOST = "127.0.0.1";
@@ -43,10 +50,3 @@ const std::string ASCII_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
 const int HASH_LENGTH = 32;
 const std::string SESSION_TOKEN_NAME = "session_token";
 const int SESSION_TOKEN_LENGTH = 32;
-const std::string EUR_CODE = "&#8364";
-const std::string USD_CODE = "&#36";
-const std::string GBP_CODE = "&#163";
-const std::string JPY_CODE = "&#165";
-const std::string SPACE_CODE = "&nbsp";
-std::string DEFAULT_CURRENCY = EUR_CODE;
-std::string CURRENCY = SPACE_CODE + DEFAULT_CURRENCY;

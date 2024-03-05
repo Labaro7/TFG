@@ -181,12 +181,13 @@ numTable {
     align-content: center;
 }
 
-#grid1, #grid2, #grid3, #grid4, #grid5 {
+.contentGrid {
     display: flex;
     flex-wrap: wrap;
     padding: 0;
     width: 100%;
     gap: 3px;
+    margin-top: 5px;
 }
 
 .grid-product, .grid-product-small {

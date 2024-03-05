@@ -457,6 +457,11 @@ Allergen Server::getAllergenByName(std::string name)
 	return database->getAllergenByName(name);
 }
 
+std::vector<Allergen> Server::getAllergensFromProduct(const Product& product)
+{
+	return database->getAllergensFromProduct(product);
+}
+
 
 // Change
 void Server::moveTable(const int& current_n_table,

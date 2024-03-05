@@ -8,23 +8,18 @@
 <body>
     <div class="tabs">
         <div class="tab-button" data-tab="1" onclick="changeTab(this)">
-            <div id="productTab"><b>Product</b></div>
+            <div id="productTab"><b>Products</b></div>
             <div id="tab-button1"></div>
         </div>
 
         <div class="tab-button" data-tab="2" onclick="changeTab(this)">
-            <div id="employeeTab"><b>Employee</b></div>
+            <div id="employeeTab"><b>Employees</b></div>
             <div id="tab-button2"></div>
         </div>
 
         <div class="tab-button" data-tab="3" onclick="changeTab(this)">
-            <div id="ingredientTab"><b>Ingredient</b></div>
+            <div id="ingredientAndAllergenTab"><b>Ingredients and Allergens</b></div>
             <div id="tab-button3"></div>
-        </div>
-
-        <div class="tab-button" data-tab="4" onclick="changeTab(this)">
-            <div id="allergenTab"><b>Allergen</b></div>
-            <div id="tab-button4"></div>
         </div>
     </div>
 
@@ -39,38 +34,7 @@
 
             <div class="page" id="productPage">
                 <div class="content">
-                    <ul id="grid1">
-                        <!--
-                        "<li class='grid-product' onclick='addProductToTicket(this)'>
-                            <div class='products-names'>Hamburguer</div>
-                            <div class='products-prices'>10.0</div>
-                        </li>
-
-                        <li class='grid-deployable' data-name='Drinks' onclick='openDeployable(this)'>Drinks</li>
-
-                        <li class='deployable-product' data-name='Drinks' onclick='addProductToTicket(this)'>
-                            <div class='products-names'>Hamburguer</div>
-                            <div class='products-prices'>10.0</div>
-                        </li>
-                        -->
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS 1 -->
-                    </ul>
-
-                    <ul id="grid2">
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS 2 -->
-                    </ul>
-
-                    <ul id="grid3">
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS 3 -->
-                    </ul>
-
-                    <ul id="grid4">
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS 4 -->
-                    </ul>
-
-                    <ul id="grid5">
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS 5 -->
-                    </ul>
+                    <!-- PLACEHOLDER: LIST OF PRODUCTS -->
                 </div>
                 <div id="forms">
                     <div id="addProductForm" action="/add/product" method="post">
@@ -161,7 +125,7 @@
 
         <div class="page" id="employeePage" data-page="2">
             <div id="employees">
-                <div class="names">Employees' names</div>
+                <div class="names">Employees' Names</div>
                 <ul id="employeeList">
                     <!-- PLACEHOLDER: CURRENT EMPLOYEES -->
                 </ul>
@@ -178,19 +142,11 @@
                             </g>
                         </g>
                     </svg>
-                    <svg id='removeEmployee'xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24">
-                        <title />
-                        <g id="Complete">
-                            <g id="minus">
-                                <line fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="4" x2="20" y1="12" y2="12" />
-                            </g>
-                        </g>
-                    </svg>
                 </div>
             </div>
             <div id="selectedEmployeeDetails">
                 <div id="selectedEmployeeDetailsText">
-                    Employee's details
+                    Selected Employee's Details
                 </div>
                 <div class="detailsRow">
                     <div>
@@ -212,11 +168,11 @@
                         <input class="detailsInput" id="id" value="4" />
                     </div>
                 </div>
-                <div>
+                <div class="onlyRow">
                     <div class="detailsText">Mobile Number</div>
                     <input class="detailsInput" id="mobileNumber" value="5" />
                 </div>
-                <div>
+                <div class="onlyRow">
                     <div class="detailsText">Level</div>
                     <input class="detailsInput" id="level" value="6" />
                 </div>
@@ -236,10 +192,10 @@
                 </div>
                 <div class="detailsRow">
                     <div id="saveEmployeeDetails" onclick="addEmployeeDetails()">
-                        Save employee
+                        Save Employee
                     </div>
-                    <div id="resetEmployeeDetails" onclick="deleteEmployeeDetails()">
-                        Delete employee
+                    <div id="deleteEmployeeDetails" onclick="deleteEmployeeDetails()">
+                        Delete Employee
                     </div>
                 </div>
             </div>
@@ -250,12 +206,124 @@
 
         </div>
 
-        <div class="page" id="ingredientPage" data-page="3">
-            <!-- PLACEHOLDER: CURRENT INGREDIENTS -->
-        </div>
+        <div class="page" id="ingredientAndAllergensPage" data-page="3">
+            <div id="currentProducts">
+                <div id="currentProductsText">
+                    Current Product List
+                </div>
+                <div class="searchBar">
+                    <div class="searchIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1"><defs><style>
+                                                                                                                                                            .cls-1 {
+                                                                                                                                                                fill: none;
+                                                                                                                                                                stroke: #FFFFFF;
+                                                                                                                                                                stroke-miterlimit: 10;
+                                                                                                                                                                stroke-width: 1.91px;
+                                                                                                                                                            }
+                        </style></defs><circle class="cls-1" cx="9.14" cy="9.14" r="7.64" /><line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39" /></svg>
+                    </div>
+                    <input class="inputFilter" id="productFilter" />
+                    <div class="searchButton" id="searchProductButton" onclick="searchProduct()">Search</div>
+                </div>
+                <ul id="currentProductsList">
+                    <!-- PLACEHOLDER: CURRENT PRODUCTS -->
+                </ul>
+                <ul id="filteredProductsList">
+                </ul>
+            </div>
 
-        <div class="page" id="allergenPage" data-page="4">
-            <!-- PLACEHOLDER: CURRENT ALLERGENS -->
+            <div id="currentIngredients">
+                <div id="currentIngredientsText">
+                    Ingredients Of Selected Product
+                </div>
+                <div class="searchBar">
+                    <div class="searchIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1">
+                            <defs>
+                                <style>
+                                    .cls-1 {
+                                        fill: none;
+                                        stroke: #FFFFFF;
+                                        stroke-miterlimit: 10;
+                                        stroke-width: 1.91px;
+                                    }
+                                </style>
+                            </defs>
+                            <circle class="cls-1" cx="9.14" cy="9.14" r="7.64" />
+                            <line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39" />
+                        </svg>
+                    </div>
+                    <input class="inputFilter" id="ingredientFilter" />
+                    <div class="searchButton" id="searchIngredientButton" onclick="searchIngredient()">Search</div>
+                </div>
+                <div class="filter" id="ingredientsFilter">
+                    <div class="filterText">Filter by: </div>
+                    <div class="allButton" id="allIngredientsButton" onclick="selectAllIngredients()">All</div>
+                    <div class="ownedButton" id="ownedIngredientsButton" onclick="selectOwnedIngredients()">Owned</div>
+                    <div class="notOwnedButton" id="notOwnedIngredientsButton" onclick="selectNotOwnedIngredients()">Not Owned</div>
+                </div>
+                <ul id="currentIngredientsList">
+                    <!-- PLACEHOLDER: CURRENT INGREDIENTS -->
+                </ul>
+                <ul id="ownedIngredientsList">
+                </ul>
+                <ul id="notOwnedIngredientsList">
+                </ul>
+                <div class="buttonsRow">
+                    <div class="saveAndDeleteButtons" id="saveIngredientsDetails" onclick="addIngredientsDetails()">
+                        Save
+                    </div>
+                    <div class="saveAndDeleteButtons" id="deleteIngredientsDetails" onclick="deleteIngredientsDetails()">
+                        Delete
+                    </div>
+                </div>
+            </div>
+            <div id="currentAllergens">
+                <div id="currentAllergensText">
+                    Allergens Of Selected Product
+                </div>
+                <div class="searchBar">
+                    <div class="searchIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1">
+                            <defs>
+                                <style>
+                                    .cls-1 {
+                                        fill: none;
+                                        stroke: #FFFFFF;
+                                        stroke-miterlimit: 10;
+                                        stroke-width: 1.91px;
+                                    }
+                                </style>
+                            </defs>
+                            <circle class="cls-1" cx="9.14" cy="9.14" r="7.64" />
+                            <line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39" />
+                        </svg>
+                    </div>
+                    <input class="inputFilter" id="allergenFilter" />
+                    <div class="searchButton" id="searchAllergenButton" onclick="searchAllergen()">Search</div>
+                </div>
+                <div class="filter" id="allergensFilter">
+                    <div class="filterText">Filter by: </div>
+                    <div class="allButton" id="allAllergensButton" onclick="selectAllAllergens()">All</div>
+                    <div class="ownedButton" id="ownedAllergensButton" onclick="selectOwnedAllergens()">Owned</div>
+                    <div class="notOwnedButton" id="notOwnedAllergensButton" onclick="selectNotOwnedAllergens()">Not Owned</div>
+                </div>
+                <ul id="currentAllergensList">
+                    <!-- PLACEHOLDER: CURRENT ALLERGENS -->
+                </ul>
+                <ul id="ownedAllergensList">
+                </ul>
+                <ul id="notOwnedAllergensList">
+                </ul>
+                <div class="buttonsRow">
+                    <div class="saveAndDeleteButtons" id="saveAllergenDetails" onclick="addAllergenDetails()">
+                        Save
+                    </div>
+                    <div class="saveAndDeleteButtons" id="deleteAllergenDetails" onclick="deleteAllergenDetails()">
+                        Delete
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

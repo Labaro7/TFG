@@ -66,6 +66,7 @@ public:
 
 	virtual std::vector<Allergen> getAllergens() = 0;
 	virtual Allergen getAllergenByName(const std::string name) = 0;
+	virtual std::vector<Allergen> getAllergensFromProduct(const Product& product) = 0;
 
 
 	// Change

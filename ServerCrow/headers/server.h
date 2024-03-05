@@ -72,6 +72,7 @@ public:
 
 	std::vector<Allergen> getAllergens() override;
 	Allergen getAllergenByName(const std::string name) override;
+	std::vector<Allergen> getAllergensFromProduct(const Product& product) override;
 
 
 	// Change

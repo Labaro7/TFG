@@ -37,6 +37,14 @@ extern const char* CURRENT_EMPLOYEES_PLACEHOLDER;
 extern const char* CURRENT_INGREDIENTS_PLACEHOLDER;
 extern const char* CURRENT_ALLERGENS_PLACEHOLDER;
 
+extern const std::string EUR_CODE;
+extern const std::string USD_CODE;
+extern const std::string GBP_CODE;
+extern const std::string JPY_CODE;
+extern const std::string SPACE_CODE;
+extern std::string DEFAULT_CURRENCY;
+extern std::string CURRENCY;
+
 // MySQL constants
 extern const std::string HOST;
 extern const int PORT;
@@ -49,12 +57,5 @@ extern const std::string ASCII_CHARACTERS;
 extern const int HASH_LENGTH;
 extern const std::string SESSION_TOKEN_NAME;
 extern const int SESSION_TOKEN_LENGTH;
-extern const std::string EUR;
-extern const std::string USD;
-extern const std::string GBP;
-extern const std::string JPY;
-extern const std::string SPACE_CODE;
-extern std::string DEFAULT_CURRENCY;
-extern std::string CURRENCY;
 
 #endif

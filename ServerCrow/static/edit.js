@@ -1,3 +1,12 @@
+const SELECTED_BACKGROUND_COLOR = "rgb(28, 89, 176)";
+const SELECTED_TEXT_COLOR = "white";
+const UNSELECTED_BACKGROUND_COLOR = "white"
+const UNSELECTED_TEXT_COLOR = "rgb(20, 20, 51)";
+
+const SELECTED_BUTTON_BACKGROUND_COLOR = "rgb(28, 89, 176)";
+const UNSELECTED_BUTTON_BACKGROUND_COLOR = "rgb(9, 43, 92)";
+const BUTTON_TEXT_COLOR = "white";
+
 // Init
 let tabNumber = 1;
 let currentGridNumber = 1;
@@ -40,7 +49,12 @@ let oldEmployee_username;
 let oldEmployee_password;
 let oldEmployee_session_token;
 
+// Ingredient + allergen
+let selectedProduct;
+let selectedProductElement
+let selectedIngredientFilter = document.getElementById("allIngredientsButton");
 
+selectAllIngredients();
 
 function changeTab(clickedTab) {
     const currentPage = document.querySelector('div[data-page="' + tabNumber + '"]');
@@ -248,10 +262,6 @@ function deleteProduct() {
 
 
 /* EMPLOYEE */
-const SELECTED_BACKGROUND_COLOR = "#0a3677";
-const SELECTED_TEXT_COLOR = "white";
-const UNSELECTED_BACKGROUND_COLOR = "white"
-const UNSELECTED_TEXT_COLOR = "rgb(20, 20, 51)";
 function selectEmployee(clickedEmployee) {
     let detailsInputArray = [
         document.getElementById("firstName"),
@@ -412,4 +422,167 @@ function deleteEmployeeDetails() {
         .catch(error => {
             console.error('Error:', error);
         });
+}
+
+
+/* INGREDIENTS + ALLERGENS */
+function selectProduct(clickedProduct) {
+    resetDisplay();
+
+    if (selectedProductElement === clickedProduct) {
+        selectedProductElement.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
+        selectedProductElement.style.color = UNSELECTED_TEXT_COLOR;
+        selectedProductElement = null;
+
+        resetDisplay();
+    }
+    else {
+        if (selectedProductElement) {
+            selectedProductElement.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
+            selectedProductElement.style.color = UNSELECTED_TEXT_COLOR;
+        }
+
+        selectedProductElement = clickedProduct;
+        selectedProductElement.style.backgroundColor = SELECTED_BACKGROUND_COLOR;
+        selectedProductElement.style.color = SELECTED_TEXT_COLOR;
+
+        displayIngredients(clickedProduct);
+        displayAllergens(clickedProduct);
+    }
+}
+
+function resetDisplay() {
+    let currentIngredients = document.getElementById("currentIngredientsList");
+    let ownedIngredients = document.getElementById("ownedIngredientsList");
+    let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
+    let currentAllergens = document.getElementById("currentAllergensList").children;
+
+    for (let ingredient of currentIngredients.children) {
+        ingredient.style.background = UNSELECTED_BACKGROUND_COLOR;
+        ingredient.style.color = UNSELECTED_TEXT_COLOR;
+        ingredient.style.display = "flex";
+    }
+
+    ownedIngredients.innerHTML = "";
+    notOwnedIngredients.innerHTML = currentIngredients.innerHTML;
+
+    for (let allergen of currentAllergens) {
+        allergen.style.background = UNSELECTED_BACKGROUND_COLOR;
+        allergen.style.color = UNSELECTED_TEXT_COLOR;
+        allergen.style.display = "flex";
+    }
+}
+
+function displayIngredients(clickedProduct) {
+    const clickedProductIngredients = clickedProduct.children[1].children;
+    let currentIngredients = document.getElementById("currentIngredientsList");
+    let ownedIngredients = document.getElementById("ownedIngredientsList");
+    let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
+
+    ownedIngredients.innerHTML = "";
+    notOwnedIngredients.innerHTML = currentIngredients.innerHTML;
+
+
+    for (let ingredient of clickedProductIngredients) {
+        let ingredientElement = document.getElementById(ingredient.textContent);
+        console.log(ingredientElement);
+
+        ingredientElement.style.background = SELECTED_BACKGROUND_COLOR;
+        ingredientElement.style.color = SELECTED_TEXT_COLOR;
+
+        let clonedIngredient = ingredientElement.cloneNode(true);
+        clonedIngredient.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
+        clonedIngredient.style.color = UNSELECTED_TEXT_COLOR;
+        ownedIngredients.appendChild(clonedIngredient);
+
+        console.log(notOwnedIngredients);
+        console.log(ingredient.textContent);
+        let owned = notOwnedIngredients.querySelector("#" + ingredient.textContent);
+        notOwnedIngredients.removeChild(owned);
+    }
+}
+
+function displayAllergens(clickedProduct) {
+    const clickedProductAllergens = clickedProduct.children[2].children;
+
+    for (let allergen of clickedProductAllergens) {
+        let allergenElement = document.getElementById(allergen.textContent);
+
+        console.log(allergen);
+
+        allergenElement.style.background = SELECTED_BACKGROUND_COLOR;
+        allergenElement.style.color = SELECTED_TEXT_COLOR;
+    }
+}
+
+function searchProduct() {
+
+}
+
+function searchIngredient() {
+
+}
+
+function searchAllergen() {
+
+}
+
+function selectAllIngredients() {
+    let currentIngredients = document.getElementById("currentIngredientsList");
+    let ownedIngredients = document.getElementById("ownedIngredientsList");
+    let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
+
+    currentIngredients.style.display = "block";
+    ownedIngredients.style.display = "none";
+    notOwnedIngredients.style.display = "none";
+
+    const allIngredients = document.getElementById("currentIngredientsList");
+
+    allIngredients.style.display = "block";
+
+    let allIngredientsButton = document.getElementById("allIngredientsButton");
+    let ownedIngredientsButton = document.getElementById("ownedIngredientsButton");
+    let notOwnedIngredientsButton = document.getElementById("notOwnedIngredientsButton");
+
+    allIngredientsButton.style.backgroundColor = SELECTED_BUTTON_BACKGROUND_COLOR;
+    ownedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+    notOwnedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+}
+
+function selectOwnedIngredients() {
+    let allIngredientsButton = document.getElementById("allIngredientsButton");
+    let ownedIngredientsButton = document.getElementById("ownedIngredientsButton");
+    let notOwnedIngredientsButton = document.getElementById("notOwnedIngredientsButton");
+
+    allIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+    ownedIngredientsButton.style.backgroundColor = SELECTED_BUTTON_BACKGROUND_COLOR;
+    notOwnedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+
+
+    let currentIngredients = document.getElementById("currentIngredientsList");
+    let ownedIngredients = document.getElementById("ownedIngredientsList");
+    let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
+
+    currentIngredients.style.display = "none";
+    ownedIngredients.style.display = "block";
+    notOwnedIngredients.style.display = "none";
+}
+
+function selectNotOwnedIngredients() {
+    let allIngredientsButton = document.getElementById("allIngredientsButton");
+    let ownedIngredientsButton = document.getElementById("ownedIngredientsButton");
+    let notOwnedIngredientsButton = document.getElementById("notOwnedIngredientsButton");
+
+    allIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+    ownedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+    notOwnedIngredientsButton.style.backgroundColor = SELECTED_BUTTON_BACKGROUND_COLOR;
+
+
+    let currentIngredients = document.getElementById("currentIngredientsList");
+    let ownedIngredients = document.getElementById("ownedIngredientsList");
+    let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
+
+    currentIngredients.style.display = "none";
+    ownedIngredients.style.display = "none";
+    notOwnedIngredients.style.display = "block";
 }

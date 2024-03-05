@@ -1278,23 +1278,38 @@ std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& produ
 		std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		query << "SELECT * FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
+		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
-		while (res->next())
+		if (res->next())
 		{
-			std::string name = res->getString("name");
+			int product_id = res->getInt("product_id");
 
-			Ingredient i(name);
-			ingredients.push_back(i);
+			query << "SELECT ingredient_id FROM productingredient WHERE product_id = " << product_id;
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int ingredient_id = res->getInt("ingredient_id");
+
+				query << "SELECT * FROM ingredients WHERE ingredient_id = " << ingredient_id;
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res2->next())
+				{
+					ingredients.push_back({ res2->getString("name") });
+				}
+			}
 		}
 
 		return ingredients;
 	}
 	catch (const sql::SQLException& e)
 	{
-		CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredients of product. Error message: " << e.what();
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get ingredients from product. Error message: " << e.what();
 		return ingredients; // Return an empty vector on error
 	}
 }
@@ -1349,6 +1364,51 @@ Allergen Database::getAllergenByName(const std::string name)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get allergen by name. Error message: " << e.what();
 		return allergen; // Return an empty Allergen on error
+	}
+}
+
+std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
+{
+	std::vector<Allergen> allergens;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		if (res->next())
+		{
+			int product_id = res->getInt("product_id");
+
+			query << "SELECT allergen_id FROM productallergen WHERE product_id = " << product_id;
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int allergen_id = res->getInt("allergen_id");
+
+				query << "SELECT * FROM allergens WHERE allergen_id = " << allergen_id;
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res2->next())
+				{
+					allergens.push_back({ res2->getString("name") });
+				}
+			}
+		}
+
+		return allergens;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get allergens from product. Error message: " << e.what();
+		return allergens;
 	}
 }
 
