@@ -333,7 +333,7 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 
 		if (getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password) VALUES(?,?,?,?,?,?,?,?)");
+			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -342,9 +342,8 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setInt(6, newEmployee.level);
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
+			pstmt->setString(9, generateSessionToken());
 			pstmt->execute();
-
-			generateSessionToken({ newEmployee.firstName, newEmployee.lastName, newEmployee.email, newEmployee.id, newEmployee.mobileNumber, newEmployee.level, newEmployee.username, newEmployee.password_hash, "" });
 
 			CROW_LOG_INFO << "[ADDED] Employee " << newEmployee.firstName << " " << newEmployee.lastName <<
 				" with level " << newEmployee.level;
@@ -360,13 +359,12 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setInt(6, newEmployee.level);
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
+			pstmt->setString(9, generateSessionToken());
 
-			pstmt->setString(9, oldEmployee.firstName);
-			pstmt->setString(10, oldEmployee.lastName);
-			pstmt->setInt(11, oldEmployee.level);
+			pstmt->setString(10, oldEmployee.firstName);
+			pstmt->setString(11, oldEmployee.lastName);
+			pstmt->setInt(12, oldEmployee.level);
 			pstmt->execute();
-
-			generateSessionToken({ newEmployee.firstName, newEmployee.lastName, newEmployee.email, newEmployee.id, newEmployee.mobileNumber, newEmployee.level, newEmployee.username, newEmployee.password_hash, "" });
 
 			CROW_LOG_INFO << "[UPDDATED] Employee " << oldEmployee.firstName << " " << oldEmployee.lastName <<
 				" with level " << oldEmployee.level <<
@@ -1486,7 +1484,7 @@ std::vector<page_t> Database::getDataFromPages()
 	}
 }
 
-std::string Database::generateSessionToken(Employee e)
+std::string Database::generateSessionToken()
 {
 	std::random_device rd;
 	std::mt19937 generator(rd());
@@ -1500,13 +1498,6 @@ std::string Database::generateSessionToken(Employee e)
 	}
 
 	std::string new_session_token = ss.str();
-
-	pstmt = con->prepareStatement("UPDATE employees SET session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
-	pstmt->setString(1, new_session_token);
-	pstmt->setString(2, e.firstName);
-	pstmt->setString(3, e.lastName);
-	pstmt->setInt(4, e.level);
-	pstmt->execute();
 
 	return new_session_token;
 }

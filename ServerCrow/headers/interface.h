@@ -88,7 +88,7 @@ public:
 
 
 	// Various
-	virtual std::string generateSessionToken(Employee e) = 0;
+	virtual std::string generateSessionToken() = 0;
 
 
 	// Print

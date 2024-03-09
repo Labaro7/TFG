@@ -384,7 +384,7 @@ int main()
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["oldEmployee"]["username"].s(),
 				 server.hash(json_data["oldEmployee"]["password"].s()),
-				 json_data["oldEmployee"]["session_token"].s()
+				 server.generateSessionToken()
 			 };
 
 			 Employee newEmployee =
@@ -397,7 +397,7 @@ int main()
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["newEmployee"]["username"].s(),
 				 server.hash(json_data["newEmployee"]["password"].s()),
-				 json_data["newEmployee"]["session_token"].s()
+				 server.generateSessionToken()
 			 };
 
 			 server.saveEmployee(oldEmployee, newEmployee);
@@ -422,7 +422,7 @@ int main()
 				 static_cast<int>(json_data["oldEmployee"]["level"].i()),
 				 json_data["oldEmployee"]["username"].s(),
 				 server.hash(json_data["oldEmployee"]["password"].s()),
-				 json_data["oldEmployee"]["session_token"].s()
+				 server.generateSessionToken()
 			 };
 
 			 server.removeEmployee(employee);

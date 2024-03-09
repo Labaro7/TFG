@@ -97,7 +97,7 @@ public:
 	void payTable(const int& n_table, const std::string& employee, const std::string& date);
 	std::string prepareOrdersJSON(const std::vector<Order>& orders);
 	std::string hash(const std::string& s);
-	std::string generateSessionToken(Employee e) override;
+	std::string generateSessionToken() override;
 
 
 	// Print

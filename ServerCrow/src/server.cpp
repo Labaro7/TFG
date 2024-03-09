@@ -276,9 +276,9 @@ std::string Server::hash(const std::string& s)
 	return ss.str();
 }
 
-std::string Server::generateSessionToken(Employee e)
+std::string Server::generateSessionToken()
 {
-	return database->generateSessionToken(e);
+	return database->generateSessionToken();
 }
 
 void Server::modifyProduct(const Product& oldProduct,

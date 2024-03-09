@@ -11,7 +11,7 @@ const BUTTON_TEXT_COLOR = "white";
 let tabNumber = 1;
 let currentGridNumber = 1;
 let currentButton = document.getElementById("productsPagesButton" + 1);
-currentButton.style.backgroundColor = "rgb(28, 89, 176)";
+currentButton.style.backgroundColor = "#0a3677";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
 let selectedDeployable = 0;
@@ -107,11 +107,11 @@ function selectButton(number) {
     let button = document.getElementById("productsPagesButton" + number);
     currentButton.style.backgroundColor = "white";
     currentButton.style.color = "black";
-    currentButton.style.border = "1px solid black";
+    currentButton.style.border = "1px solid #0a3677";
     currentButton = button;
 
     button = document.getElementById("productsPagesButton" + number);
-    button.style.backgroundColor = "rgb(28, 89, 176)";
+    button.style.backgroundColor = "#0a3677";
     button.style.color = "white";
     currentButton.style.border = "1px solid black";
 }
@@ -472,14 +472,10 @@ function resetDisplay() {
 function selectIngredient(clickedIngredient) {
     if (clickedIngredient.style.backgroundColor === SELECTED_BACKGROUND_COLOR) {
         clickedIngredient.style.background = UNSELECTED_BACKGROUND_COLOR;
-        clickedIngredient.style.color = UNSELECTED_TEXT_COLOR;
-
 
     }
     else {
         clickedIngredient.style.background = SELECTED_BACKGROUND_COLOR;
-        clickedIngredient.style.color = SELECTED_TEXT_COLOR;
-
     }
 
 }
@@ -503,6 +499,7 @@ function displayIngredients(clickedProduct) {
         let clonedIngredient = ingredientElement.cloneNode(true);
         clonedIngredient.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
         clonedIngredient.style.color = UNSELECTED_TEXT_COLOR;
+        clonedIgredient.onclick = selectIngredient(ingredientElement);
         ownedIngredients.appendChild(clonedIngredient);
 
         let owned = notOwnedIngredients.querySelector("#" + ingredient.textContent);
@@ -644,32 +641,6 @@ function selectNotOwnedIngredients() {
     currentIngredients.style.display = "none";
     ownedIngredients.style.display = "none";
     notOwnedIngredients.style.display = "block";
-}
-
-function setNewIngredientName(newIngredient) {
-    if (newIngredient.children[0]) {
-        newIngredient.id = newIngredient.children[0].value;
-    }
-}
-
-function addNewIngredient() {
-    let currentIngredients = document.getElementById("currentIngredientsList");
-    //let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
-
-    let newIngredient = document.createElement("li");
-    newIngredient.className = "currentIngredient";
-    newIngredient.onclick = function () { selectIngredient(newIngredient) };
-
-    let newIngredientInput = document.createElement("input");
-    newIngredientInput.className = "newIngredientInput";
-    newIngredientInput.style.fontSize = "20px";
-    newIngredientInput.style.fontWeight = "700";
-    newIngredientInput.style.color = "rgb(20, 20, 51)";
-    newIngredientInput.onchange = setNewIngredientName(newIngredient);
-    newIngredientInput.onclick = function (event) { event.stopPropagation(); };
-
-    newIngredient.appendChild(newIngredientInput);
-    currentIngredients.appendChild(newIngredient);
 }
 
 function displayAllergens(clickedProduct) {

@@ -371,11 +371,12 @@ numTable {
     align-items: center;
     position: relative;
     text-align: center;
-    max-height: 50px;
-    max-width: 100px;
+    max-height: 60px;
+    max-width: 105px;
     border: 1px solid black;
     left: 6px;
     z-index: 5;
+    height: 40px;
 }
 
 #modifyProductMenu {
@@ -451,22 +452,28 @@ numTable {
     max-width: 115px;
 }
 
-#modifyProductAmountButton, #deleteProductButton {
-    height: 100%;
+#addDetailsButton {
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+#deleteProductButton {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+#modifyProductAmountButton, #deleteProductButton, #addDetailsButton {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    height: 100%;
 }
 
 #modifyProductMenu {
     display: none;
     position: absolute;
-}
-
-#binSVG {
-    padding: 5px;
 }
 
 /* Move table menu */

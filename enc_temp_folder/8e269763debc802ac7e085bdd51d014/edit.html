@@ -6,65 +6,50 @@
     <link rel="icon" href="..\static\favicon.png" sizes="1x1" type="image/png">
 </head>
 <body>
-    <div id="pages">
-        <div class="tabs">
-            <div class="tab-button" data-tab="1" onclick="changeTab(this)">
-                <div id="productTab"><b>Products</b></div>
-                <div id="tab-button1"></div>
-            </div>
-
-            <div class="tab-button" data-tab="2" onclick="changeTab(this)">
-                <div id="employeeTab"><b>Employees</b></div>
-                <div id="tab-button2"></div>
-            </div>
-
-            <div class="tab-button" data-tab="3" onclick="changeTab(this)">
-                <div id="ingredientAndAllergenTab"><b>Ingredients and Allergens</b></div>
-                <div id="tab-button3"></div>
-            </div>
-
-            <div class="tab-button" data-tab="4" onclick="changeTab(this)">
-                <div id="settingsTab"><b>Settings</b></div>
-                <div id="tab-button4"></div>
-            </div>
+    <div class="tabs">
+        <div class="tab-button" data-tab="1" onclick="changeTab(this)">
+            <div id="productTab"><b>Products</b></div>
+            <div id="tab-button1"></div>
         </div>
+
+        <div class="tab-button" data-tab="2" onclick="changeTab(this)">
+            <div id="employeeTab"><b>Employees</b></div>
+            <div id="tab-button2"></div>
+        </div>
+
+        <div class="tab-button" data-tab="3" onclick="changeTab(this)">
+            <div id="ingredientAndAllergenTab"><b>Ingredients and Allergens</b></div>
+            <div id="tab-button3"></div>
+        </div>
+    </div>
+
+    <div id="pages">
         <div class="page" id="productPage" data-page="1">
-            <div class="productTab">
-                <div class="productContent" id="productPage">
-                    <div id="pagesTitle">
-                        Current Products
-                    </div>
-                    <div class="productPages">
-                        <!-- PLACEHOLDER: PRODUCTS PAGES BUTTONS -->
-                    </div>
-                    <div class="content">
-                        <!-- PLACEHOLDER: LIST OF PRODUCTS -->
-                    </div>
+            <div class="productPages">
+                <!--
+                <div class="productsPagesButtons" id="productsPagesButton1" data-number="1" onclick="displayMenu(this)">1</div>
+                -->
+                <!-- PLACEHOLDER: PRODUCTS PAGES BUTTONS -->
+            </div>
+
+            <div class="page" id="productPage">
+                <div class="content">
+                    <!-- PLACEHOLDER: LIST OF PRODUCTS -->
                 </div>
-
-                <div id="arrows">
-                    <svg id="arrow1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-2</title><g id="Left-4" data-name="Left"><path d="M19,12a1,1,0,0,1-1,1H8.414l1.293,1.293a1,1,0,1,1-1.414,1.414l-3-3a1,1,0,0,1,0-1.414l3-3A1,1,0,0,1,9.707,9.707L8.414,11H18A1,1,0,0,1,19,12Z" style="fill:#000000" /></g></svg>
-                    <svg id="arrow1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-1</title><g id="Right-4" data-name="Right"><path d="M18.707,12.707l-3,3a1,1,0,0,1-1.414-1.414L15.586,13H6a1,1,0,0,1,0-2h9.586L14.293,9.707a1,1,0,0,1,1.414-1.414l3,3A1,1,0,0,1,18.707,12.707Z" style="fill:#000000" /></g></svg>
-
-                </div>
-
                 <div id="forms">
                     <div id="addProductForm" action="/add/product" method="post">
-                        <div id="addProductTitle" class="formTitle">
-                            Add New Product
-                        </div>
                         <div id="name">
-                            <div>Name</div>
-                            <input id="nameInput" name="nameInput" maxlength="30" size="30" placeholder="Enter product name" />
+                            <div>NAME</div>
+                            <input id="nameInput" name="nameInput" maxlength="30" size="30" />
                         </div>
 
                         <div id="price">
-                            <div>Price</div>
+                            <div>PRICE</div>
                             <input type="number" maxlength="5" size="5" id="priceInput" name="priceInput" min="0" max="9999.999" step="0.01" value="0.0" />
                         </div>
 
                         <div id="color">
-                            <div>Color</div>
+                            <div>COLOR</div>
                             <input type="color" list="redColors" id="colorInput" name="colorInput" value="#FFFFFF" />
                             <datalist id="redColors">
                                 <option value="#FFFFFF"></option>
@@ -83,42 +68,37 @@
                         </div>
 
                         <div name="isDeployable" id="isDeployable">
-                            <div>Deployable</div>
+                            <div>DEPLOYABLE</div>
                             <select id="deployableInput" name="deployableInput">
                                 <option value="Non-deployable">Non-deployable</option>
                                 <option value="Deployable">Deployable</option>
                             </select>
                         </div>
 
-                        <div class="buttons">
-                            <button id="acceptInput" onclick="addProduct()">Save</button>
-                            <button type="reset" id="resetInput">Reset</button>
-                        </div>
+                        <button type="reset" id="resetInput">Reset</button>
+                        <button id="acceptInput" onclick="addProduct()">Accept</button>
                     </div>
 
-                    <div id="modifyProductForm">
-                        <div id="addProductTitle" class="formTitle">
-                            Modify Current Product
-                        </div>
+                    <form id="modifyProductForm">
                         <div id="selectedElementText">
-                            Selected element
+                            SELECTED ELEMENT
                         </div>
                         <div id="selectedElement">
 
                         </div>
 
                         <div id="newName">
-                            <div>New name</div>
-                            <input id="newNameInput" name="newNameInput" maxlength="30" size="30" placeholder="Enter new product name" />
+                            <div>NEW NAME</div>
+                            <input id="newNameInput" name="newNameInput" maxlength="30" size="30" />
                         </div>
 
                         <div id="newPrice">
-                            <div>New price</div>
+                            <div>NEW PRICE</div>
                             <input type="number" maxlength="5" size="5" id="newPriceInput" name="priceInput" min="0" max="9999.999" step="0.01" value="0.0" />
                         </div>
 
                         <div id="newColor">
-                            <div>New color</div>
+                            <div>NEW COLOR</div>
                             <input type="color" list="redColors" id="newColorInput" name="newColorInput" value="#FFFFFF" />
                             <datalist id="redColors">
                                 <option value="#FFFFFF"></option>
@@ -135,14 +115,11 @@
                                 <option value="#FF80EE"></option>
                             </datalist>
                         </div>
-                        <div class="buttons">
-                            <div id="acceptModifyInput" onclick="modifyProduct()">Save</div>
-                            <div type="reset" id="resetModifyInput">Reset</div>
-                            <div id="deleteProductButton" onclick="deleteProduct()">Delete</div>
-                        </div>
-                    </div>
+                        <button id="deleteProductButton" onclick="deleteProduct()">Delete</button>
+                        <button type="reset" id="resetModifyInput">Reset</button>
+                        <button id="acceptModifyInput" onclick="modifyProduct()">Accept</button>
+                    </form>
                 </div>
-
             </div>
         </div>
 
@@ -167,11 +144,6 @@
                     </svg>
                 </div>
             </div>
-
-            <div>
-                <svg id="arrow2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-1</title><g id="Right-4" data-name="Right"><path d="M18.707,12.707l-3,3a1,1,0,0,1-1.414-1.414L15.586,13H6a1,1,0,0,1,0-2h9.586L14.293,9.707a1,1,0,0,1,1.414-1.414l3,3A1,1,0,0,1,18.707,12.707Z" style="fill:#000000" /></g></svg>
-            </div>
-
             <div id="selectedEmployeeDetails">
                 <div id="selectedEmployeeDetailsText">
                     Selected Employee's Details
@@ -233,24 +205,18 @@
         <div class="page" id="ingredientAndAllergensPage" data-page="3">
             <div id="currentProducts">
                 <div id="currentProductsText">
-                    Product List
+                    Current Product List
                 </div>
                 <div class="searchBar">
                     <div class="searchIcon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill: none;
-                                        stroke: #FFFFFF;
-                                        stroke-miterlimit: 10;
-                                        stroke-width: 1.91px;
-                                    }
-                                </style>
-                            </defs>
-                            <circle class="cls-1" cx="9.14" cy="9.14" r="7.64" />
-                            <line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1"><defs><style>
+                                                                                                                                                            .cls-1 {
+                                                                                                                                                                fill: none;
+                                                                                                                                                                stroke: #FFFFFF;
+                                                                                                                                                                stroke-miterlimit: 10;
+                                                                                                                                                                stroke-width: 1.91px;
+                                                                                                                                                            }
+                        </style></defs><circle class="cls-1" cx="9.14" cy="9.14" r="7.64" /><line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39" /></svg>
                     </div>
                     <input class="inputFilter" id="productFilter" />
                     <div class="searchButton" id="searchProductButton" onclick="searchProduct()">Search</div>
@@ -261,12 +227,10 @@
                 <ul id="filteredProductsList">
                 </ul>
             </div>
-            <div>
-                <svg id="arrow2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-1</title><g id="Right-4" data-name="Right"><path d="M18.707,12.707l-3,3a1,1,0,0,1-1.414-1.414L15.586,13H6a1,1,0,0,1,0-2h9.586L14.293,9.707a1,1,0,0,1,1.414-1.414l3,3A1,1,0,0,1,18.707,12.707Z" style="fill:#000000" /></g></svg>
-            </div>
+
             <div id="currentIngredients">
                 <div id="currentIngredientsText">
-                    Ingredient List
+                    Ingredients Of Selected Product
                 </div>
                 <div class="searchBar">
                     <div class="searchIcon">
@@ -302,9 +266,6 @@
                 <ul id="notOwnedIngredientsList">
                 </ul>
                 <div class="buttonsRow">
-                    <div class="saveAndDeleteButtons" id="addNewIngredient" onclick="addNewIngredient()">
-                        Add New
-                    </div>
                     <div class="saveAndDeleteButtons" id="saveIngredientsDetails" onclick="addIngredientsDetails()">
                         Save
                     </div>
@@ -313,14 +274,9 @@
                     </div>
                 </div>
             </div>
-
-            <div>
-                <svg id="arrow2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-1</title><g id="Right-4" data-name="Right"><path d="M18.707,12.707l-3,3a1,1,0,0,1-1.414-1.414L15.586,13H6a1,1,0,0,1,0-2h9.586L14.293,9.707a1,1,0,0,1,1.414-1.414l3,3A1,1,0,0,1,18.707,12.707Z" style="fill:#000000" /></g></svg>
-            </div>
-
             <div id="currentAllergens">
                 <div id="currentAllergensText">
-                    Allergen List
+                    Allergens Of Selected Product
                 </div>
                 <div class="searchBar">
                     <div class="searchIcon">
@@ -365,10 +321,8 @@
                 </div>
             </div>
         </div>
-        <div class="page" id="configPage" data-page="4">
+    </div>
 
-        </div>
-
-        <script src="..\static\edit.js"></script>
+    <script src="..\static\edit.js"></script>
 </body>
 </html>

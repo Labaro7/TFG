@@ -115,7 +115,7 @@ public:
 
 
 	// Various
-	std::string generateSessionToken(Employee e) override;
+	std::string generateSessionToken() override;
 
 
 	// Print

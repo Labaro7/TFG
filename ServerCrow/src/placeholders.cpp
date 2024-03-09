@@ -414,7 +414,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 
 	for (const auto& ingredient : ingredients)
 	{
-		ss << "<li class='currentIngredient' id='" << ingredient.name << "'>" << ingredient.name << "</li>";
+		ss << "<li class='currentIngredient' onclick='selectIngredient(this)' id='" << ingredient.name << "'>" << ingredient.name << "</li>";
 	}
 
 	currentIngredientsHTML = ss.str();
@@ -440,7 +440,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& pr
 
 	for (const auto& allergen : allergens)
 	{
-		ss << "<li class='currentAllergen' id='" << allergen.name << "'>" << allergen.name << "</li>";
+		ss << "<li class='currentAllergen' onclick='selectAllergen(this)' id='" << allergen.name << "'>" << allergen.name << "</li>";
 	}
 
 	currentAllergensHTML = ss.str();
