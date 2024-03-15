@@ -143,7 +143,10 @@ int main()
 			 auto added = json_data["added"];
 			 auto modified = json_data["modified"];
 			 auto deleted = json_data["deleted"];
+			 auto employeeName = json_data["employee"].s();
+
 			 Table t = server.getTableByNumber(n_table);
+			 Employee employee = server.getEmployeeByName(employeeName);
 
 			 // If a table with that number doesnt exist
 			 if (t.isEmpty())
@@ -163,7 +166,7 @@ int main()
 						   false,
 						   object["details"].s());
 
-				 server.saveTableProduct(t, p, times, details);
+				 server.saveTableProduct(t, p, times, details, employee);
 			 }
 
 			 for (const auto& object : modified)

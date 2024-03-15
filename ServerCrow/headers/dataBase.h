@@ -61,7 +61,7 @@ public:
 	void saveIngredient(const Ingredient& ingredient) override;
 	void saveAllergen(const Allergen& allergen) override;
 
-	void saveTableProduct(Table& table, const Product& product, const int& amount, const std::string& details) override;
+	void saveTableProduct(Table& table, const Product& product, const int& amount, const std::string& details, const Employee& employee) override;
 	void saveOrderProduct(const Order& order, const int& product_id, const int& amount) override;
 	void saveProductIngredient(const Product& product, const Ingredient& ingredient) override;
 	void saveProductAllergen(const Product& product, const Allergen& allergen) override;
@@ -74,9 +74,10 @@ public:
 
 	std::vector<Table> getTables() override;
 	Table getTableByNumber(const int n_table) override;
+	std::string getLastModifiedFromTable(const Table& table) override;
 
 	std::vector<Employee> getEmployees() override;
-	Employee getEmployeeByName(const std::string& firstName, const std::string& lastName) override;
+	Employee getEmployeeByName(const std::string& fullName) override;
 	Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) override;
 	Employee getEmployeeBySessionToken(const std::string& session_token) override;
 

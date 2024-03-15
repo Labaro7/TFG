@@ -71,6 +71,7 @@ struct Table
 	double bill;
 	double discount;
 	double bill_with_discount;
+	std::string last_modified;
 
 	Table();
 	Table(int n_table);

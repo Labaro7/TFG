@@ -153,7 +153,7 @@ void Server::initialize()
 	saveTable(t1);
 	for (auto const& p : order1)
 	{
-		saveTableProduct(t1, p.first, p.second, "");
+		saveTableProduct(t1, p.first, p.second, "", {});
 	}
 
 	product_unordered_map order2 = { {p31, 3}, {p26, 1} };
@@ -161,7 +161,7 @@ void Server::initialize()
 	saveTable(t2);
 	for (auto const& p : order2)
 	{
-		saveTableProduct(t2, p.first, p.second, "");
+		saveTableProduct(t2, p.first, p.second, "", {});
 	}
 
 	pages[0] = { tup1, tup2, tup3, tup4, tup5, tup6, tup7 };
@@ -349,13 +349,14 @@ void Server::saveAllergen(const Allergen& allergen)
 void Server::saveTableProduct(Table& table,
 							  const Product& product,
 							  const int& times,
-							  const std::string& details)
+							  const std::string& details,
+							  const Employee& employee)
 {
 	Table aux(table);
 	aux.bill += product.price;
 	//restaurant->current_tables[table.n_table] = table;
 
-	database->saveTableProduct(aux, product, times, details);
+	database->saveTableProduct(aux, product, times, details, employee);
 }
 
 void Server::saveProductAllergen(const Product& product, const Allergen& allergen)
@@ -390,14 +391,19 @@ Table Server::getTableByNumber(int n_table)
 	return database->getTableByNumber(n_table);
 }
 
+std::string Server::getLastModifiedFromTable(const Table& table)
+{
+	return database->getLastModifiedFromTable(table);
+}
+
 std::vector<Employee> Server::getEmployees()
 {
 	return database->getEmployees();
 }
 
-Employee Server::getEmployeeByName(const std::string& firstName, const std::string& lastName)
+Employee Server::getEmployeeByName(const std::string& fullName)
 {
-	return database->getEmployeeByName(firstName, lastName);
+	return database->getEmployeeByName(fullName);
 }
 
 Employee Server::getEmployeeByAccount(const std::string& username,

@@ -182,12 +182,16 @@ body {
     gap: 2px;
     margin: 0px 0px;
     cursor: pointer;
+    height: 50px;
 }
 
 .productsPagesButton {
     flex: 1;
     background-color: white;
     border: 1px solid rgb(9, 43, 92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .fifthRow {
@@ -399,7 +403,7 @@ body {
     font-size: 20px;
     padding-right: 5px;
     margin-bottom: 4px;
-    font-weight: 500;
+    font-weight: 100;
     position: relative;
     margin-left: 5px;
     margin-right: auto;

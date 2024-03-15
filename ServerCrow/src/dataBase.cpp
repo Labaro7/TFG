@@ -247,7 +247,7 @@ void Database::initialize()
 {
 	// Create the tables to define the domain
 	// TODO: Make n_table primary key so there are no duplicate tables
-	MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
+	MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, last_modified VARCHAR(45)");
 	MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, firstName VARCHAR(45), lastName VARCHAR(45), email VARCHAR(45), id VARCHAR(45), mobileNumber VARCHAR(45), level INT, username VARCHAR(45), password VARCHAR(45), session_token VARCHAR(45)");
 	MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
 	MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, paid DOUBLE, discount DOUBLE, method VARCHAR(45), employee VARCHAR(45), date VARCHAR(45)");
@@ -331,7 +331,10 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		if (getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty() && getEmployeeByName(newEmployee.firstName, newEmployee.lastName).isEmpty())
+		const std::string oldEmployeeFullName = oldEmployee.firstName + " " + oldEmployee.lastName;
+		const std::string newEmployeeFullName = oldEmployee.firstName + " " + oldEmployee.lastName;
+
+		if (getEmployeeByName(oldEmployeeFullName).isEmpty() && getEmployeeByName(newEmployeeFullName).isEmpty())
 		{
 			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
 			pstmt->setString(1, newEmployee.firstName);
@@ -348,7 +351,7 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			CROW_LOG_INFO << "[ADDED] Employee " << newEmployee.firstName << " " << newEmployee.lastName <<
 				" with level " << newEmployee.level;
 		}
-		else if (!getEmployeeByName(oldEmployee.firstName, oldEmployee.lastName).isEmpty())
+		else if (!getEmployeeByName(oldEmployeeFullName).isEmpty())
 		{
 			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ? WHERE firstName = ? AND lastName = ? AND level = ?");
 			pstmt->setString(1, newEmployee.firstName);
@@ -556,7 +559,8 @@ void Database::saveAllergen(const Allergen& allergen)
 void Database::saveTableProduct(Table& table,
 								const Product& product,
 								const int& amount,
-								const std::string& details)
+								const std::string& details,
+								const Employee& employee)
 {
 	try
 	{
@@ -579,10 +583,12 @@ void Database::saveTableProduct(Table& table,
 		{
 			table_id = res->getInt("table_id");
 			double new_bill = res->getDouble("bill") + (product.price * amount);
+			const std::string employeeName = employee.firstName + " " + employee.lastName;
 
-			pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
+			pstmt = con->prepareStatement("UPDATE tables SET bill = ?, last_modified = ? WHERE table_id = ?");
 			pstmt->setDouble(1, new_bill);
-			pstmt->setInt(2, table_id);
+			pstmt->setString(2, employeeName);
+			pstmt->setInt(3, table_id);
 			pstmt->execute();
 
 			CROW_LOG_INFO << "[UPDATED] Table " << table.n_table <<
@@ -821,6 +827,35 @@ Table Database::getTableByNumber(const int n_table)
 	}
 }
 
+std::string Database::getLastModifiedFromTable(const Table& table)
+{
+	std::string last_modified;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+
+		query << "SELECT last_modified FROM tables WHERE n_table = " << table.n_table; // TODO: change tables for a varible that corresponds to the table name
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		if (res->next())
+		{
+			last_modified = res->getString("last_modified");
+		}
+
+		return last_modified;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get last_modified. Error message: " << e.what();
+		return last_modified;
+	}
+}
+
+
 std::vector<Employee> Database::getEmployees()
 {
 	std::vector<Employee> employees;
@@ -858,8 +893,7 @@ std::vector<Employee> Database::getEmployees()
 	}
 }
 
-Employee Database::getEmployeeByName(const std::string& firstName,
-									 const std::string& lastName)
+Employee Database::getEmployeeByName(const std::string& fullName)
 {
 	Employee employee;
 
@@ -868,12 +902,15 @@ Employee Database::getEmployeeByName(const std::string& firstName,
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		query << "SELECT * FROM employees WHERE firstName = '" << firstName << "' AND lastName = '" << lastName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
+		std::cout << "hey1 " << std::endl;
+		query << "SELECT * FROM employees WHERE CONCAT(firstName, ' ', lastName) = '" << fullName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
 		if (res->next())
 		{
+			std::cout << "hey2 " << std::endl;
+
 			employee.firstName = res->getString("firstName");
 			employee.lastName = res->getString("lastName");
 			employee.email = res->getString("email");

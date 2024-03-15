@@ -16,7 +16,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 	for (const auto& t : tables)
 	{
-		ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "</a><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY_SYMBOL << "</div></li>" << std::endl;
+		const std::string last_modified = server.getLastModifiedFromTable(t);
+		ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "<div class='lastModified'>" << last_modified << "</div></a><div class = 'tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY_SYMBOL << "</div></li>";
 	}
 
 	std::string tablesPricesHTML = ss.str();

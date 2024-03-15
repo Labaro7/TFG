@@ -855,8 +855,7 @@ function selectProductToDelete(clickedElement) {
             const price = document.getElementById("price");
             const discount = document.getElementById("discount").textContent;
 
-            let currency = " " + price.textContent[price.textContent.length - 1];
-            price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
+            price.textContent = (parseFloat(price.textContent) - (parseFloat(added_ticket[index].price) * added_ticket[index].times * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
             added_ticket.splice(index, 1);
 
             let addedDivision = document.getElementById("divisionAddedProducts");

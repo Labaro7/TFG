@@ -34,7 +34,7 @@ public:
 	virtual void saveIngredient(const Ingredient& ingredient) = 0;
 	virtual void saveAllergen(const Allergen& allergen) = 0;
 
-	virtual void saveTableProduct(Table& table, const Product& product, const int& amount, const std::string& details) = 0;
+	virtual void saveTableProduct(Table& table, const Product& product, const int& amount, const std::string& details, const Employee& employee) = 0;
 	virtual void saveOrderProduct(const Order& order, const int& product_id, const int& amount) = 0;
 	virtual void saveProductIngredient(const Product& product, const Ingredient& ingredient) = 0;
 	virtual void saveProductAllergen(const Product& product, const Allergen& allergen) = 0;
@@ -47,9 +47,11 @@ public:
 
 	virtual std::vector<Table> getTables() = 0;
 	virtual Table getTableByNumber(const int n_table) = 0;
+	virtual std::string getLastModifiedFromTable(const Table& table) = 0;
+
 
 	virtual std::vector<Employee> getEmployees() = 0;
-	virtual Employee getEmployeeByName(const std::string& firstName, const std::string& lastName) = 0;
+	virtual Employee getEmployeeByName(const std::string& fullName) = 0;
 	virtual Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) = 0;
 	virtual Employee getEmployeeBySessionToken(const std::string& session_token) = 0;
 
