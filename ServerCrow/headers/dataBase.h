@@ -112,6 +112,8 @@ public:
 
 	void removeTableProduct(const int& n_table, const Product& product, const int& times)  override;
 	void removeProductIngredient(const Product& product, const Ingredient& ingredient) override;
+	void removeProductIngredients(const Product& product) override;
+	void removeProductAllergens(const Product& product) override;
 
 
 	// Various

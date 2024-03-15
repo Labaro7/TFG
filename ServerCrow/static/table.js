@@ -75,24 +75,77 @@ function sortTicketAlphabetically() {
     ul.innerHTML += '<div id="divisionAddedProducts"><div class="horizontal-line"></div>ADDED<div class="horizontal-line"></div></div>'
 }
 
+function showIngredientsAndAllergens(secondRow) {
+    let lastOrder = secondRow.children[0];
+    let productList = document.querySelectorAll('div.products-names, li.product');
+    let lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
+
+    productList.forEach(function (product) {
+        if (product.textContent === lastOrderName) {
+            let ingredients = product.parentElement.children[2].children;
+            let allergens = product.parentElement.children[3].children;
+
+            if (ingredients.length) {
+                for (let ingredient of ingredients) {
+                    let ingredientName = ingredient.textContent;
+
+                    console.log(ingredientName);
+                }
+            }
+
+            if (allergens.length) {
+                for (let allergen of allergens) {
+                    let allergenName = allergen.textContent;
+
+                    console.log(allergenName);
+                }
+            }
+        }
+    });
+}
+
 function goBack() {
     setTimeout(() => { window.location.href = "/"; }, 10);
 }
+
+function searchByName(array, name) {
+    return array.find(function (obj) {
+        return obj.name === name;
+    });
+}
 function deleteLastOrder() {
+    let lastOrder = secondRow.children[0];
+    let lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
+    let currency = " " + price.textContent[price.textContent.length - 1];
+
     if (added_ticket.length > 0) {
-        let last = added_ticket[added_ticket.length - 1];
+        let last = searchByName(added_ticket, lastOrderName);
+        let lastIndex = added_ticket.indexOf(last);
         const discount = document.getElementById("discountValue").textContent;
-        price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * parseInt(last.times) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2); // TODO: Change por removed product price
+        price.textContent = (parseFloat(price.textContent) - (parseFloat(last.price) * parseInt(last.times) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency; // TODO: Change por removed product price
 
         // Remove the li item
         let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
-        if (ticketList.lastElementChild.contains(modifyDeleteMenu)) {
-            modifyDeleteMenu.style.display = "none";
-            document.body.appendChild(modifyDeleteMenu);
-        }
-        ticketList.removeChild(ticketList.lastElementChild);
+        let addedTicketProducts = document.querySelectorAll('li.addedTicketProduct');
 
-        added_ticket.pop();
+        for (let addedTicket of addedTicketProducts) {
+            let ticketElements = addedTicket.querySelectorAll('div.productNames');
+
+            ticketElements.forEach(function (item) {
+                if (item.textContent.includes(lastOrderName)) {
+                    let ticketElement = item.parentElement.parentElement;
+
+                    if (ticketElement.contains(modifyDeleteMenu)) {
+                        modifyDeleteMenu.style.display = "none";
+                        document.body.appendChild(modifyDeleteMenu);
+                    }
+
+                    ticketList.removeChild(ticketElement);
+                }
+            });
+        }
+
+        added_ticket.splice(lastIndex, 1);
         last = added_ticket[added_ticket.length - 1];
 
         // Remove from ticket array
@@ -127,11 +180,10 @@ function addProductToTicket(clickedProduct) {
 
     let last = "x" + + added_ticket[added_ticket.length - 1];
     let found = added_ticket.find(prod => (prod.name === (clickedProduct.children)[0].textContent && prod.details === ""));
-    console.log(found);
 
     if (added_ticket.length === 0) document.getElementById("divisionAddedProducts").style.display = "flex";
 
-    console.log(found);
+    let currency = " " + price.textContent[price.textContent.length - 1];
     if (found) {
         found["times"] += multiplier_array[multiplier_index];
 
@@ -142,7 +194,7 @@ function addProductToTicket(clickedProduct) {
 
         lastProduct.textContent = "x" + found["times"] + " " + found.name + " | " + found.price;
 
-        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(found.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
     }
     else {
         let product = {
@@ -205,7 +257,7 @@ function addProductToTicket(clickedProduct) {
 
         ticketList.appendChild(child);
 
-        price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+        price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
     }
 }
 
@@ -224,11 +276,16 @@ function openDeployable(clickedDeployable) {
 
 
 function changeToProductsTab() {
-    const ProductsTab = document.getElementById("tab-buttonProducts");
-    const TicketTab = document.getElementById("tab-buttonTicket");
+    const productsTab = document.getElementById("products");
+    const ticketTab = document.getElementById("ticket");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
-    ProductsTab.style.visibility = 'visible';
-    TicketTab.style.visibility = 'hidden';
+
+    productsTab.style.backgroundColor = "rgb(9, 43, 92)";
+    productsTab.style.color = "white";
+    ticketTab.style.backgroundColor = "white";
+    ticketTab.style.color = "black";
+
+
     modifyDeleteMenu.style.visibility = 'hidden';
 
     const productsMenu = document.getElementById("productsMenu");
@@ -239,11 +296,15 @@ function changeToProductsTab() {
 
 
 function changeToTicketTab() {
-    const ProductsTab = document.getElementById("tab-buttonProducts");
-    const TicketTab = document.getElementById("tab-buttonTicket");
+    const productsTab = document.getElementById("products");
+    const ticketTab = document.getElementById("ticket");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
-    ProductsTab.style.visibility = 'hidden';
-    TicketTab.style.visibility = 'visible';
+
+    productsTab.style.backgroundColor = "white";
+    productsTab.style.color = "black";
+    ticketTab.style.backgroundColor = "rgb(9, 43, 92)";
+    ticketTab.style.color = "white";
+
     modifyDeleteMenu.style.visibility = 'visible';
 
     const productsMenu = document.getElementById("productsMenu");
@@ -481,20 +542,36 @@ function moveTable() {
         });
 }
 
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
+
 function payTable() {
+    let billPrice = price.textContent.slice(0, -2);
+
     let data = {
-        n_table: n_table.textContent.substr(7), //substr to delete "Table: "
+        n_table: n_table.textContent.substr(7),
+        n_clients: 2,
         ticket: current_ticket,
-        price: price.textContent,
-        date: new Date(),
-        //method: cash or card
+        bill: billPrice,
+        paid: billPrice,
+        discount: 0.0,
+        method: "Card",
+        date: formatDate(new Date())
     }
     if (getCookie("employee_name") != null) {
         data.employee = getCookie("employee_name")
     }
 
     const url = "/payTable";
-    fetch(url, {
+    fetch(url, {    
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -596,6 +673,7 @@ function openModifyDeleteMenu(clickedProduct) {
         if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "white";
+                clickedProduct.style.color = "black";
             }
             else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#D7FCDA";
@@ -613,7 +691,8 @@ function openModifyDeleteMenu(clickedProduct) {
     else {
         if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") { // Not deleted item?
             if (clickedProduct.className == "ticketProduct") {
-                clickedProduct.style.backgroundColor = "yellow"
+                clickedProduct.style.backgroundColor = "rgb(28, 89, 176)";
+                clickedProduct.style.color = "white";
             }
             else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#e9fe6d";
@@ -632,7 +711,7 @@ function openModifyDeleteMenu(clickedProduct) {
         else {
             if (modifyingProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
                 if (modifyingProduct.className == "ticketProduct") {
-                    modifyingProduct.style.backgroundColor = "white";
+                    modifyingProduct.style.backgroundColor = "white";    
                 }
                 else if (modifyingProduct.className == "addedTicketProduct") {
                     modifyingProduct.style.backgroundColor = "#D7FCDA";
@@ -640,6 +719,8 @@ function openModifyDeleteMenu(clickedProduct) {
                 else {
                     modifyingProduct.style.backgroundColor = "orange";
                 }
+
+                modifyingProduct.style.color = "black";
             }
             else {
                 modifyingProduct.style.backgroundColor = "rgb(255, 120, 151)";

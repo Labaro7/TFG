@@ -127,7 +127,6 @@ bool Products::empty() {
 
 /* ------------------------------------------- ORDER ------------------------------------------- */
 Order::Order() :
-	id(),
 	n_table(),
 	n_clients(),
 	bill(),
@@ -138,12 +137,13 @@ Order::Order() :
 {
 }
 
-Order::Order(const int& id, const int& n_table, const int& n_clients, const double& bill, const double& discount, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date) :
-	id(id),
+Order::Order(const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date) :
 	n_table(n_table),
 	n_clients(n_clients),
 	bill(bill),
+	paid(paid),
 	discount(discount),
+	method(method),
 	products(products),
 	employee(employee),
 	date(date)
@@ -152,7 +152,7 @@ Order::Order(const int& id, const int& n_table, const int& n_clients, const doub
 
 bool Order::isEmpty()
 {
-	return !id && !n_table && !n_clients && !bill && !discount && products.empty() && employee.empty() && date.empty();
+	return !n_table && !n_clients && !bill && !discount && products.empty() && employee.empty() && date.empty();
 }
 
 void Order::copyDataFromTable(const Table& t)

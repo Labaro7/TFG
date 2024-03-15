@@ -30,13 +30,18 @@ const char* CURRENT_EMPLOYEES_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT EMPLOYEES
 const char* CURRENT_INGREDIENTS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT INGREDIENTS -->";
 const char* CURRENT_ALLERGENS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT ALLERGENS -->";
 
-const std::string EUR_CODE = "&#8364";
-const std::string USD_CODE = "&#36";
-const std::string GBP_CODE = "&#163";
-const std::string JPY_CODE = "&#165";
-const std::string SPACE_CODE = "&nbsp";
-std::string DEFAULT_CURRENCY = EUR_CODE;
-std::string CURRENCY = SPACE_CODE + DEFAULT_CURRENCY;
+const std::string EUR = "EUR";
+const std::string EUR_SYMBOL = "&#8364";
+const std::string USD = "USD";
+const std::string USD_SYMBOL = "&#36";
+const std::string GBP = "GBP";
+const std::string GBP_SYMBOL = "&#163";
+const std::string JPY = "JPY";
+const std::string JPY_SYMBOL = "&#165";
+
+const std::string SPACE_SYMBOL = "&nbsp";
+std::string CURRENCY = EUR;
+std::string CURRENCY_SYMBOL = SPACE_SYMBOL + EUR_SYMBOL;
 
 // MySQL constants
 const std::string HOST = "127.0.0.1";

@@ -240,8 +240,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	// 5. Generate HTML piece with the ticket bill
 	ss << "<div id='bill'>";
 	ss << "<div id='discount'><div id='minus'>-</div><div id='discountValue'>" << discount << "</div><div id='percentage'>%</div></div>";
-	ss << "<div id='currency'></div><div id='price'>" << bill * (1 - (discount / 100)) << CURRENCY_SYMBOL << "</div>";
-	ss << "</div>";
+	ss << "<div id='currency'></div><div id='price'>" << bill * (1 - (discount / 100)) << CURRENCY_SYMBOL << "</div";
+	ss << "</div></div>";
 
 	std::string ticketBillHTML = ss.str();
 	ss.str("");

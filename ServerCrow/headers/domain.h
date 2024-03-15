@@ -113,17 +113,32 @@ using table_unordered_map = std::unordered_map<int, Table, TableHashFunction>;
 /* ------------------------------------------- ORDER ------------------------------------------- */
 struct Order
 {
-	int id;
+	//int id;
 	int n_table;
 	int n_clients;
 	double bill;
+	double paid;
 	double discount;
+	std::string method;
 	std::vector<std::pair<Product, int>> products;
 	std::string employee;
 	std::string date;
 
 	Order();
-	Order(const int& id, const int& n_table, const int& n_clients, const double& bill, const double& discount, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date);
+	Order(const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date);
+
+	bool operator==(const Order& other) const
+	{
+		return n_table == other.n_table &&
+			n_clients == other.n_clients &&
+			bill == other.bill &&
+			paid == other.paid &&
+			discount == other.discount &&
+			method == other.method &&
+			products == other.products &&
+			employee == other.employee &&
+			date == other.date;
+	}
 
 	bool isEmpty();
 	void copyDataFromTable(const Table& t);

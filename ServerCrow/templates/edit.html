@@ -258,8 +258,11 @@
                 <ul id="currentProductsList">
                     <!-- PLACEHOLDER: CURRENT PRODUCTS -->
                 </ul>
-                <ul id="filteredProductsList">
-                </ul>
+                <div class="buttonsRow">
+                    <div class="saveAndDeleteButtons" id="saveRelationships" onclick="saveRelationships()">
+                        Save relationships
+                    </div>
+                </div>
             </div>
             <div>
                 <svg id="arrow2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="70px"><title>Artboard-1</title><g id="Right-4" data-name="Right"><path d="M18.707,12.707l-3,3a1,1,0,0,1-1.414-1.414L15.586,13H6a1,1,0,0,1,0-2h9.586L14.293,9.707a1,1,0,0,1,1.414-1.414l3,3A1,1,0,0,1,18.707,12.707Z" style="fill:#000000" /></g></svg>
@@ -305,10 +308,10 @@
                     <div class="saveAndDeleteButtons" id="addNewIngredient" onclick="addNewIngredient()">
                         Add New
                     </div>
-                    <div class="saveAndDeleteButtons" id="saveIngredientsDetails" onclick="addIngredientsDetails()">
+                    <div class="saveAndDeleteButtons" id="saveIngredients" onclick="saveIngredients()">
                         Save
                     </div>
-                    <div class="saveAndDeleteButtons" id="deleteIngredientsDetails" onclick="deleteIngredientsDetails()">
+                    <div class="saveAndDeleteButtons" id="deleteIngredients" onclick="deleteIngredients()">
                         Delete
                     </div>
                 </div>
@@ -356,10 +359,13 @@
                 <ul id="notOwnedAllergensList">
                 </ul>
                 <div class="buttonsRow">
-                    <div class="saveAndDeleteButtons" id="saveAllergenDetails" onclick="addAllergenDetails()">
+                    <div class="saveAndDeleteButtons" id="addNewAllergen" onclick="addNewAllergen()">
+                        Add New
+                    </div>
+                    <div class="saveAndDeleteButtons" id="saveAllergens" onclick="saveAllergens()">
                         Save
                     </div>
-                    <div class="saveAndDeleteButtons" id="deleteAllergenDetails" onclick="deleteAllergenDetails()">
+                    <div class="saveAndDeleteButtons" id="deleteAllergens" onclick="deleteAllergens()">
                         Delete
                     </div>
                 </div>

@@ -22,8 +22,10 @@ body {
 
 .tabs {
     display: flex;
-    color: rgb(12, 9, 34);
+    color: black;
     background-color: #aaccff;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;    
 }
 
 .tab-button {
@@ -33,13 +35,25 @@ body {
     flex-direction: column;
     box-sizing: border-box;
     border: 0px solid red;
-    color: #0a3677;
+    color: black;
 }
 
-.selectTable, .currentTables {
+#selectTableTab, #currentTablesTab {
     cursor: pointer;
     text-align: center;
     font-size: 23px;
+    padding: 5px;
+}
+
+#selectTableTab {
+    background-color: rgb(9, 43, 92);
+    color: white;
+    border-right: 1px solid black;
+}
+
+#currentTablesTab {
+    background-color: white;
+    color: black;
 }
 
 #tab-buttonSelectTable, #tab-buttonCurrentTables {
@@ -51,7 +65,7 @@ body {
     border: 0px solid yellow;
 }
 
-.currentTables {
+#currentTables {
     background-color: #aaccff;
 }
 
@@ -92,7 +106,7 @@ body {
     margin-top: auto;
     margin-bottom: auto;
     width: 50%;
-    color: #0a3677;
+    color: black;
 }
 
 #tableInput {
@@ -139,7 +153,7 @@ body {
     text-align: center;
     font-size: 45px;
     border: 0px solid red;
-    color: rgb(20, 20, 51);
+    color: black;
 }
 
 .actions {
@@ -202,6 +216,7 @@ body {
     background-color: #0a3677;
     color: white;
     text-decoration: none;
+    border-bottom: 1px solid black;
 }
 
 .tablePrice {

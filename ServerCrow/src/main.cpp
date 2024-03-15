@@ -206,15 +206,32 @@ int main()
 		 {
 			 auto json_data = crow::json::load(req.body);
 			 const int n_table = json_data["n_table"].i();
+			 const int n_clients = json_data["n_clients"].i();
+			 const double bill = std::stod(json_data["bill"].s());
+			 const double paid = std::stod(json_data["paid"].s());
+			 const double discount = json_data["discount"].d();
+			 const std::string method = json_data["method"].s();
 			 const std::string date = json_data["date"].s();
-			 std::string employee = "";
 
+			 std::string employee = "";
 			 if (MIDDLEWARE_ACTIVATED && AUTH_NEEDED)
 			 {
 				 employee = json_data["employee"].s();
 			 }
 
-			 server.payTable(n_table, employee, date);
+			 Order order = {
+				 n_table,
+				 n_clients,
+				 bill,
+				 paid,
+				 discount,
+				 method,
+				 {},
+				 employee,
+				 date
+			 };
+
+			 server.payTable(order);
 		 });
 
 	CROW_ROUTE(app, "/deleteTable")
@@ -435,16 +452,94 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 const auto& json_data = crow::json::load(req.body);
+			 const auto& addedIngredients = json_data["added_ingredients"];
 
+			 for (const auto& addedIngredientName : addedIngredients)
+			 {
+				 Ingredient addedIngredient(addedIngredientName.s());
 
+				 server.saveIngredient(addedIngredient);
+			 }
+		 });
+
+	CROW_ROUTE(app, "/edit/delete/ingredient")
+		.methods("POST"_method)
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 const auto& json_data = crow::json::load(req.body);
+			 const auto& deletedIngredients = json_data["deleted_ingredients"];
+
+			 for (const auto& deletedIngredientName : deletedIngredients)
+			 {
+				 Ingredient deletedIngredient(deletedIngredientName.s());
+
+				 server.removeIngredient(deletedIngredient);
+			 }
 		 });
 
 	CROW_ROUTE(app, "/edit/add/allergen")
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 const auto& json_data = crow::json::load(req.body);
+			 const auto& addedAllergens = json_data["added_allergens"];
 
+			 for (const auto& addedAllergenName : addedAllergens)
+			 {
+				 Allergen addedAllergen(addedAllergenName.s());
 
+				 server.saveAllergen(addedAllergen);
+			 }
+		 });
+
+	CROW_ROUTE(app, "/edit/delete/allergen")
+		.methods("POST"_method)
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 const auto& json_data = crow::json::load(req.body);
+			 const auto& deletedAllergens = json_data["deleted_allergens"];
+
+			 for (const auto& deletedAllergenName : deletedAllergens)
+			 {
+				 Allergen deletedAllergen(deletedAllergenName.s());
+
+				 server.removeAllergen(deletedAllergen);
+			 }
+		 });
+
+	CROW_ROUTE(app, "/edit/add/relationship")
+		.methods("POST"_method)
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 const auto& json_data = crow::json::load(req.body);
+			 const auto& selectedProduct = json_data["selected_product"];
+			 const auto& selectedIngredients = json_data["selected_ingredients"];
+			 const auto& selectedAllergens = json_data["selected_allergens"];
+
+			 const Product product = server.getProductByName(selectedProduct.s());
+
+			 server.removeProductIngredients(product);
+
+			 std::cout << selectedProduct << std::endl;
+			 std::cout << selectedIngredients << std::endl;
+			 std::cout << selectedAllergens << std::endl;
+
+			 for (const auto& selectedIngredient : selectedIngredients)
+			 {
+				 Ingredient ingredient(selectedIngredient.s());
+
+				 server.saveProductIngredient(product, ingredient);
+			 }
+
+			 server.removeProductAllergens(product);
+
+			 for (const auto& selectedAllergen : selectedAllergens)
+			 {
+				 Allergen allergen(selectedAllergen.s());
+
+				 server.saveProductAllergen(product, allergen);
+			 }
 		 });
 
 

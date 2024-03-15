@@ -213,11 +213,15 @@ std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
 
 	for (auto& order : orders)
 	{
+		//const int& order_id = getOrderId(order);
 		ss << "    {\n"
-			<< "      'id':" << order.id << ",\n"
+			//<< "      'id':" << order_id << ",\n"
 			<< "      'n_table':" << order.n_table << ",\n"
-			<< "      'bill':" << order.bill << ",\n"
+			<< "      'n_clients':" << order.n_clients << ",\n"
+			<< "      'bill':" << order.bill << CURRENCY << ",\n"
+			<< "      'paid':" << order.paid << CURRENCY << ",\n"
 			<< "      'discount':" << order.discount << ",\n"
+			<< "      'method':" << order.method << ",\n"
 			<< "      'employee':'" << order.employee << "',\n"
 			<< "      'date':'" << order.date << "',\n"
 			<< "      'products':[ \n";
@@ -226,7 +230,7 @@ std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
 		{
 			ss << "        {\n"
 				<< "          'name':'" << product.first.name << "',\n"
-				<< "          'price':'" << product.first.price << "',\n"
+				<< "          'price':'" << product.first.price << CURRENCY << "',\n"
 				<< "          'amount':" << product.second << "\n"
 				<< "        }, \n";
 
@@ -240,7 +244,7 @@ std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
 		ss << "] \n    }, \n";
 
 		// Remove the comma
-		if (order.id == orders.back().id)
+		if (order == orders.back())
 		{
 			ss.seekp(-3, std::ios_base::end);
 		}
@@ -535,6 +539,16 @@ void Server::removeProductIngredient(const Product& product,
 	database->removeProductIngredient(product, ingredient);
 }
 
+void Server::removeProductIngredients(const Product& product)
+{
+	database->removeProductIngredients(product);
+}
+
+void Server::removeProductAllergens(const Product& product)
+{
+	database->removeProductAllergens(product);
+}
+
 void Server::removeOrder(const Order& order)
 {
 	database->removeOrder(order);
@@ -551,17 +565,11 @@ void Server::removeAllergen(const Allergen& allergen)
 }
 
 
-void Server::payTable(const int& n_table,
-					  const std::string& employee,
-					  const std::string& date)
+void Server::payTable(const Order& order)
 {
-	Order o;
-	Table t = getTableByNumber(n_table);
+	Table t = getTableByNumber(order.n_table);
 
-	o.copyDataFromTable(t);
-	o.employee = employee;
-	o.date = date;
-	saveOrder(o);
+	saveOrder(order);
 
 	removeTable(t);
 }

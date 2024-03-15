@@ -91,10 +91,13 @@ public:
 
 	void removeTableProduct(const int& n_table, const Product& product, const int& times) override;
 	void removeProductIngredient(const Product& product, const Ingredient& ingredient) override;
+	void removeProductIngredients(const Product& product) override;
+	void removeProductAllergens(const Product& product) override;
+
 
 
 	// Various
-	void payTable(const int& n_table, const std::string& employee, const std::string& date);
+	void payTable(const Order& order);
 	std::string prepareOrdersJSON(const std::vector<Order>& orders);
 	std::string hash(const std::string& s);
 	std::string generateSessionToken() override;

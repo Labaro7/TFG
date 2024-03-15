@@ -250,7 +250,7 @@ void Database::initialize()
 	MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE");
 	MySqlCreateTable("employees", "employee_id INT AUTO_INCREMENT PRIMARY KEY, firstName VARCHAR(45), lastName VARCHAR(45), email VARCHAR(45), id VARCHAR(45), mobileNumber VARCHAR(45), level INT, username VARCHAR(45), password VARCHAR(45), session_token VARCHAR(45)");
 	MySqlCreateTable("products", "product_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45), price DOUBLE, color VARCHAR(45), page INT, deployable BOOLEAN");
-	MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, employee VARCHAR(45), date VARCHAR(45)");
+	MySqlCreateTable("orders", "order_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, paid DOUBLE, discount DOUBLE, method VARCHAR(45), employee VARCHAR(45), date VARCHAR(45)");
 	MySqlCreateTable("ingredients", "ingredient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
 	MySqlCreateTable("allergens", "allergen_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
 	MySqlCreateTable("restaurants", "restaurant_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(45)");
@@ -425,13 +425,15 @@ void Database::saveOrder(const Order& order)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		pstmt = con->prepareStatement("INSERT INTO orders(n_table, n_clients, bill, discount, employee, date) VALUES(?,?,?,?,?,?)");
+		pstmt = con->prepareStatement("INSERT INTO orders(n_table, n_clients, bill, paid, discount, method, employee, date) VALUES(?,?,?,?,?,?,?,?)");
 		pstmt->setInt(1, order.n_table);
 		pstmt->setInt(2, order.n_clients);
 		pstmt->setDouble(3, order.bill);
-		pstmt->setDouble(4, order.discount);
-		pstmt->setString(5, order.employee);
-		pstmt->setString(6, order.date);
+		pstmt->setDouble(4, order.paid);
+		pstmt->setDouble(5, order.discount);
+		pstmt->setString(6, order.method);
+		pstmt->setString(7, order.employee);
+		pstmt->setString(8, order.date);
 		pstmt->execute();
 
 		std::stringstream query;
@@ -457,7 +459,9 @@ void Database::saveOrder(const Order& order)
 
 			CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
 				" with bill " << order.bill <<
+				" with paid " << order.paid <<
 				" with discount " << order.discount <<
+				" with method " << order.method <<
 				" by employee " << order.employee <<
 				" at date " << order.date;
 		}
@@ -503,19 +507,13 @@ void Database::saveIngredient(const Ingredient& ingredient)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		std::string name = ingredient.name;
-
-		if (getIngredientByName(name).isEmpty())
+		if (getIngredientByName(ingredient.name).isEmpty())
 		{
-			std::ostringstream oss;
-			oss << name;
-			std::string values = oss.str();
-
 			pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
-			pstmt->setString(1, name);
+			pstmt->setString(1, ingredient.name);
 			pstmt->execute();
 
-			CROW_LOG_INFO << "[ADDED] Ingredient with name " << name <<
+			CROW_LOG_INFO << "[ADDED] Ingredient with name " << ingredient.name <<
 				" inserted into ingredients.";
 		}
 		else
@@ -533,21 +531,15 @@ void Database::saveAllergen(const Allergen& allergen)
 {
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::mutex> lock(mutex);
 
-		std::string name = allergen.name;
-
-		if (getAllergenByName(name).isEmpty())
+		if (getAllergenByName(allergen.name).isEmpty())
 		{
-			std::ostringstream oss;
-			oss << name;
-			std::string values = oss.str();
-
 			pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
-			pstmt->setString(1, name);
+			pstmt->setString(1, allergen.name);
 			pstmt->execute();
 
-			CROW_LOG_INFO << "[ADDED] Allergen with name " << name;
+			CROW_LOG_INFO << "[ADDED] Allergen with name " << allergen.name;
 		}
 		else
 		{
@@ -646,12 +638,13 @@ void Database::saveTableProduct(Table& table,
 	}
 }
 
+// It resets the productingredient table. This is more "set" than "save"
 void Database::saveProductIngredient(const Product& product,
 									 const Ingredient& ingredient)
 {
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
 
@@ -659,11 +652,9 @@ void Database::saveProductIngredient(const Product& product,
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
-		int product_id = 0;
-		int ingredient_id = 0;
 		if (res->next())
 		{
-			product_id = res->getInt("product_id");
+			int product_id = res->getInt("product_id");
 
 			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
 			res = stmt->executeQuery(query.str());
@@ -671,22 +662,15 @@ void Database::saveProductIngredient(const Product& product,
 
 			if (res->next())
 			{
-				ingredient_id = res->getInt("ingredient_id");
+				int ingredient_id = res->getInt("ingredient_id");
 
-				query << "SELECT * FROM productingredient WHERE product_id = " << product_id << " AND ingredient_id = " << ingredient_id;
-				res = stmt->executeQuery(query.str());
-				query.str("");
+				pstmt = con->prepareStatement("INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
+				pstmt->setInt(1, product_id);
+				pstmt->setInt(2, ingredient_id);
+				pstmt->execute();
 
-				if (!res->next())
-				{
-					pstmt = con->prepareStatement("INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
-					pstmt->setInt(1, product_id);
-					pstmt->setInt(2, ingredient_id);
-					pstmt->execute();
-
-					CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
-						" and ingredient_id " << ingredient_id;
-				}
+				CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
+					" and ingredient_id " << ingredient_id;
 			}
 		}
 	}
@@ -700,7 +684,7 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 {
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
 
@@ -708,11 +692,9 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
-		int product_id = 0;
-		int allergen_id = 0;
 		if (res->next())
 		{
-			product_id = res->getInt("product_id");
+			int product_id = res->getInt("product_id");
 
 			query << "SELECT allergen_id FROM allergens WHERE name = '" << allergen.name << "'";
 			res = stmt->executeQuery(query.str());
@@ -720,22 +702,15 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 
 			if (res->next())
 			{
-				allergen_id = res->getInt("allergen_id");
+				int allergen_id = res->getInt("allergen_id");
 
-				query << "SELECT * FROM productallergen WHERE product_id = " << product_id << " AND allergen_id = " << allergen_id;
-				res = stmt->executeQuery(query.str());
-				query.str("");
+				pstmt = con->prepareStatement("INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
+				pstmt->setInt(1, product_id);
+				pstmt->setInt(2, allergen_id);
+				pstmt->execute();
 
-				if (!res->next())
-				{
-					pstmt = con->prepareStatement("INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
-					pstmt->setInt(1, product_id);
-					pstmt->setInt(2, allergen_id);
-					pstmt->execute();
-
-					CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
-						" and allergen_id " << allergen_id;
-				}
+				CROW_LOG_INFO << "[ADDED] Productingredient with product_id " << product_id <<
+					" and allergen_id " << allergen_id;
 			}
 		}
 	}
@@ -1140,7 +1115,9 @@ std::vector<Order> Database::getOrders()
 			int n_table = res->getInt("n_table");
 			int n_clients = res->getInt("n_clients");
 			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
 			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
 			std::string employee = res->getString("employee");
 			std::string date = res->getString("date");
 
@@ -1171,7 +1148,7 @@ std::vector<Order> Database::getOrders()
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, discount, products, employee, date };
+			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1249,13 +1226,10 @@ Ingredient Database::getIngredientByName(const std::string& name)
 		query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
-		std::cout << "A " << name << std::endl;
 
 		if (res->next())
 		{
 			ingredient.name = res->getString("name");
-			std::cout << "B " << ingredient.name << std::endl;
-
 		}
 
 		return ingredient;
@@ -1939,6 +1913,46 @@ void Database::removeProductIngredient(const Product& product,
 	catch (const sql::SQLException& e)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not remove productingredient. Error message: " << e.what();
+	}
+}
+
+void Database::removeProductIngredients(const Product& product)
+{
+	std::unique_lock<std::mutex> lock(mutex);
+
+	std::stringstream query;
+
+	query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+	sql::ResultSet* res = stmt->executeQuery(query.str());
+	query.str("");
+
+	if (res->next())
+	{
+		int product_id = res->getInt("product_id");
+
+		pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ?");
+		pstmt->setInt(1, product_id);
+		pstmt->execute();
+	}
+}
+
+void Database::removeProductAllergens(const Product& product)
+{
+	std::unique_lock<std::mutex> lock(mutex);
+
+	std::stringstream query;
+
+	query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+	sql::ResultSet* res = stmt->executeQuery(query.str());
+	query.str("");
+
+	if (res->next())
+	{
+		int product_id = res->getInt("product_id");
+
+		pstmt = con->prepareStatement("DELETE FROM productallergen WHERE product_id = ?");
+		pstmt->setInt(1, product_id);
+		pstmt->execute();
 	}
 }
 

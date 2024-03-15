@@ -47,11 +47,6 @@ let oldEmployee_level;
 let oldEmployee_username;
 let oldEmployee_password;
 
-// Ingredient + allergen
-let selectedProduct;
-let selectedProductElement
-let selectedIngredientFilter = document.getElementById("allIngredientsButton");
-
 selectAllIngredients();
 
 function changeTab(clickedTab) {
@@ -422,13 +417,24 @@ function deleteEmployeeDetails() {
 
 
 /* INGREDIENTS + ALLERGENS */
+let selectedProductElement;
+let selectedIngredientFilter = document.getElementById("allIngredientsButton");
+let added_ingredients = [];
+let added_allergens = [];
+let selectedProduct;
+let selectedIngredients = [];
+let selectedAllergens = [];
 function selectProduct(clickedProduct) {
     resetDisplay();
+    selectedIngredients = [];
+    selectedAllergens = [];
 
     if (selectedProductElement === clickedProduct) {
         selectedProductElement.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
         selectedProductElement.style.color = UNSELECTED_TEXT_COLOR;
         selectedProductElement = null;
+
+        selectedProduct = null;
 
         resetDisplay();
     }
@@ -441,6 +447,8 @@ function selectProduct(clickedProduct) {
         selectedProductElement = clickedProduct;
         selectedProductElement.style.backgroundColor = SELECTED_BACKGROUND_COLOR;
         selectedProductElement.style.color = SELECTED_TEXT_COLOR;
+
+        selectedProduct = clickedProduct.children[0].textContent;
 
         displayIngredients(clickedProduct);
         displayAllergens(clickedProduct);
@@ -469,19 +477,28 @@ function resetDisplay() {
     }
 }
 
+function removeElementByName(arr, name) {
+    const index = arr.findIndex(item => item === name);
+
+    if (index !== -1) {
+        arr.splice(index, 1);
+    }
+}
+
 function selectIngredient(clickedIngredient) {
     if (clickedIngredient.style.backgroundColor === SELECTED_BACKGROUND_COLOR) {
         clickedIngredient.style.background = UNSELECTED_BACKGROUND_COLOR;
         clickedIngredient.style.color = UNSELECTED_TEXT_COLOR;
 
+        removeElementByName(selectedIngredients, clickedIngredient.textContent);
 
     }
     else {
         clickedIngredient.style.background = SELECTED_BACKGROUND_COLOR;
         clickedIngredient.style.color = SELECTED_TEXT_COLOR;
 
+        selectedIngredients.push(clickedIngredient.textContent);
     }
-
 }
 
 function displayIngredients(clickedProduct) {
@@ -493,12 +510,13 @@ function displayIngredients(clickedProduct) {
     ownedIngredients.innerHTML = "";
     notOwnedIngredients.innerHTML = currentIngredients.innerHTML;
 
-
     for (let ingredient of clickedProductIngredients) {
         let ingredientElement = document.getElementById(ingredient.textContent);
 
         ingredientElement.style.background = SELECTED_BACKGROUND_COLOR;
         ingredientElement.style.color = SELECTED_TEXT_COLOR;
+
+        selectedIngredients.push(ingredientElement.textContent);
 
         let clonedIngredient = ingredientElement.cloneNode(true);
         clonedIngredient.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
@@ -508,6 +526,8 @@ function displayIngredients(clickedProduct) {
         let owned = notOwnedIngredients.querySelector("#" + ingredient.textContent);
         notOwnedIngredients.removeChild(owned);
     }
+
+    console.log(selectedIngredients);
 }
 
 function searchProduct() {
@@ -606,6 +626,9 @@ function selectAllIngredients() {
     allIngredientsButton.style.backgroundColor = SELECTED_BUTTON_BACKGROUND_COLOR;
     ownedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
     notOwnedIngredientsButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+
+    //displayIngredients();
+    //selectedIngredients = [];
 }
 
 function selectOwnedIngredients() {
@@ -625,6 +648,8 @@ function selectOwnedIngredients() {
     currentIngredients.style.display = "none";
     ownedIngredients.style.display = "block";
     notOwnedIngredients.style.display = "none";
+
+    //selectedIngredients = [];
 }
 
 function selectNotOwnedIngredients() {
@@ -644,6 +669,8 @@ function selectNotOwnedIngredients() {
     currentIngredients.style.display = "none";
     ownedIngredients.style.display = "none";
     notOwnedIngredients.style.display = "block";
+
+    //selectedIngredients = [];
 }
 
 function setNewIngredientName(newIngredient) {
@@ -654,11 +681,12 @@ function setNewIngredientName(newIngredient) {
 
 function addNewIngredient() {
     let currentIngredients = document.getElementById("currentIngredientsList");
-    //let notOwnedIngredients = document.getElementById("notOwnedIngredientsList");
 
     let newIngredient = document.createElement("li");
     newIngredient.className = "currentIngredient";
     newIngredient.onclick = function () { selectIngredient(newIngredient) };
+
+    added_ingredients.push(newIngredient);
 
     let newIngredientInput = document.createElement("input");
     newIngredientInput.className = "newIngredientInput";
@@ -670,6 +698,62 @@ function addNewIngredient() {
 
     newIngredient.appendChild(newIngredientInput);
     currentIngredients.appendChild(newIngredient);
+}
+
+function selectAllergen() {
+
+}
+
+function saveIngredients() {
+    let data = {
+        added_ingredients: []
+    };
+
+    for (let ingredientElement of added_ingredients) {
+        data.added_ingredients.push(ingredientElement.children[0].value);
+    }
+
+    const url = "/edit/add/ingredient";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "/edit"; }, 100);
+}
+
+function deleteIngredients() {
+    let data = {
+        deleted_ingredients: selectedIngredients
+    }
+
+    const url = "/edit/delete/ingredient";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "/edit"; }, 100);
 }
 
 function displayAllergens(clickedProduct) {
@@ -686,6 +770,8 @@ function displayAllergens(clickedProduct) {
 
         allergenElement.style.background = SELECTED_BACKGROUND_COLOR;
         allergenElement.style.color = SELECTED_TEXT_COLOR;
+
+        selectedAllergens.push(allergenElement.textContent);
 
         let clonedAllergen = allergenElement.cloneNode(true);
         clonedAllergen.style.backgroundColor = UNSELECTED_BACKGROUND_COLOR;
@@ -764,6 +850,9 @@ function selectAllAllergens() {
     allAllergensButton.style.backgroundColor = SELECTED_BUTTON_BACKGROUND_COLOR;
     ownedAllergensButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
     notOwnedAllergensButton.style.backgroundColor = UNSELECTED_BUTTON_BACKGROUND_COLOR;
+
+    //displayAllergens();
+    //selectedAllergens = [];
 }
 
 function selectOwnedAllergens() {
@@ -783,6 +872,8 @@ function selectOwnedAllergens() {
     currentAllergens.style.display = "none";
     ownedAllergens.style.display = "block";
     notOwnedAllergens.style.display = "none";
+
+    //selectedAllergens = [];
 }
 
 function selectNotOwnedAllergens() {
@@ -802,4 +893,130 @@ function selectNotOwnedAllergens() {
     currentAllergens.style.display = "none";
     ownedAllergens.style.display = "none";
     notOwnedAllergens.style.display = "block";
+
+    //selectedAllergens = [];
+}
+
+function setNewAllergenName(newAllergen) {
+    if (newAllergen.children[0]) {
+        newAllergen.id = newAllergen.children[0].value;
+    }
+}
+
+function selectAllergen(clickedAllergen) {
+    if (clickedAllergen.style.backgroundColor === SELECTED_BACKGROUND_COLOR) {
+        clickedAllergen.style.background = UNSELECTED_BACKGROUND_COLOR;
+        clickedAllergen.style.color = UNSELECTED_TEXT_COLOR;
+
+        removeElementByName(selectedAllergens, clickedAllergen.textContent);
+
+    }
+    else {
+        clickedAllergen.style.background = SELECTED_BACKGROUND_COLOR;
+        clickedAllergen.style.color = SELECTED_TEXT_COLOR;
+
+        selectedAllergens.push(clickedAllergen.textContent);
+    }
+}
+
+function addNewAllergen() {
+    let currentAllergens = document.getElementById("currentAllergensList");
+
+    let newAllergen = document.createElement("li");
+    newAllergen.className = "currentAllergen";
+    newAllergen.onclick = function () { selectIngredient(newAllergen) };
+
+    added_allergens.push(newAllergen);
+
+    let newAllergenInput = document.createElement("input");
+    newAllergenInput.className = "newAllergenInput";
+    newAllergenInput.style.fontSize = "20px";
+    newAllergenInput.style.fontWeight = "700";
+    newAllergenInput.style.color = "rgb(20, 20, 51)";
+    newAllergenInput.onchange = setNewAllergenName(newAllergen);
+    newAllergenInput.onclick = function (event) { event.stopPropagation(); };
+
+    newAllergen.appendChild(newAllergenInput);
+    currentAllergens.appendChild(newAllergen);
+}
+
+function saveAllergens() {
+    let data = {
+        added_allergens: []
+    };
+
+    for (let allergenElement of added_allergens) {
+        data.added_allergens.push(allergenElement.children[0].value);
+    }
+
+    const url = "/edit/add/allergen";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "/edit"; }, 100);
+}
+
+function deleteAllergens() {
+    let data = {
+        deleted_allergens: selectedAllergens
+    }
+
+    const url = "/edit/delete/allergen";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "/edit"; }, 100);
+}
+
+
+function saveRelationships() {
+    let data = {
+        selected_product: selectedProduct,
+        selected_ingredients: selectedIngredients,
+        selected_allergens: selectedAllergens
+    };
+
+    console.log(data);
+
+    const url = "/edit/add/relationship";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    setTimeout(() => { window.location.href = "/edit"; }, 100);
 }

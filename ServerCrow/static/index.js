@@ -1,17 +1,23 @@
-const selectTableTab = document.getElementById("tab-buttonSelectTable");
-const currentTablesTab = document.getElementById("tab-buttonCurrentTables");
+const selectTableTab = document.getElementById("selectTableTab");
+const currentTablesTab = document.getElementById("currentTablesTab");
 const selectTablePage = document.getElementById("select-table-page");
 const currentTablesPage = document.getElementById("current-tables-page");
 
 function changeToSelectTableTab() {
-    selectTableTab.style.visibility = 'visible';
-    currentTablesTab.style.visibility = 'hidden';
+    selectTableTab.style.backgroundColor = 'rgb(9, 43, 92)';
+    selectTableTab.style.color = "white";
+    currentTablesTab.style.backgroundColor = 'white';
+    currentTablesTab.style.color = "black";
+
     showPage('select-table-page');
 }
 
 function changeToCurrentTablesTab() {
-    selectTableTab.style.visibility = 'hidden';
-    currentTablesTab.style.visibility = 'visible';
+    selectTableTab.style.backgroundColor = 'white';
+    selectTableTab.style.color = "black";
+    currentTablesTab.style.backgroundColor = 'rgb(9, 43, 92)';
+    currentTablesTab.style.color = "white";
+
     showPage('current-tables-page');
 }
 

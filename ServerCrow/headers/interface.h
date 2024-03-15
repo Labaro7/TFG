@@ -85,6 +85,8 @@ public:
 
 	virtual void removeTableProduct(const int& n_table, const Product& product, const int& times) = 0;
 	virtual void removeProductIngredient(const Product& product, const Ingredient& ingredient) = 0;
+	virtual void removeProductIngredients(const Product& product) = 0;
+	virtual void removeProductAllergens(const Product& product) = 0;
 
 
 	// Various

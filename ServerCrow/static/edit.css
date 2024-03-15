@@ -617,11 +617,11 @@ ul {
     bottom: 1px;
 }
 
-#saveIngredientsDetails, #saveAllergenDetails, #addNewIngredient, #deleteIngredientsDetails {
+#saveIngredients, #saveAllergens, #addNewIngredient, #deleteIngredients, #deleteAllergens, #addNewAllergen, #saveRelationships {
     border-right: 1px solid white;
 }
 
-#deleteIngredientsDetails, #deleteAllergenDetails {
+#deleteIngredients, #deleteAllergens {
     border-left: 0px;
 }
 
@@ -629,7 +629,7 @@ ul {
     display: none;
 }
 
-.newIngredientInput {
+.newIngredientInput, .newAllergenInput {
     background-color: transparent;
     border: 0;
     border-bottom: 1px solid rgb(20, 20, 51);
