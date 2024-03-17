@@ -426,40 +426,27 @@ body {
     position: relative;
     text-align: center;
     max-height: 60px;
-    max-width: 170px;
-    width: 170px;
+    max-width: 105px;
     border: 1px solid black;
     left: 6px;
     z-index: 5;
     height: 100%;
-    margin: 5px;
-}
-
-#modifyProductMenuHeader {
-    background-color: rgb(9, 43, 92);
-    color: white;
-    font-size: 23px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 1px solid black;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 5px;
 }
 
 #modifyProductMenu {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     position: absolute;
     top: 10%;
     left: 10%;
+    width: 80%;
     height: 80%;
     z-index: 6;
     background-color: #aaccff;
+    border: 3px solid rgb(9, 43, 92);
     flex-wrap: wrap;
-    border: 1px solid black;
 }
 
 #amountInput {
@@ -476,31 +463,31 @@ body {
 
 #modifyProductMenuButtons {
     display: flex;
-    justify-content: left;
     width: 100%;
-    background-color: rgb(9, 43, 92);
-    border-top: 1px solid black;
+    height: 10%;
 }
 
 #modifyProductMenuAcceptButton, #modifyProductMenuCancelButton {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
-    font-size: 20px;
-    border-right: 1px solid white;
-    padding: 5px;
+    height: 100%;
+    text-shadow: 2px 2px 2px black;
+    font-size: 30px;
 }
 
 #modifyProductMenuAcceptButton {
+    background-color: green;
+    border-top: 1px solid black;
 }
 
 #modifyProductMenuCancelButton {
-}
-
-#infoButton {
-    border-right: 1px solid black;
+    background-color: red;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
 }
 
 #modifyProductAmountButton {
@@ -520,9 +507,18 @@ body {
     max-width: 115px;
 }
 
-#modifyProductAmountButton, #deleteProductButton, #addDetailsButton, #infoButton {
-    max-width: 40px;
-    width: 40px;
+#addDetailsButton {
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+#deleteProductButton {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+#modifyProductAmountButton, #deleteProductButton, #addDetailsButton {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -541,27 +537,14 @@ body {
     flex-direction: column;
     align-items: center;
     position: absolute;
-    top: 7.5%;
+    top: 10%;
     left: 10%;
     width: 80%;
-    height: 85%;
+    height: 80%;
     z-index: 1;
     background-color: #aaccff;
+    border: 3px solid rgb(9, 43, 92);
     flex-wrap: wrap;
-    border: 1px solid black;
-}
-
-#moveTableMenuHeader {
-    background-color: rgb(9, 43, 92);
-    color: white;
-    font-size: 23px;
-    width: 100%;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 1px solid black;
 }
 
 #tableInput {
@@ -612,23 +595,30 @@ body {
 #moveTableMenuButtons {
     display: flex;
     width: 100%;
-    background-color: rgb(9, 43, 92);
-    color: white;
-    border-top: 1px solid black;
+    height: 10%;
 }
 
 #moveTableMenuAcceptButton, #moveTableMenuCancelButton {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
-    font-size: 20px;
-    padding: 5px;
+    height: 100%;
+    text-shadow: 2px 2px 2px black;
+    font-size: 30px;
 }
 
-#moveTableMenuAcceptButton, #moveTableMenuCancelButton {
-    border-right: 1px solid white;
+#moveTableMenuAcceptButton {
+    background-color: green;
+    border-top: 1px solid black;
+}
+
+#moveTableMenuCancelButton {
+    background-color: red;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
 }
 
 /* Move table warning menu */
@@ -710,11 +700,12 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 23px;
+    font-size: 25px;
     color: white;
     border: 1px solid rgba(0, 0, 0, 0.7);
     height: 50px;
     bottom: 0;
+    text-shadow: 2px 2px 2px black;
     margin: 0 -10px;
 }
 
@@ -820,98 +811,3 @@ body {
     border-top: 1px solid black;
 }
 
-/* Ingredients and allergens menu */
-#ingredientsAndAllergensMenu {
-    position: absolute;
-    left: 12.5%;
-    top: 12.5%;
-    width: 75%;
-    height: 75%;
-    background-color: white;
-    display: none;
-    flex-direction: column;
-    border: 1px solid black;
-}
-
-#productName {
-    background-color: rgb(9, 43, 92);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 23px;
-    padding: 5px;
-}
-
-#ingredientsAndAllergensTabs {
-    display: flex;
-}
-
-#ingredientsTab, #allergensTab {
-    background-color: rgb(28, 89, 176);
-    color: white;
-    border: 1px solid black;
-    border-top: 2px solid white;
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    padding: 5px;
-    margin-left: -1px;
-    margin-right: -1px;
-    cursor: pointer;
-}
-
-#allergensTab {
-    background-color: rgb(9, 43, 92);
-    color: white;
-    border-left: 1px solid white;
-}
-
-#ingredientsAndAllergens {
-    color: black;
-    flex: 1;
-    padding: 0;
-    margin: 0;
-    position: relative;
-    left: 0;
-    top: 0;
-    overflow-y: auto;
-}
-
-.ingredients, .allergens {
-    display: flex;
-    flex-direction: column;
-    color: black;
-    background-color: white;
-    list-style: none;
-    padding: 0;
-}
-
-.allergens {
-    margin: 0;
-}
-
-#allergensList {
-    display: none;
-}
-
-.ingredient, .allergen {
-    border-bottom: 1px solid black;
-    padding: 5px;
-    font-size: 20px;
-}
-
-#ingredientsAndAllergensFooter {
-    background-color: rgb(9, 43, 92);
-    color: white;
-    display: flex;
-    border-top: 1px solid black
-}
-
-#backButton {
-    border-right: 1px solid white;
-    padding: 5px;
-    font-size: 20px;
-}

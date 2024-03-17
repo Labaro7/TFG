@@ -519,14 +519,14 @@ ul {
     color: white;
     border: 1px solid black;
     border-bottom: 0px;
-    border-top: 2px solid white;
+    border-top: 1px solid white;
 }
 
 .filter {
     display: flex;
     background-color: rgb(9, 43, 92);
     color: white;
-    border-top: 2px solid white;
+    border-top: 1px solid white;
     border-right: 1px solid black;
     border-left: 1px solid black;
 }

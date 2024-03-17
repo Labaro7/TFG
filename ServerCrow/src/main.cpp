@@ -148,7 +148,6 @@ int main()
 			 Table t = server.getTableByNumber(n_table);
 			 Employee employee = server.getEmployeeByName(employeeName);
 
-			 // If a table with that number doesnt exist
 			 if (t.isEmpty())
 			 {
 				 t = { n_table, 3, product_unordered_map(), 0.0 };

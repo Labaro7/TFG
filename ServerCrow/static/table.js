@@ -76,32 +76,75 @@ function sortTicketAlphabetically() {
 }
 
 function showIngredientsAndAllergens(secondRow) {
-    let lastOrder = secondRow.children[0];
-    let productList = document.querySelectorAll('div.products-names, li.product');
+    let lastOrder = document.getElementById("lastOrder");
     let lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
+    let productList = document.querySelectorAll('div.products-names, li.product');
+    let ingredientsAndAllergensMenu = document.getElementById("ingredientsAndAllergensMenu");
+    let productsMenu = document.getElementById("productsMenu");
+    let tab = document.getElementsByClassName("tab");
+    let productName = document.getElementById("productName");
+    let ingredientsList = document.getElementById("ingredientsList");
+    let allergensList = document.getElementById("allergensList");
 
-    productList.forEach(function (product) {
-        if (product.textContent === lastOrderName) {
-            let ingredients = product.parentElement.children[2].children;
-            let allergens = product.parentElement.children[3].children;
+    if (lastOrder.textContent !== "-") {
+        ingredientsAndAllergensMenu.style.display = "flex";
 
-            if (ingredients.length) {
-                for (let ingredient of ingredients) {
-                    let ingredientName = ingredient.textContent;
+        productsMenu.style.pointerEvents = "none";
+        productsMenu.style.filter = "blur(10px) grayscale(100%)";
+        document.body.style.backgroundColor.filter = "grayscale(100%)";
+        tab[0].style.pointerEvents = "none";
+        tab[0].style.filter = "blur(10px) grayscale(100%)";
+        document.body.style.backgroundColor = "#b0b0b0";
 
-                    console.log(ingredientName);
+        productName.textContent = lastOrderName;
+        ingredientsList.innerHTML = "";
+        allergensList.innerHTML = "";
+
+        productList.forEach(function (product) {
+            if (product.textContent === lastOrderName) {
+                let productIngredients = product.parentElement.children[2].children;
+                let productAllergens = product.parentElement.children[3].children;
+
+                if (productIngredients.length) {
+                    for (let productIngredient of productIngredients) {
+                        let productIngredientName = productIngredient.textContent;
+
+                        console.log(productIngredientName);
+                        let newIngredient = document.createElement("li");
+                        newIngredient.className = "ingredient";
+                        newIngredient.textContent = productIngredientName;
+                        ingredientsList.appendChild(newIngredient);
+                    }
+                }
+
+                if (productAllergens.length) {
+                    for (let productAllergen of productAllergens) {
+                        let productAllergenName = productAllergen.textContent;
+
+                        console.log(productAllergenName);
+                        let newAllergen = document.createElement("li");
+                        newAllergen.className = "allergen";
+                        newAllergen.textContent = productAllergenName;
+                        allergensList.appendChild(newAllergen);
+                    }
                 }
             }
+        });
+    }
+}
 
-            if (allergens.length) {
-                for (let allergen of allergens) {
-                    let allergenName = allergen.textContent;
+function goBackToTable() {
+    let ingredientsAndAllergensMenu = document.getElementById("ingredientsAndAllergensMenu");
+    let productsMenu = document.getElementById("productsMenu");
+    let tab = document.getElementsByClassName("tab");
 
-                    console.log(allergenName);
-                }
-            }
-        }
-    });
+    ingredientsAndAllergensMenu.style.display = "none";
+    productsMenu.style.pointerEvents = "auto";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
+    productsMenu.style.filter = "";
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#aaccff";
 }
 
 function goBack() {
@@ -415,10 +458,11 @@ function openMoveTableMenu() {
     let moveTableMenu = document.getElementById("moveTableMenu");
 
     tab[0].style.pointerEvents = "none";
-    tab[0].style.filter = "blur(5px)";
+    tab[0].style.filter = "blur(10px) grayscale(100%)";
     productsMenu.style.pointerEvents = "none";
-    productsMenu.style.filter = "blur(5px)";
+    productsMenu.style.filter = "blur(10px) grayscale(100%)";
     moveTableMenu.style.display = "flex";
+    document.body.style.backgroundColor = "#b0b0b0";
 }
 
 function appendNumber(number) {
@@ -473,11 +517,13 @@ function cancelMoveTableMenu() {
     let moveTableWarningMenu = document.getElementById("moveTableWarningMenu");
 
     tab[0].style.pointerEvents = "auto";
-    tab[0].style.filter = "blur(0px)";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
     productsMenu.style.pointerEvents = "auto";
-    productsMenu.style.filter = "blur(0px)";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
     moveTableMenu.style.display = "none";
     moveTableWarningMenu.style.display = "none";
+    document.body.style.backgroundColor = "#aaccff";
+
 
 }
 
@@ -543,14 +589,14 @@ function moveTable() {
 }
 
 function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
+    const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
 
-    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function payTable() {
@@ -680,6 +726,7 @@ function openModifyDeleteMenu(clickedProduct) {
             }
             else {
                 clickedProduct.style.backgroundColor = "orange";
+                clickedProduct.style.color = "black";
             }
         }
         else {
@@ -699,6 +746,7 @@ function openModifyDeleteMenu(clickedProduct) {
             }
             else {
                 clickedProduct.style.backgroundColor = "orange";
+                clickedProduct.style.color = "black";
             }
         }
         else {
@@ -718,6 +766,7 @@ function openModifyDeleteMenu(clickedProduct) {
                 }
                 else {
                     modifyingProduct.style.backgroundColor = "orange";
+                    clickedProduct.style.color = "black";
                 }
 
                 modifyingProduct.style.color = "black";
@@ -744,35 +793,55 @@ function selectProductToModify() {
     let ticketMenu = document.getElementById("ticketMenu");
 
     tab[0].style.pointerEvents = "none";
-    tab[0].style.filter = "blur(5px)";
+    tab[0].style.filter = "blur(10px) grayscale(100%)";
     ticketMenu.style.pointerEvents = "none";
-    ticketMenu.style.filter = "blur(5px)";
+    ticketMenu.style.filter = "blur(10px) grayscale(100%)";
+    document.body.style.backgroundColor = "#b0b0b0";
 }
 function modifyProduct() {
     let amountInput = document.getElementById("amountInput");
     let productTimes = modifyingProduct.children[0].children[0];
     let oldProductTimes = modifyingProduct.children[0].children[1];
 
-    if (modifyingProduct.children[0].children[1].textContent === "") {
-        oldProductTimes.textContent = productTimes.textContent;
-        oldProductTimes.style.textDecoration = "line-through";
+    console.log(amountInput.value, oldProductTimes.textContent.substr(1), (amountInput.value) === oldProductTimes.textContent.substr(1));
+    if (amountInput.value === "") {
+        amountInput = "0";
+    }
+    else if (amountInput.value === oldProductTimes.textContent.substr(1) || amountInput.value === productTimes.textContent.substr(1)) {
+        console.log("jeyu");
+        modifyingProduct.style.backgroundColor = "rgb(28, 89, 176)";
+        modifyingProduct.style.color = "white";
+        modifyingProduct.className = "ticketProduct";
 
-        productTimes.style.textDecoration = "none";
-        productTimes.textContent = "x" + amountInput.value;
+        if (oldProductTimes.textContent !== "") {
+            productTimes.textContent = oldProductTimes.textContent;
+            oldProductTimes.style.textDecoration = "none";
+            oldProductTimes.textContent = ""
+        }     
     }
     else {
-        productTimes.textContent = "x" + amountInput.value;
+        modifyingProduct.style.backgroundColor = "orange";
+        modifyingProduct.style.color = "black";
+
+        if (modifyingProduct.children[0].children[1].textContent === "") {
+            modifyingProduct.className = "modifiedProduct"; 
+
+            oldProductTimes.textContent = productTimes.textContent;
+            oldProductTimes.style.textDecoration = "line-through";
+        }
+
+            productTimes.style.textDecoration = "none";
+            productTimes.textContent = "x" + amountInput.value;
     }
 
-    modifyingProduct.style.backgroundColor = "orange";
-    modifyingProduct.className = "modifiedProduct";
-    amountInput.value = "";
+    amountInput.value = ""; 
 
+    let currency = " " + price.textContent[price.textContent.length - 1];
     const discount = document.getElementById("discountValue").textContent;
-    price.textContent = (parseFloat(price.textContent) - (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+    price.textContent = (parseFloat(price.textContent) - (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
 
     modifyingProduct.children[3].textContent = (parseFloat(modifyingProduct.children[2].textContent) * parseFloat(productTimes.textContent.substr(1))).toFixed(2);
-    price.textContent = (parseFloat(price.textContent) + (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2);
+    price.textContent = (parseFloat(price.textContent) + (parseFloat(modifyingProduct.children[3].textContent) * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
 
     let index = added_ticket.findIndex(prod => prod.name === modifyingProduct.children[1].textContent);
     if (index !== -1) {
@@ -819,9 +888,10 @@ function cancelModifyDeleteMenu() {
     let ticketMenu = document.getElementById("ticketMenu");
 
     tab[0].style.pointerEvents = "auto"
-    tab[0].style.filter = "blur(0px)";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
     ticketMenu.style.pointerEvents = "auto";
-    ticketMenu.style.filter = "blur(0px)";
+    ticketMenu.style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#aaccff";
 
     amountInput.value = "";
 }
@@ -830,7 +900,22 @@ function selectProductToDelete(clickedElement) {
     event.stopPropagation(); // So the child onclick is on top of the parents'
 
     let a = document.getElementById("modifyDeleteMenu").parentNode;
-    a.style.backgroundColor === "rgb(255, 120, 151)" ? a.className === "ticketProduct" ? a.style.backgroundColor = "white" : a.style.backgroundColor = "#e9fe6d" : a.style.backgroundColor = "#ff7897";
+
+    if (a.style.backgroundColor === "rgb(255, 120, 151)") {
+        if (a.className === "ticketProduct") {
+            a.style.backgroundColor = "white";
+            a.style.color = "black";
+        }
+        else {
+            a.style.backgroundColor = "orange";
+            a.style.color = "black";
+        }
+    }
+
+    else {
+        a.style.backgroundColor = "#ff7897";
+        a.style.color = "white";
+    }
 
     if (a.className === "ticketProduct") {
         let index = deleted_ticket.findIndex(prod => prod.name === a.children[1].textContent);
@@ -895,3 +980,30 @@ function getCookie(cookieName) {
 }
 
 
+function selectIngredientsTab() {
+    const ingredientsTab = document.getElementById("ingredientsTab");
+    const ingredients = document.getElementById("ingredientsList");
+
+    ingredientsTab.style.backgroundColor = "rgb(28, 89, 176)";
+    ingredients.style.display = "flex";
+
+    const allergensTab = document.getElementById("allergensTab");
+    const allergens = document.getElementById("allergensList");
+
+    allergensTab.style.backgroundColor = "rgb(9, 43, 92)";
+    allergens.style.display = "none";
+}
+
+function selectAllergensTab() {
+    const ingredientsTab = document.getElementById("ingredientsTab");
+    const ingredients = document.getElementById("ingredientsList");
+
+    ingredientsTab.style.backgroundColor = "rgb(9, 43, 92)";
+    ingredients.style.display = "none";
+
+    const allergensTab = document.getElementById("allergensTab");
+    const allergens = document.getElementById("allergensList");
+
+    allergensTab.style.backgroundColor = "rgb(28, 89, 176)";
+    allergens.style.display = "flex";
+}

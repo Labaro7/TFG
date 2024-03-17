@@ -1676,7 +1676,7 @@ void Database::moveTable(const int& current_n_table,
 
 						if (res3->next())
 						{
-							double current_table_product_price = res3->getDouble("price");
+							int current_table_product_price = res3->getInt("price");
 							new_table_bill += current_table_product_price * current_table_product_amount;
 
 							// Update new table bill
@@ -1717,6 +1717,7 @@ void Database::moveTable(const int& current_n_table,
 			}
 
 			removeTable(curr_table);
+			;
 		}
 		else
 		{ // If there is no existing table just change n_table

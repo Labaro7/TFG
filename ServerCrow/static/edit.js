@@ -1,7 +1,7 @@
 const SELECTED_BACKGROUND_COLOR = "rgb(28, 89, 176)";
 const SELECTED_TEXT_COLOR = "white";
 const UNSELECTED_BACKGROUND_COLOR = "white"
-const UNSELECTED_TEXT_COLOR = "rgb(20, 20, 51)";
+const UNSELECTED_TEXT_COLOR = "black";
 
 const SELECTED_BUTTON_BACKGROUND_COLOR = "rgb(28, 89, 176)";
 const UNSELECTED_BUTTON_BACKGROUND_COLOR = "rgb(9, 43, 92)";
@@ -18,7 +18,7 @@ let selectedDeployable = 0;
 let selectedPage = 1;
 
 // Modify
-let selectedElement; document.getElementById("selected-product");
+let selectedElement = document.getElementById("selected-product");
 let selectedElementName;
 let selectedElementPrice;
 let selectedElementPage = selectedPage;
@@ -50,17 +50,19 @@ let oldEmployee_password;
 selectAllIngredients();
 
 function changeTab(clickedTab) {
+    const currentTab = document.querySelector('div[data-tab="' + tabNumber + '"]');
     const currentPage = document.querySelector('div[data-page="' + tabNumber + '"]');
-    let currentTab = document.querySelector("div[data-tab='" + tabNumber + "']");
+    currentTab.style.backgroundColor = "white";
+    currentTab.style.color = "black";
     currentPage.style.display = "none";
-    currentTab.children[1].style.visibility = "hidden";
 
     tabNumber = clickedTab.getAttribute("data-tab");
 
+    const newTab = document.querySelector('div[data-tab="' + tabNumber + '"]');
     const newPage = document.querySelector('div[data-page="' + tabNumber + '"]');
-    currentTab = document.querySelector("div[data-tab='" + tabNumber + "']");
+    newTab.style.backgroundColor = "rgb(9, 43, 92)";
+    newTab.style.color = "white";
     newPage.style.display = "flex";
-    currentTab.children[1].style.visibility = "visible";
 }
 
 // TODO: It cannot display 6 or more menus

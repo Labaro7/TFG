@@ -156,13 +156,6 @@
     </div>
 
     <div id="modifyDeleteMenu">
-        <div id="infoButton">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="none">
-                <g id="Warning / Info">
-                    <path id="Vector" d="M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z" stroke="#000000" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
-                </g>
-            </svg>
-        </div>
         <div id="modifyProductAmountButton" onclick="selectProductToModify()">
             <svg xmlns="http://www.w3.org/2000/svg" width="35px" height="35px" viewBox="0 0 21 21">
                 <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)">
@@ -205,9 +198,6 @@
     </div>
 
     <div id="moveTableMenu">
-        <div id="moveTableMenuHeader">
-            Move table
-        </div>
         <input type="text" id="tableInput" value="" maxlength="5" readonly />
         <div class="button-grid">
             <div class="gridItem"><div class="button" onclick="appendNumber(7)">7</div></div>
@@ -258,9 +248,6 @@
     </div>
 
     <div id="modifyProductMenu">
-        <div id="modifyProductMenuHeader">
-            Modify product amount
-        </div>
         <input type="text" id="amountInput" value="" maxlength="5" readonly />
         <div class="button-grid">
             <div class="gridItem"><div class="button" onclick="appendNumber(7)">7</div></div>
@@ -279,54 +266,6 @@
         <div id="modifyProductMenuButtons">
             <div id="modifyProductMenuAcceptButton" onclick="modifyProduct()">Accept</div>
             <div id="modifyProductMenuCancelButton" onclick="cancelModifyDeleteMenu()">Cancel</div>
-        </div>
-    </div>
-
-    <div id="ingredientsAndAllergensMenu">
-        <div id="productName"></div>
-        <div id="ingredientsAndAllergensTabs">
-            <div id="ingredientsTab" onclick="selectIngredientsTab()">
-                Ingredients
-            </div>
-            <div id="allergensTab" onclick="selectAllergensTab()">
-                Allergens
-            </div>
-        </div>
-        <ul id="ingredientsAndAllergens">
-            <li class="ingredients">
-                <ul class="ingredients" id="ingredientsList">
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                    <li class="ingredient">Ingredient1</li>
-                    <li class="ingredient">Ingredient2</li>
-                    <li class="ingredient">Ingredient3</li>
-                </ul>
-            </li>
-            <li class="allergens">
-                <ul class="allergens" id="allergensList">
-                    <li class="allergen">Allergen1</li>
-                    <li class="allergen">Allergen2</li>
-                    <li class="allergen">Allergen3</li>
-                </ul>
-            </li>
-        </ul>
-        <div id="ingredientsAndAllergensFooter">
-            <div id="backButton" onclick="goBackToTable()">
-                Back
-            </div>
         </div>
     </div>
 
