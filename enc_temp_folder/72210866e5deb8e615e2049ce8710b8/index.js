@@ -3,14 +3,6 @@ const currentTablesTab = document.getElementById("currentTablesTab");
 const selectTablePage = document.getElementById("select-table-page");
 const currentTablesPage = document.getElementById("current-tables-page");
 
-init();
-
-function init() {
-    let tablePrices = document.getElementsByClassName("tablePrice");
-
-    for (let tablePrice of tablePrices) tablePrice.textContent = parseFloat(tablePrice.textContent).toFixed(2) + " " + tablePrice.textContent[tablePrice.textContent.length-1];
-}
-
 function changeToSelectTableTab() {
     selectTableTab.style.backgroundColor = 'rgb(9, 43, 92)';
     selectTableTab.style.color = "white";
