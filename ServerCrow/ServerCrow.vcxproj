@@ -141,30 +141,42 @@
     <None Include="static\index.js" />
     <None Include="static\login.css" />
     <None Include="static\login.js" />
+    <None Include="static\stats.css" />
+    <None Include="static\stats.js" />
     <None Include="static\table.css" />
     <None Include="static\table.js" />
     <None Include="templates\edit.html" />
     <None Include="templates\index.html" />
     <None Include="templates\login.html" />
+    <None Include="templates\stats.html" />
     <None Include="templates\table.html" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\authMiddleware.h" />
-    <ClInclude Include="headers\constants.h" />
-    <ClInclude Include="headers\crow_all.h" />
-    <ClInclude Include="headers\database.h" />
-    <ClInclude Include="headers\domain.h" />
-    <ClInclude Include="headers\interface.h" />
-    <ClInclude Include="headers\placeholders.h" />
-    <ClInclude Include="headers\server.h" />
+    <ClInclude Include="headers\api.hpp" />
+    <ClInclude Include="headers\apiRoute.hpp" />
+    <ClInclude Include="headers\authMiddleware.hpp" />
+    <ClInclude Include="headers\billApi.hpp" />
+    <ClInclude Include="headers\constants.hpp" />
+    <ClInclude Include="headers\crow_all.hpp" />
+    <ClInclude Include="headers\database.hpp" />
+    <ClInclude Include="headers\domain.hpp" />
+    <ClInclude Include="headers\interface.hpp" />
+    <ClInclude Include="headers\nClientApi.hpp" />
+    <ClInclude Include="headers\orderApi.hpp" />
+    <ClInclude Include="headers\placeholders.hpp" />
+    <ClInclude Include="headers\server.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\api.cpp" />
     <ClCompile Include="src\authMiddleware.cpp" />
+    <ClCompile Include="src\billApi.cpp" />
     <ClCompile Include="src\constants.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\domain.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\nClientApi.cpp" />
+    <ClCompile Include="src\orderApi.cpp" />
     <ClCompile Include="src\placeholders.cpp" />
     <ClCompile Include="src\server.cpp" />
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "..\headers\constants.h"
+#include "..\headers\constants.hpp"
 
 // Crow constants
 const std::string SERVER_IP = "192.168.1.66";
@@ -14,7 +14,7 @@ extern const std::string LOGIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\
 extern const std::string INDEX_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html";
 extern const std::string TABLE_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html";
 extern const std::string EDIT_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\edit.html";
-
+extern const std::string STATS_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\stats.html";
 
 // HTML constants
 const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";
@@ -49,6 +49,10 @@ const int PORT = 3306;
 const std::string USERNAME = "user";
 const std::string PASSWORD = "user";
 const std::string DATABASE_NAME = "example_db";
+const std::string MYSQL_DAY = "DATE";
+const std::string MYSQL_WEEK = "WEEK";
+const std::string MYSQL_MONTH = "MONTH";
+const std::string MYSQL_YEAR = "YEAR";
 
 // Other constants
 const std::string ASCII_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>";

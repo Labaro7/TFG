@@ -1,8 +1,8 @@
-#include "..\headers\server.h"
-#include "..\headers\domain.h"
-#include "..\headers\constants.h"
-#include "..\headers\placeholders.h"
-#include "..\headers\authMiddleware.h"
+#include "..\headers\server.hpp"
+#include "..\headers\domain.hpp"
+#include "..\headers\constants.hpp"
+#include "..\headers\placeholders.hpp"
+#include "..\headers\authMiddleware.hpp"
 #include <tuple>
 #include <chrono>
 #include <iomanip>
@@ -277,18 +277,39 @@ int main()
 		 });
 
 
-	CROW_ROUTE(app, "/api/stats")
-		([&server]()
+	CROW_ROUTE(app, "/api/<path>")
+		([&server](const crow::request& req, std::string path)
 		 {
-			 std::vector<Order> orders = server.getOrders();
+			 const crow::json::wvalue data = server.retrieveRequest(path);
 
-			 return server.prepareOrdersJSON(orders);
+			 return data.dump();
 		 });
 
 	CROW_CATCHALL_ROUTE(app)
 		([]()
 		 {
 			 return "Wrong Route";
+		 });
+
+	CROW_ROUTE(app, "/stats")
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 std::ifstream file(STATS_HTML_FILE_PATH);
+			 std::stringstream ssHTML;
+			 ssHTML << file.rdbuf();
+			 file.close();
+			 std::string contentHTML = ssHTML.str();
+			 //std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
+
+			 /*if (modifiedHTML == "")
+			 {
+				 res.code = 500;
+				 res.body = "Error reading HTML template", "text/plain";
+			 }*/
+
+			 res.set_header("Content-Type", "text/html");
+			 res.write(contentHTML);
+			 res.end();
 		 });
 
 	CROW_ROUTE(app, "/edit")

@@ -1,5 +1,5 @@
-#include "..\headers\placeholders.h"
-#include "..\headers\constants.h"
+#include "..\headers\placeholders.hpp"
+#include "..\headers\constants.hpp"
 
 // index.html
 std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server)

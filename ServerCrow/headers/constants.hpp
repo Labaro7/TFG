@@ -22,6 +22,7 @@ extern const std::string LOGIN_HTML_FILE_PATH;
 extern const std::string INDEX_HTML_FILE_PATH;
 extern const std::string TABLE_HTML_FILE_PATH;
 extern const std::string EDIT_HTML_FILE_PATH;
+extern const std::string STATS_HTML_FILE_PATH;
 
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;
@@ -56,6 +57,10 @@ extern const int PORT;
 extern const std::string USERNAME;
 extern const std::string PASSWORD;
 extern const std::string DATABASE_NAME;
+extern const std::string MYSQL_DAY;
+extern const std::string MYSQL_WEEK;
+extern const std::string MYSQL_MONTH;
+extern const std::string MYSQL_YEAR;
 
 // Other constants
 extern const std::string ASCII_CHARACTERS;

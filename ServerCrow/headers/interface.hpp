@@ -3,10 +3,10 @@
 #define _INTERFACE_HPP_
 
 // Crow includes
-#include "crow_all.h"
+#include "crow_all.hpp"
 
 // Custom includes
-#include "domain.h"
+#include "domain.hpp"
 
 // Other includes
 #include <sstream>

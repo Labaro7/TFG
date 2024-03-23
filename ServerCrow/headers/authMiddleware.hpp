@@ -2,10 +2,10 @@
 #ifndef _AUTHMIDDLEWARE_HPP_
 #define _AUTHMIDDLEWARE_HPP_
 
-#include "crow_all.h"
-#include "constants.h"
-#include "server.h"
-#include "database.h"
+#include "crow_all.hpp"
+#include "constants.hpp"
+#include "server.hpp"
+#include "database.hpp"
 
 class AuthMiddleware
 {

@@ -1,6 +1,6 @@
-#include "..\headers\database.h"
-#include "..\headers\crow_all.h"
-#include "..\headers\domain.h"
+#include "..\headers\database.hpp"
+#include "..\headers\crow_all.hpp"
+#include "..\headers\domain.hpp"
 
 Database::Database() : pstmt()
 {
@@ -29,26 +29,31 @@ Database::Database() : pstmt()
 Database::Database(const Database& database)
 {
 	connection_properties = database.connection_properties;
+	std::cout << "COPYYY" << std::endl;
 
 	driver = database.driver;
 
-	if (database.con)
-	{
-		con = std::shared_ptr<sql::Connection>(driver->connect(connection_properties), [](sql::Connection* ptr)
-											   {
-												   delete ptr;
-											   });
-	}
+	con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
 
-	if (database.stmt)
-	{
-		stmt = con->createStatement();
-	}
+	stmt = database.stmt;
 
-	if (database.pstmt)
-	{
-		pstmt = database.pstmt;
-	}
+	pstmt = database.pstmt;
+
+}
+
+Database::Database(const std::shared_ptr<Database> database)
+{
+	connection_properties = database->connection_properties;
+	std::cout << "COPYYY" << std::endl;
+
+	driver = database->driver;
+
+	con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
+
+	stmt = database->stmt;
+
+	pstmt = database->pstmt;
+
 }
 
 Database::~Database()
@@ -1249,6 +1254,74 @@ std::vector<Order> Database::getOrders()
 
 	return order;
 }*/
+
+std::vector<Order> Database::getOrdersByDate(const std::string& date, const std::string& mode)
+{
+	std::vector<Order> orders;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		std::cout << date << std::endl;
+		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			std::cout << "aaaaa" << std::endl;
+			int order_id = res->getInt("order_id");
+			int n_table = res->getInt("n_table");
+			int n_clients = res->getInt("n_clients");
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
+			std::string employee = res->getString("employee");
+			std::string date = res->getString("date");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			std::vector<std::pair<Product, int>> products;
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				int amount = res2->getInt("amount");
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					std::string name = res3->getString("name");
+					int price = res3->getInt("price");
+					std::string color = res3->getString("color");
+					int page = res3->getInt("page");
+					int deployable = res3->getInt("deployable");
+
+					Product p(name, price, color, page, deployable);
+					products.push_back({ p, amount });
+				}
+			}
+
+			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			orders.push_back(o);
+		}
+
+		return orders;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orders by date. Error message: " << e.what();
+
+		return orders;
+	}
+}
 
 std::vector<Ingredient> Database::getIngredients()
 {

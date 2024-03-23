@@ -1,12 +1,20 @@
-#include "..\headers\server.h"
-#include "..\headers\crow_all.h"
-#include "..\headers\domain.h"
+#include "..\headers\server.hpp"
+#include "..\headers\crow_all.hpp"
+#include "..\headers\domain.hpp"
 #include <sstream>
 
 Server::Server()
 {
-	database = std::make_unique<Database>();
-	restaurant = std::make_unique<Restaurant>();
+	database = std::make_shared<Database>();
+	api = std::make_shared<API>(database);
+	restaurant = std::make_shared<Restaurant>();
+}
+
+Server::Server(Server& server)
+{
+	database = server.database;
+	api = server.api;
+	restaurant = server.restaurant;
 }
 
 Server::~Server()
@@ -207,58 +215,38 @@ void Server::dropAllTables()
 
 std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
 {
-	std::stringstream ss;
+	crow::json::wvalue json;
 
-	ss << "{\n  'orders':[ \n";
-
+	crow::json::wvalue::list ordersArray;
 	for (auto& order : orders)
 	{
-		//const int& order_id = getOrderId(order);
-		ss << "    {\n"
-			//<< "      'id':" << order_id << ",\n"
-			<< "      'n_table':" << order.n_table << ",\n"
-			<< "      'n_clients':" << order.n_clients << ",\n"
-			<< "      'bill':" << order.bill << CURRENCY << ",\n"
-			<< "      'paid':" << order.paid << CURRENCY << ",\n"
-			<< "      'discount':" << order.discount << ",\n"
-			<< "      'method':" << order.method << ",\n"
-			<< "      'employee':'" << order.employee << "',\n"
-			<< "      'date':'" << order.date << "',\n"
-			<< "      'products':[ \n";
+		crow::json::wvalue orderObj;
+		orderObj["n_table"] = order.n_table;
+		orderObj["n_clients"] = order.n_clients;
+		orderObj["bill"] = order.bill;
+		orderObj["paid"] = order.paid;
+		orderObj["discount"] = order.discount;
+		orderObj["method"] = order.method;
+		orderObj["employee"] = order.employee;
+		orderObj["date"] = order.date;
 
-		for (const auto& product : order.products)
+		crow::json::wvalue::list productsArray;
+		for (auto& product : order.products)
 		{
-			ss << "        {\n"
-				<< "          'name':'" << product.first.name << "',\n"
-				<< "          'price':'" << product.first.price << CURRENCY << "',\n"
-				<< "          'amount':" << product.second << "\n"
-				<< "        }, \n";
-
-			// Remove the comma
-			if (product.first.name == order.products.back().first.name)
-			{
-				ss.seekp(-3, std::ios_base::end);
-			}
+			crow::json::wvalue productObj;
+			productObj["name"] = product.first.name;
+			productObj["price"] = product.first.price;
+			productObj["amount"] = product.second;
+			productsArray.push_back(productObj);
 		}
 
-		ss << "] \n    }, \n";
-
-		// Remove the comma
-		if (order == orders.back())
-		{
-			ss.seekp(-3, std::ios_base::end);
-		}
+		orderObj["products"] = std::move(productsArray);
+		ordersArray.push_back(orderObj);
 	}
 
-	// Remove the comma
-	if (!orders.empty())
-	{
-		ss.seekp(-3, std::ios_base::end);
-	}
+	json["orders"] = std::move(ordersArray);
 
-	ss << "]\n}";
-
-	return ss.str();
+	return json.dump();
 }
 
 
@@ -284,6 +272,12 @@ std::string Server::generateSessionToken()
 {
 	return database->generateSessionToken();
 }
+
+crow::json::wvalue Server::retrieveRequest(std::string& uri)
+{
+	return api->retrieveRequest(uri);
+}
+
 
 void Server::modifyProduct(const Product& oldProduct,
 						   const Product& newProduct)

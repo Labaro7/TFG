@@ -28,6 +28,12 @@
     <Filter Include="ssl">
       <UniqueIdentifier>{9b03f0a2-71f3-4eb9-a9a1-faaad426ef22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de origen\api">
+      <UniqueIdentifier>{fcd5a6d9-0272-4aa4-994e-bf45c2e7cd82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\api">
+      <UniqueIdentifier>{bad504e8-2a39-4d25-9bd3-c1a434f09760}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -78,31 +84,55 @@
     <None Include="static\login.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
+    <None Include="templates\stats.html">
+      <Filter>Archivos de recursos\html</Filter>
+    </None>
+    <None Include="static\stats.css">
+      <Filter>Archivos de recursos\css</Filter>
+    </None>
+    <None Include="static\stats.js">
+      <Filter>Archivos de recursos\js</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\database.h">
+    <ClInclude Include="headers\database.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\server.h">
+    <ClInclude Include="headers\server.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\crow_all.h">
+    <ClInclude Include="headers\crow_all.hpp">
       <Filter>Archivos de encabezado\crow</Filter>
     </ClInclude>
-    <ClInclude Include="headers\constants.h">
+    <ClInclude Include="headers\constants.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\placeholders.h">
+    <ClInclude Include="headers\placeholders.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\domain.h">
+    <ClInclude Include="headers\domain.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\authMiddleware.h">
+    <ClInclude Include="headers\authMiddleware.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="headers\interface.h">
+    <ClInclude Include="headers\interface.hpp">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\api.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\orderApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\billApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\nClientApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\apiRoute.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +156,18 @@
     </ClCompile>
     <ClCompile Include="src\authMiddleware.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\api.cpp">
+      <Filter>Archivos de origen\api</Filter>
+    </ClCompile>
+    <ClCompile Include="src\orderApi.cpp">
+      <Filter>Archivos de origen\api</Filter>
+    </ClCompile>
+    <ClCompile Include="src\billApi.cpp">
+      <Filter>Archivos de origen\api</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nClientApi.cpp">
+      <Filter>Archivos de origen\api</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

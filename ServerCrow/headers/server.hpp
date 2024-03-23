@@ -1,57 +1,40 @@
 #pragma once
-#ifndef _DATABASE_HPP_
-#define _DATABASE_HPP_
+#ifndef _SERVER_HPP_
+#define _SERVER_HPP_
 
-// MySQL includes.
-#include "mysql_connection.h"
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/prepared_statement.h>
+#include "crow_all.hpp"
+#include "interface.hpp"
+#include "database.hpp"
+#include "domain.hpp"
+#include "api.hpp"
 
-// Other includes
-#include "domain.h"
-#include "constants.h"
 #include <sstream>
-#include <mutex>
-#include <deque>
-#include <iomanip>
+#include <string>
+#include <memory>
+#include <functional>
 #include <iostream>
-#include <random>
-#include "interface.h"
 
-class Database : public Interface
+class API;
+class OrderAPI;
+class BillAPI;
+class NClientAPI;
+
+class Server : public Interface
 {
 public:
-	Database();
-	Database(const Database& database);
-	~Database();
+	Server();
+	Server(Server& server);
+	~Server();
 
 
-	// Database
-	void MySqlCreateDatabase(const std::string name);
-	void MySqlDropDatabase(const std::string name);
-	void MySqlUseDatabase(const std::string name);
-	void MySqlSaveChangesToDataBase();
-
-
-	// Tables
-	void MySqlCreateTable(const std::string name, std::string definition);
-	void MySqlDropTable(const std::string name);
-	void MySqlModifyTable(const std::string name, std::string modifications);
-	void MySqlEmptyTable(const std::string name);
+	// Getter
+	Database& db();
 
 
 	// Init
 	void initialize() override;
 	void dropAllTables() override;
-	void initializeEmployeesTable();
-	void initializeProductsTable();
-	void initializeIngredientsTable();
-	void initializeAllergensTable();
-	void initializeOrdersTable();
 
-
-	// ALL THE METHODS BELOW MUST USE THE MUTEX ATTRIBUTE
 
 	// Save
 	void saveTable(const Table& table) override;
@@ -69,8 +52,10 @@ public:
 
 	// Get
 	std::vector<Product> getProductsByDeployableId(const int& deployable_id) override;
+	void getDataFromDatabase();
 	std::pair<int, std::vector<Product>> getProductsAndIds() override;
 	std::vector<page_t> getDataFromPages() override;
+	int getRestaurantPagesSize();
 
 	std::vector<Table> getTables() override;
 	Table getTableByNumber(const int n_table) override;
@@ -78,7 +63,7 @@ public:
 
 	std::vector<Employee> getEmployees() override;
 	Employee getEmployeeByName(const std::string& fullName) override;
-	Employee getEmployeeByAccount(const std::string& username, const std::string& password_hash) override;
+	Employee getEmployeeByAccount(const std::string& usernname, const std::string& password_hash) override;
 	Employee getEmployeeBySessionToken(const std::string& session_token) override;
 
 	std::vector<Product> getProducts() override;
@@ -98,27 +83,31 @@ public:
 
 
 	// Change
-	void moveTable(const int& current_n_table, const int& new_n_table)  override;
-	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount)  override;
+	void moveTable(const int& current_n_table, const int& new_n_table) override;
+	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount) override;
 	void modifyProduct(const Product& oldProduct, const Product& newProduct) override;
 
 
 	// Remove
-	void removeTable(const Table& table)  override;
-	void removeEmployee(const Employee& employee)  override;
-	void removeProduct(const Product& product)  override;
-	void removeOrder(const Order& order)  override;
-	void removeIngredient(const Ingredient& ingredient)  override;
-	void removeAllergen(const Allergen& allergen)  override;
+	void removeTable(const Table& table) override;
+	void removeEmployee(const Employee& employee) override;
+	void removeProduct(const Product& product) override;
+	void removeOrder(const Order& order) override;
+	void removeIngredient(const Ingredient& ingredient) override;
+	void removeAllergen(const Allergen& allergen) override;
 
-	void removeTableProduct(const int& n_table, const Product& product, const int& times)  override;
+	void removeTableProduct(const int& n_table, const Product& product, const int& times) override;
 	void removeProductIngredient(const Product& product, const Ingredient& ingredient) override;
 	void removeProductIngredients(const Product& product) override;
 	void removeProductAllergens(const Product& product) override;
 
 
 	// Various
+	void payTable(const Order& order);
+	std::string prepareOrdersJSON(const std::vector<Order>& orders);
+	std::string hash(const std::string& s);
 	std::string generateSessionToken() override;
+	crow::json::wvalue retrieveRequest(std::string& uri);
 
 
 	// Print
@@ -131,15 +120,10 @@ public:
 
 
 private:
-	sql::ConnectOptionsMap connection_properties;
-	sql::Driver* driver;
+	std::shared_ptr<Database> database;
+	std::shared_ptr<API> api;
+public:
+	std::shared_ptr<Restaurant> restaurant;
+};
 
-	std::shared_ptr<sql::Connection> con;
-	sql::Statement* stmt;
-	sql::PreparedStatement* pstmt;
-
-	std::mutex mutex;
-
-}; // class Database
-
-#endif
+#endif // _SERVER_HPP_
