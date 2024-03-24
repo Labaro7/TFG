@@ -206,6 +206,7 @@ body {
     height: 430px;
     border: 0px solid rgb(9, 43, 92);
     margin-top: 5px;
+    align-content: center;
 }
 
 .contentGrid {
