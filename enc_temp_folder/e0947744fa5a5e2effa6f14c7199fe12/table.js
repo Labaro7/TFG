@@ -899,13 +899,12 @@ function cancelModifyDeleteMenu() {
 function selectProductToDelete(clickedElement) {
     event.stopPropagation(); // So the child onclick is on top of the parents'
 
-    let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
     let a = document.getElementById("modifyDeleteMenu").parentNode;
 
     if (a.style.backgroundColor === "rgb(255, 120, 151)") {
         if (a.className === "ticketProduct") {
-            a.style.backgroundColor = "rgb(28, 89, 176)";
-            a.style.color = "white";
+            a.style.backgroundColor = "white";
+            a.style.color = "black";
         }
         else {
             a.style.backgroundColor = "orange";
@@ -952,7 +951,7 @@ function selectProductToDelete(clickedElement) {
             }
             else lastProduct.textContent = "-", addedDivision.style.display = "none";
 
-            modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
+            let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
             modifyDeleteMenu.style.display = "none";
             document.body.appendChild(modifyDeleteMenu);
 
