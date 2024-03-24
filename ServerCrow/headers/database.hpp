@@ -87,11 +87,15 @@ public:
 	int getProductIdByName(const std::string name) override;
 
 	std::vector<Order> getOrders() override;
-	//Order getOrderByTime(const std::string time) override;
 	std::vector<Order> getOrdersByDate(const std::string& date, const std::string& mode);
 	std::vector<Order> getOrdersByEmployee(const std::string& employeeName);
 	std::vector<Order> getOrdersByMethod(const std::string& method);
-
+	std::vector<BillAndPaid> getBillsAndPaids();
+	std::vector<BillAndPaid> getBillsAndPaidsByDate(const std::string& date, const std::string& mode);
+	std::vector<BillAndPaid> getBillsAndPaidsByEmployee(const std::string& employeeName);
+	int getNClients();
+	int getNClientsByDate(const std::string& date, const std::string& mode);
+	int getNClientsByEmployee(const std::string& employeeName);
 
 	std::vector<Ingredient> getIngredients() override;
 	Ingredient getIngredientByName(const std::string& name) override;

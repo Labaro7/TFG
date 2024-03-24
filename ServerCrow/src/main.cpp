@@ -68,8 +68,6 @@ int main()
 			 std::string username = json_data["username"].s();
 			 std::string password = server.hash(json_data["password"].s());
 
-			 std::cout << "login" << std::endl;
-
 			 CROW_LOG_INFO << "Employee logged in with username: " << username << " and password hash:" << password;
 
 			 Employee e = server.getEmployeeByAccount(username, password);
@@ -89,8 +87,6 @@ int main()
 				 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
 				 res.add_header("Set-Cookie", "employee_name=" + e.firstName + " " + e.lastName + "; Path=/");
 				 res.redirect("/");
-
-				 std::cout << "redir " << res.body << std::endl;
 			 }
 			 else
 			 {
@@ -199,7 +195,7 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
-			 std::cout << "modify " << std::endl;
+
 		 });
 
 	CROW_ROUTE(app, "/payTable")
@@ -275,7 +271,6 @@ int main()
 
 			 server.moveTable(current_n_table, new_n_table);
 		 });
-
 
 	CROW_ROUTE(app, "/api/<path>")
 		([&server](const crow::request& req, std::string path)
@@ -543,10 +538,6 @@ int main()
 			 const Product product = server.getProductByName(selectedProduct.s());
 
 			 server.removeProductIngredients(product);
-
-			 std::cout << selectedProduct << std::endl;
-			 std::cout << selectedIngredients << std::endl;
-			 std::cout << selectedAllergens << std::endl;
 
 			 for (const auto& selectedIngredient : selectedIngredients)
 			 {

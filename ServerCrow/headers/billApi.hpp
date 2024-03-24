@@ -13,10 +13,9 @@ public:
 
 	std::string extractURISegment(std::string& uri) override;
 
+	crow::json::wvalue buildBillsJSON(std::vector<BillAndPaid> billsAndPaids);
+
 	crow::json::wvalue processRequest(std::string& uri) override;
-
-	crow::json::wvalue buildBillsJSON(std::vector<Order> orders);
-
 };
 
 #endif

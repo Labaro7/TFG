@@ -145,6 +145,16 @@ struct Order
 	void copyDataFromTable(const Table& t);
 };
 
+struct BillAndPaid
+{
+	double bill;
+	double paid;
+	std::string date;
+
+	BillAndPaid();
+	BillAndPaid(const double& bill, const double& paid, const std::string& date);
+};
+
 
 
 /* ------------------------------------------- INGREDIENT ------------------------------------------- */

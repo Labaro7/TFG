@@ -29,7 +29,6 @@ Database::Database() : pstmt()
 Database::Database(const Database& database)
 {
 	connection_properties = database.connection_properties;
-	std::cout << "COPYYY" << std::endl;
 
 	driver = database.driver;
 
@@ -44,7 +43,6 @@ Database::Database(const Database& database)
 Database::Database(const std::shared_ptr<Database> database)
 {
 	connection_properties = database->connection_properties;
-	std::cout << "COPYYY" << std::endl;
 
 	driver = database->driver;
 
@@ -250,6 +248,8 @@ void Database::initializeAllergensTable()
 
 void Database::initialize()
 {
+	CROW_LOG_INFO << "[DB] initialize";
+
 	// Create the tables to define the domain
 	// TODO: Make n_table primary key so there are no duplicate tables
 	MySqlCreateTable("tables", "table_id INT AUTO_INCREMENT PRIMARY KEY, n_table INT, n_clients INT, bill DOUBLE, discount DOUBLE, last_modified VARCHAR(45)");
@@ -279,6 +279,8 @@ void Database::initialize()
 
 void Database::dropAllTables()
 {
+	CROW_LOG_INFO << "[DB] dropAllTables";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -309,6 +311,8 @@ void Database::dropAllTables()
 // Save
 void Database::saveTable(const Table& table)
 {
+	CROW_LOG_INFO << "[DB] saveTable";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -332,6 +336,8 @@ void Database::saveTable(const Table& table)
 
 void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
 {
+	CROW_LOG_INFO << "[DB] saveEmployee";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -392,6 +398,8 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 
 void Database::saveProduct(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] saveProduct";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -429,6 +437,8 @@ void Database::saveProduct(const Product& product)
 
 void Database::saveOrder(const Order& order)
 {
+	CROW_LOG_INFO << "[DB] saveOrder";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -483,6 +493,8 @@ void Database::saveOrder(const Order& order)
 // Do not use the mutex here!. This function is called from another one that uses it.
 void Database::saveOrderProduct(const Order& order, const int& product_id, const int& amount)
 {
+	CROW_LOG_INFO << "[DB] saveOrderProduct";
+
 	try
 	{
 		//std::unique_lock<std::mutex> lock(mutex);
@@ -511,6 +523,8 @@ void Database::saveOrderProduct(const Order& order, const int& product_id, const
 
 void Database::saveIngredient(const Ingredient& ingredient)
 {
+	CROW_LOG_INFO << "[DB] saveIngredient";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -537,6 +551,8 @@ void Database::saveIngredient(const Ingredient& ingredient)
 
 void Database::saveAllergen(const Allergen& allergen)
 {
+	CROW_LOG_INFO << "[DB] saveAllergen";
+
 	try
 	{
 		//std::unique_lock<std::mutex> lock(mutex);
@@ -592,6 +608,8 @@ void Database::saveTableProduct(Table& table,
 								const std::string& details,
 								const Employee& employee)
 {
+	CROW_LOG_INFO << "[DB] saveTableProduct";
+
 	try
 	{
 		//std::unique_lock<std::mutex> lock(mutex);
@@ -678,6 +696,8 @@ void Database::saveTableProduct(Table& table,
 void Database::saveProductIngredient(const Product& product,
 									 const Ingredient& ingredient)
 {
+	CROW_LOG_INFO << "[DB] saveProductIngredient";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -718,6 +738,8 @@ void Database::saveProductIngredient(const Product& product,
 
 void Database::saveProductAllergen(const Product& product, const Allergen& allergen)
 {
+	CROW_LOG_INFO << "[DB] saveProductAllergen";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -760,6 +782,8 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 //Get
 std::vector<Table> Database::getTables()
 {
+	CROW_LOG_INFO << "[DB] getTables";
+
 	std::vector<Table> tables;
 
 	try
@@ -798,6 +822,8 @@ std::vector<Table> Database::getTables()
 
 Table Database::getTableByNumber(const int n_table)
 {
+	CROW_LOG_INFO << "[DB] getTableByNumber";
+
 	Table table;
 
 	try
@@ -859,6 +885,8 @@ Table Database::getTableByNumber(const int n_table)
 
 std::string Database::getLastModifiedFromTable(const Table& table)
 {
+	CROW_LOG_INFO << "[DB] getlastModifiedFromTable";
+
 	std::string last_modified;
 
 	try
@@ -888,6 +916,8 @@ std::string Database::getLastModifiedFromTable(const Table& table)
 
 std::vector<Employee> Database::getEmployees()
 {
+	CROW_LOG_INFO << "[DB] getEmployees";
+
 	std::vector<Employee> employees;
 
 	try
@@ -925,6 +955,8 @@ std::vector<Employee> Database::getEmployees()
 
 Employee Database::getEmployeeByName(const std::string& fullName)
 {
+	CROW_LOG_INFO << "[DB] getEmployeeByName";
+
 	Employee employee;
 
 	try
@@ -932,15 +964,12 @@ Employee Database::getEmployeeByName(const std::string& fullName)
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		std::cout << "hey1 " << std::endl;
 		query << "SELECT * FROM employees WHERE CONCAT(firstName, ' ', lastName) = '" << fullName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
 		if (res->next())
 		{
-			std::cout << "hey2 " << std::endl;
-
 			employee.firstName = res->getString("firstName");
 			employee.lastName = res->getString("lastName");
 			employee.email = res->getString("email");
@@ -964,6 +993,8 @@ Employee Database::getEmployeeByName(const std::string& fullName)
 Employee Database::getEmployeeByAccount(const std::string& username,
 										const std::string& password_hash)
 {
+	CROW_LOG_INFO << "[DB] getEmployeeByAccount";
+
 	Employee employee;
 
 	try
@@ -998,6 +1029,8 @@ Employee Database::getEmployeeByAccount(const std::string& username,
 
 Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 {
+	CROW_LOG_INFO << "[DB] getEmployeeBySessionToken";
+
 	Employee employee;
 
 	try
@@ -1033,6 +1066,8 @@ Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 
 std::vector<Product> Database::getProducts()
 {
+	CROW_LOG_INFO << "[DB] getProducts";
+
 	std::vector<Product> products;
 
 	try
@@ -1067,6 +1102,8 @@ std::vector<Product> Database::getProducts()
 
 Product Database::getProductByName(const std::string name)
 {
+	CROW_LOG_INFO << "[DB] getProductByName";
+
 	Product product;
 	try
 	{
@@ -1096,6 +1133,8 @@ Product Database::getProductByName(const std::string name)
 
 int Database::getProductIdByName(const std::string name)
 {
+	CROW_LOG_INFO << "[DB] getProductIdByName";
+
 	int id = 0;
 
 	try
@@ -1122,6 +1161,8 @@ int Database::getProductIdByName(const std::string name)
 
 std::vector<Product> Database::getProductsByDeployableId(const int& deployable_id)
 {
+	CROW_LOG_INFO << "[DB] getProductsByDeployableId";
+
 	std::vector<Product> products;
 
 	try
@@ -1156,6 +1197,8 @@ std::vector<Product> Database::getProductsByDeployableId(const int& deployable_i
 
 std::pair<int, std::vector<Product>> Database::getProductsAndIds()
 {
+	CROW_LOG_INFO << "[DB] getProductsAndIds";
+
 	std::unique_lock<std::mutex> lock(mutex);
 
 	std::vector<Product> products = getProducts();
@@ -1165,6 +1208,8 @@ std::pair<int, std::vector<Product>> Database::getProductsAndIds()
 
 std::vector<Order> Database::getOrders()
 {
+	CROW_LOG_INFO << "[DB] getOrders";
+
 	std::vector<Order> orders;
 
 	try
@@ -1257,6 +1302,8 @@ std::vector<Order> Database::getOrders()
 
 std::vector<Order> Database::getOrdersByDate(const std::string& date, const std::string& mode)
 {
+	CROW_LOG_INFO << "[DB] getOrdersByDate";
+
 	std::vector<Order> orders;
 
 	try
@@ -1267,12 +1314,10 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 		std::stringstream query;
 		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
-		std::cout << query.str() << ".";
 		query.str("");
 
 		while (res->next())
 		{
-			std::cout << "a" << std::endl;
 			int order_id = res->getInt("order_id");
 			int n_table = res->getInt("n_table");
 			int n_clients = res->getInt("n_clients");
@@ -1326,6 +1371,8 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 
 std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName)
 {
+	CROW_LOG_INFO << "[DB] getOrdersByEmployee";
+
 	std::vector<Order> orders;
 
 	try
@@ -1333,14 +1380,12 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		std::cout << "ttt " << employeeName << "." << std::endl;
 		query << "SELECT * FROM orders WHERE employee = '" << employeeName << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
 		query.str("");
 
 		while (res->next())
 		{
-			std::cout << "ttt1 " << std::endl;
 			int order_id = res->getInt("order_id");
 			int n_table = res->getInt("n_table");
 			int n_clients = res->getInt("n_clients");
@@ -1394,6 +1439,8 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 
 std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 {
+	CROW_LOG_INFO << "[DB] getOrdersByMethod";
+
 	std::vector<Order> orders;
 
 	try
@@ -1458,8 +1505,208 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 	}
 }
 
+std::vector<BillAndPaid> Database::getBillsAndPaids()
+{
+	CROW_LOG_INFO << "[DB] getBillsAndPaids";
+
+	std::vector<BillAndPaid> billsAndPaids;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT bill, paid FROM orders";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			std::string date = res->getString("date");
+
+			billsAndPaids.push_back({ bill, paid, date });
+		}
+
+		return billsAndPaids;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get bills. Error message: " << e.what();
+
+		return billsAndPaids;
+	}
+}
+
+std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& date, const std::string& mode)
+{
+	CROW_LOG_INFO << "[DB] getBillsAndPaidsByDate";
+
+	std::vector<BillAndPaid> billsAndPaids;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT bill, paid, date FROM orders WHERE " << mode << "(date) = " << date;
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			std::string date = res->getString("date");
+
+			billsAndPaids.push_back({ bill, paid, date });
+		}
+
+		return billsAndPaids;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get bills by date. Error message: " << e.what();
+
+		return billsAndPaids;
+	}
+}
+
+std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string& employeeName)
+{
+	CROW_LOG_INFO << "[DB] getBillsAndPaidsByEmployee";
+
+	std::vector<BillAndPaid> billsAndPaids;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT bill, paid, date FROM orders WHERE employee = '" << employeeName << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			std::string date = res->getString("date");
+
+			billsAndPaids.push_back({ bill, paid, date });
+		}
+
+		return billsAndPaids;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get bills by employee. Error message: " << e.what();
+
+		return billsAndPaids;
+	}
+}
+
+int Database::getNClients()
+{
+	CROW_LOG_INFO << "[DB] getNClients";
+
+	int totalNClients = 0;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT n_clients FROM orders";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			int n_clients = res->getInt("n_clients");
+
+			totalNClients += n_clients;
+		}
+
+		return totalNClients;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get number of clients. Error message: " << e.what();
+
+		return totalNClients;
+	}
+}
+
+int Database::getNClientsByDate(const std::string& date, const std::string& mode)
+{
+	CROW_LOG_INFO << "[DB] getNClientsByDate";
+
+	int totalNClients = 0;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT n_clients FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			int n_clients = res->getInt("n_clients");
+
+			totalNClients += n_clients;
+		}
+
+		return totalNClients;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get number of clients by date. Error message: " << e.what();
+
+		return totalNClients;
+	}
+}
+
+int Database::getNClientsByEmployee(const std::string& employeeName)
+{
+	CROW_LOG_INFO << "[DB] getNClientsByEmployee";
+
+	int totalNClients = 0;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT n_clients FROM orders WHERE employee = '" << employeeName << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			int n_clients = res->getInt("n_clients");
+
+			totalNClients += n_clients;
+		}
+
+		return totalNClients;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get number of clients by employee. Error message: " << e.what();
+
+		return totalNClients;
+	}
+}
+
 std::vector<Ingredient> Database::getIngredients()
 {
+	CROW_LOG_INFO << "[DB] getIngredients";
+
 	std::vector<Ingredient> ingredients;
 
 	try
@@ -1486,6 +1733,8 @@ std::vector<Ingredient> Database::getIngredients()
 
 Ingredient Database::getIngredientByName(const std::string& name)
 {
+	CROW_LOG_INFO << "[DB] getIngredientsByName";
+
 	Ingredient ingredient;
 
 	try
@@ -1513,6 +1762,8 @@ Ingredient Database::getIngredientByName(const std::string& name)
 
 std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] getIngredientsFromProduct";
+
 	std::vector<Ingredient> ingredients;
 
 	try
@@ -1558,6 +1809,8 @@ std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& produ
 
 std::vector<Allergen> Database::getAllergens()
 {
+	CROW_LOG_INFO << "[DB] getAllergens";
+
 	std::vector<Allergen> allergens;
 
 	try
@@ -1584,6 +1837,8 @@ std::vector<Allergen> Database::getAllergens()
 
 Allergen Database::getAllergenByName(const std::string name)
 {
+	CROW_LOG_INFO << "[DB] getAllergensByName";
+
 	Allergen allergen;
 
 	try
@@ -1611,6 +1866,8 @@ Allergen Database::getAllergenByName(const std::string name)
 
 std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] getAllergensFromProduct";
+
 	std::vector<Allergen> allergens;
 
 	try
@@ -1656,6 +1913,8 @@ std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 
 std::vector<page_t> Database::getDataFromPages()
 {
+	CROW_LOG_INFO << "[DB] getDataFromPages";
+
 	std::vector<page_t> pages(N_FOURTH_ROW_BUTTONS);
 	int i = 0;
 
@@ -1730,6 +1989,8 @@ std::vector<page_t> Database::getDataFromPages()
 
 std::string Database::generateSessionToken()
 {
+	CROW_LOG_INFO << "[DB] generateSessionToken";
+
 	std::random_device rd;
 	std::mt19937 generator(rd());
 
@@ -1750,6 +2011,8 @@ std::string Database::generateSessionToken()
 // Print
 void Database::printTables()
 {
+	CROW_LOG_INFO << "[DB] printTables";
+
 	std::vector<Table> tables = getTables();
 
 	CROW_LOG_INFO << "[LIST] Tables: ";
@@ -1761,6 +2024,8 @@ void Database::printTables()
 
 void Database::printEmployees()
 {
+	CROW_LOG_INFO << "[DB] printEmployees";
+
 	std::vector<Employee> employees = getEmployees();
 
 	CROW_LOG_INFO << "[LIST] Employees: ";
@@ -1772,6 +2037,8 @@ void Database::printEmployees()
 
 void Database::printProducts()
 {
+	CROW_LOG_INFO << "[DB] printProducts";
+
 	std::vector<Product> products = getProducts();
 
 	CROW_LOG_INFO << "[LIST] Products: ";
@@ -1783,7 +2050,10 @@ void Database::printProducts()
 
 void Database::printOrders()
 {
-	/*std::vector<Order> orders = getOrders();
+	/*
+	CROW_LOG_INFO << "[DB] printOrders";
+
+	std::vector<Order> orders = getOrders();
 
 	CROW_LOG_INFO << "[LIST] Orders: ";
 	for (const auto order : orders) {
@@ -1793,6 +2063,8 @@ void Database::printOrders()
 
 void Database::printIngredients()
 {
+	CROW_LOG_INFO << "[DB] printIngredients";
+
 	std::vector<Ingredient> ingredients = getIngredients();
 
 	CROW_LOG_INFO << "[LIST] Ingredients: ";
@@ -1804,6 +2076,8 @@ void Database::printIngredients()
 
 void Database::printAllergens()
 {
+	CROW_LOG_INFO << "[DB] printAllergens";
+
 	std::vector<Allergen> allergens = getAllergens();
 
 	CROW_LOG_INFO << "[LIST] Allergens: ";
@@ -1818,6 +2092,8 @@ void Database::printAllergens()
 void Database::moveTable(const int& current_n_table,
 						 const int& new_n_table)
 {
+	CROW_LOG_INFO << "[DB] moveTable";
+
 	try
 	{
 		std::stringstream query;
@@ -1944,6 +2220,8 @@ void Database::changeTableProductAmount(const Table& table,
 										const Product& product,
 										const int& new_amount)
 {
+	CROW_LOG_INFO << "[DB] changeTableProductAmount";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2009,6 +2287,8 @@ void Database::changeTableProductAmount(const Table& table,
 // Remove
 void Database::removeTable(const Table& table)
 {
+	CROW_LOG_INFO << "[DB] removeTable";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2049,6 +2329,8 @@ void Database::removeTable(const Table& table)
 
 void Database::removeEmployee(const Employee& employee)
 {
+	CROW_LOG_INFO << "[DB] removeEmployee";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2070,6 +2352,8 @@ void Database::removeEmployee(const Employee& employee)
 
 void Database::removeProduct(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] removeProduct";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2098,6 +2382,8 @@ void Database::removeTableProduct(const int& n_table,
 								  const Product& product,
 								  const int& times)
 {
+	CROW_LOG_INFO << "[DB] remoTableProduct";
+
 	try
 	{
 		std::stringstream query;
@@ -2149,6 +2435,8 @@ void Database::removeTableProduct(const int& n_table,
 void Database::removeProductIngredient(const Product& product,
 									   const Ingredient& ingredient)
 {
+	CROW_LOG_INFO << "[DB] removeProductIngredient";
+
 	try
 	{
 		std::stringstream query;
@@ -2187,6 +2475,8 @@ void Database::removeProductIngredient(const Product& product,
 
 void Database::removeProductIngredients(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] remoProductIngredients";
+
 	std::unique_lock<std::mutex> lock(mutex);
 
 	std::stringstream query;
@@ -2207,6 +2497,8 @@ void Database::removeProductIngredients(const Product& product)
 
 void Database::removeProductAllergens(const Product& product)
 {
+	CROW_LOG_INFO << "[DB] removeProductAllergens";
+
 	std::unique_lock<std::mutex> lock(mutex);
 
 	std::stringstream query;
@@ -2227,7 +2519,10 @@ void Database::removeProductAllergens(const Product& product)
 
 void Database::removeOrder(const Order& order)
 {
-	/*try {
+	/*
+	CROW_LOG_INFO << "[DB] removeOrder";
+
+	try {
 		std::string time = order.time;
 		std::string message = order.message;
 
@@ -2247,6 +2542,8 @@ void Database::removeOrder(const Order& order)
 
 void Database::removeIngredient(const Ingredient& ingredient)
 {
+	CROW_LOG_INFO << "[DB] removeIngredient";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2267,6 +2564,8 @@ void Database::removeIngredient(const Ingredient& ingredient)
 
 void Database::removeAllergen(const Allergen& allergen)
 {
+	CROW_LOG_INFO << "[DB] removeAllergen";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);
@@ -2290,6 +2589,8 @@ void Database::removeAllergen(const Allergen& allergen)
 void Database::modifyProduct(const Product& oldProduct,
 							 const Product& newProduct)
 {
+	CROW_LOG_INFO << "[DB] modifyProduct";
+
 	try
 	{
 		std::unique_lock<std::mutex> lock(mutex);

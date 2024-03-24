@@ -13,6 +13,8 @@ public:
 
 	std::string extractURISegment(std::string& uri) override;
 
+	crow::json::wvalue buildNClientsJSON(const int& n_clients);
+
 	crow::json::wvalue processRequest(std::string& uri) override;
 };
 

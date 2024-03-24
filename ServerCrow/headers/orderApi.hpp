@@ -13,12 +13,9 @@ public:
 
 	std::string extractURISegment(std::string& uri) override;
 
-	crow::json::wvalue processRequest(std::string& uri) override;
-
 	crow::json::wvalue buildOrdersJSON(std::vector<Order> orders);
 
-private:
-	OrderAPI() = delete;
+	crow::json::wvalue processRequest(std::string& uri) override;
 };
 
 #endif

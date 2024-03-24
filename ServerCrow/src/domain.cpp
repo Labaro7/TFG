@@ -168,6 +168,19 @@ void Order::copyDataFromTable(const Table& t)
 	}
 }
 
+BillAndPaid::BillAndPaid() :
+	bill(),
+	paid(),
+	date()
+{
+}
+
+BillAndPaid::BillAndPaid(const double& bill, const double& paid, const std::string& date) :
+	bill(bill),
+	paid(paid),
+	date(date)
+{
+}
 
 
 /* ------------------------------------------- INGREDIENT ------------------------------------------- */

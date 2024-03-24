@@ -8,22 +8,18 @@ OrderAPI::OrderAPI(std::shared_ptr<Database> database)
 
 std::string OrderAPI::extractURISegment(std::string& uri)
 {
-	std::cout << "uri " << uri << std::endl;
 	std::string direction;
 	int initial_pos = 0;
 
 	if (uri[0] == '/')
 	{
 		initial_pos = 1;
-		std::cout << "b " << std::endl;
 	}
 
 	size_t pos = uri.find('/', initial_pos);
-	std::cout << "abdula1 " << pos << std::endl;
 	if (pos != std::string::npos)
 	{
 		pos = uri.find('/', initial_pos);
-		std::cout << "abdula2 " << pos << std::endl;
 	}
 	else
 	{
@@ -31,7 +27,6 @@ std::string OrderAPI::extractURISegment(std::string& uri)
 	}
 
 	direction = uri.substr(0, pos);
-	std::cout << "abdula " << pos << " " << uri.length() << std::endl;
 
 	if (pos < uri.length() - 1 && uri[pos] == '/')
 	{
@@ -79,7 +74,7 @@ crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 
 crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 {
-	crow::json::wvalue res;
+	crow::json::wvalue data;
 
 	std::string mode = extractURISegment(uri);
 	std::transform(mode.begin(), mode.end(), mode.begin(), ::toupper); // We make the string equals to the MySQL keywords DATE, WEEK, MONTH or YEAR
@@ -91,18 +86,23 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 		mode == MYSQL_MONTH ||
 		mode == MYSQL_YEAR)
 	{
-		res = buildOrdersJSON(database->getOrdersByDate(uri, mode));
+		const std::string& date = extractURISegment(uri);
+		data = buildOrdersJSON(database->getOrdersByDate(date, mode));
 	}
 	else if (mode == "EMPLOYEE")
 	{
-		const std::string employee = extractURISegment(uri);
-		res = buildOrdersJSON(database->getOrdersByEmployee(employee));
+		const std::string employeeName = extractURISegment(uri);
+		data = buildOrdersJSON(database->getOrdersByEmployee(employeeName));
 	}
 	else if (mode == "METHOD")
 	{
 		const std::string method = extractURISegment(uri);
-		res = buildOrdersJSON(database->getOrdersByMethod(method));
+		data = buildOrdersJSON(database->getOrdersByMethod(method));
+	}
+	else if (mode == "")
+	{
+		data = buildOrdersJSON(database->getOrders());
 	}
 
-	return res;
+	return data;
 }

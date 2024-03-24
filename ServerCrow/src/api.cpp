@@ -19,14 +19,18 @@ std::string API::extractURISegment(std::string& uri)
 	}
 
 	size_t pos = uri.find('/', initial_pos);
-	if (pos == std::string::npos)
+	if (pos != std::string::npos)
 	{
-		pos = uri.find('\0', initial_pos);
+		pos = uri.find('/', initial_pos);
+
+	}
+	else
+	{
+		pos = uri.length();
 	}
 
 	direction = uri.substr(0, pos);
 
-	std::cout << "yeeepa " << pos << " " << uri.length() << std::endl;
 	if (pos < (uri.length() - 1) && uri[pos] == '/')
 	{
 		pos++;
@@ -91,39 +95,46 @@ API::DirectionCode API::getDirectionCode(std::string& uri)
 
 crow::json::wvalue API::retrieveRequest(std::string& uri)
 {
-	CROW_LOG_INFO << "[API] Retrieved request with URI: " << uri;
-
-	crow::json::wvalue res;
-	DirectionCode dirCode = getDirectionCode(uri);
-
-	switch (dirCode)
+	try
 	{
-		case DirectionCode::ORDER:
-			CROW_LOG_INFO << "[OrderAPI] Processing request with URI: " << uri;
-			res = orderAPI->processRequest(uri);
+		CROW_LOG_INFO << "[API] Retrieved request with URI: " << uri;
 
-			break;
+		crow::json::wvalue res;
+		DirectionCode dirCode = getDirectionCode(uri);
 
-		case DirectionCode::BILL:
-			CROW_LOG_INFO << "[BillAPI] Processing request with URI: " << uri;
-			res = billAPI->processRequest(uri);
+		switch (dirCode)
+		{
+			case DirectionCode::ORDER:
+				CROW_LOG_INFO << "[OrderAPI] Processing request with URI: " << uri;
+				res = orderAPI->processRequest(uri);
 
-			break;
+				break;
 
-		case DirectionCode::NCLIENT:
-			CROW_LOG_INFO << "[NClientAPI] Processing request with URI: " << uri;
-			res = nClientAPI->processRequest(uri);
+			case DirectionCode::BILL:
+				CROW_LOG_INFO << "[BillAPI] Processing request with URI: " << uri;
+				res = billAPI->processRequest(uri);
 
-			break;
+				break;
 
-		default:
-			CROW_LOG_WARNING << "[API] Not a valid URI for the API";
-			return res;
+			case DirectionCode::NCLIENT:
+				CROW_LOG_INFO << "[NClientAPI] Processing request with URI: " << uri;
+				res = nClientAPI->processRequest(uri);
 
-			break;
+				break;
+
+			default:
+				CROW_LOG_WARNING << "[API] Not a valid URI for the API";
+				return res;
+
+				break;
+		}
+
+		CROW_LOG_INFO << "[API] Returning response";
+
+		return res;
 	}
-
-	CROW_LOG_INFO << "[API] Returning response";
-
-	return res;
+	catch (const std::exception& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get retrieve request by API. Error message: " << e.what();
+	}
 }
