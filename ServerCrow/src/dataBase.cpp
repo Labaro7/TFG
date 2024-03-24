@@ -358,7 +358,7 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 		}
 		else if (!getEmployeeByName(oldEmployeeFullName).isEmpty())
 		{
-			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ? WHERE firstName = ? AND lastName = ? AND level = ?");
+			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ?, session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -1261,17 +1261,18 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 
 	try
 	{
+		CROW_LOG_INFO << "[DB] getOrdersByDate " << date << ".";
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
-		std::cout << date << std::endl;
 		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
 		sql::ResultSet* res = stmt->executeQuery(query.str());
+		std::cout << query.str() << ".";
 		query.str("");
 
 		while (res->next())
 		{
-			std::cout << "aaaaa" << std::endl;
+			std::cout << "a" << std::endl;
 			int order_id = res->getInt("order_id");
 			int n_table = res->getInt("n_table");
 			int n_clients = res->getInt("n_clients");
@@ -1318,6 +1319,140 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 	catch (const sql::SQLException& e)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get orders by date. Error message: " << e.what();
+
+		return orders;
+	}
+}
+
+std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName)
+{
+	std::vector<Order> orders;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		std::cout << "ttt " << employeeName << "." << std::endl;
+		query << "SELECT * FROM orders WHERE employee = '" << employeeName << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			std::cout << "ttt1 " << std::endl;
+			int order_id = res->getInt("order_id");
+			int n_table = res->getInt("n_table");
+			int n_clients = res->getInt("n_clients");
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
+			std::string employee = res->getString("employee");
+			std::string date = res->getString("date");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			std::vector<std::pair<Product, int>> products;
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				int amount = res2->getInt("amount");
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					std::string name = res3->getString("name");
+					int price = res3->getInt("price");
+					std::string color = res3->getString("color");
+					int page = res3->getInt("page");
+					int deployable = res3->getInt("deployable");
+
+					Product p(name, price, color, page, deployable);
+					products.push_back({ p, amount });
+				}
+			}
+
+			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			orders.push_back(o);
+		}
+
+		return orders;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orders by employee. Error message: " << e.what();
+
+		return orders;
+	}
+}
+
+std::vector<Order> Database::getOrdersByMethod(const std::string& method)
+{
+	std::vector<Order> orders;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT * FROM orders WHERE method = '" << method << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			int order_id = res->getInt("order_id");
+			int n_table = res->getInt("n_table");
+			int n_clients = res->getInt("n_clients");
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
+			std::string employee = res->getString("employee");
+			std::string date = res->getString("date");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			std::vector<std::pair<Product, int>> products;
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				int amount = res2->getInt("amount");
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					std::string name = res3->getString("name");
+					int price = res3->getInt("price");
+					std::string color = res3->getString("color");
+					int page = res3->getInt("page");
+					int deployable = res3->getInt("deployable");
+
+					Product p(name, price, color, page, deployable);
+					products.push_back({ p, amount });
+				}
+			}
+
+			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			orders.push_back(o);
+		}
+
+		return orders;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orders by method. Error message: " << e.what();
 
 		return orders;
 	}

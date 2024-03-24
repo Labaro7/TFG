@@ -11,9 +11,12 @@ class BillAPI : public ApiRoute
 public:
 	BillAPI(std::shared_ptr<Database> database);
 
-	std::string extractDirection(std::string& uri) override;
+	std::string extractURISegment(std::string& uri) override;
 
 	crow::json::wvalue processRequest(std::string& uri) override;
+
+	crow::json::wvalue buildBillsJSON(std::vector<Order> orders);
+
 };
 
 #endif

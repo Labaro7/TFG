@@ -9,7 +9,7 @@
 class ApiRoute
 {
 public:
-	virtual std::string extractDirection(std::string& uri) = 0;
+	virtual std::string extractURISegment(std::string& uri) = 0;
 
 	virtual crow::json::wvalue processRequest(std::string& uri) = 0;
 

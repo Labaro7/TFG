@@ -24,22 +24,17 @@ public:
 		NCLIENT = 2,
 	};
 
-	std::string extractDirection(std::string& uri);
+	std::string extractURISegment(std::string& uri);
 
 	DirectionCode getDirectionCode(std::string& uri);
+
+	void decodeURI(std::string& uri);
 
 	crow::json::wvalue retrieveRequest(std::string& uri);
 
 protected:
 	API() = delete;
-	struct CustomDeleter
-	{
-		void operator()(int* ptr) const
-		{
-			std::cout << "Custom deleter: Deleting pointer at address: " << ptr << std::endl;
-			delete ptr; // Custom cleanup operation
-		}
-	};
+
 	std::shared_ptr<Database> database;
 
 	std::shared_ptr<OrderAPI> orderAPI;

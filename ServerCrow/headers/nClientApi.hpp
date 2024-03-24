@@ -11,7 +11,7 @@ class NClientAPI : public ApiRoute
 public:
 	NClientAPI(std::shared_ptr<Database> database);
 
-	std::string extractDirection(std::string& uri) override;
+	std::string extractURISegment(std::string& uri) override;
 
 	crow::json::wvalue processRequest(std::string& uri) override;
 };

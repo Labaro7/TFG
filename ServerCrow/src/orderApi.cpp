@@ -1,29 +1,39 @@
 #include "..\headers\orderApi.hpp"
+#include <regex>
 
 OrderAPI::OrderAPI(std::shared_ptr<Database> database)
 {
 	this->database = database;
 }
 
-std::string OrderAPI::extractDirection(std::string& uri)
+std::string OrderAPI::extractURISegment(std::string& uri)
 {
+	std::cout << "uri " << uri << std::endl;
 	std::string direction;
 	int initial_pos = 0;
 
 	if (uri[0] == '/')
 	{
 		initial_pos = 1;
+		std::cout << "b " << std::endl;
 	}
 
 	size_t pos = uri.find('/', initial_pos);
-	if (pos == std::string::npos)
+	std::cout << "abdula1 " << pos << std::endl;
+	if (pos != std::string::npos)
 	{
-		pos = uri.find('\0', initial_pos);
+		pos = uri.find('/', initial_pos);
+		std::cout << "abdula2 " << pos << std::endl;
+	}
+	else
+	{
+		pos = uri.length();
 	}
 
 	direction = uri.substr(0, pos);
+	std::cout << "abdula " << pos << " " << uri.length() << std::endl;
 
-	if (uri[pos] == '/' && pos < uri.length() - 1)
+	if (pos < uri.length() - 1 && uri[pos] == '/')
 	{
 		pos++;
 	}
@@ -71,30 +81,27 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 {
 	crow::json::wvalue res;
 
-	std::string direction = extractDirection(uri);
+	std::string mode = extractURISegment(uri);
+	std::transform(mode.begin(), mode.end(), mode.begin(), ::toupper); // We make the string equals to the MySQL keywords DATE, WEEK, MONTH or YEAR
 
-	CROW_LOG_INFO << "[OrderApi] Get orders by " << direction;
+	CROW_LOG_INFO << "[OrderAPI] Get orders by " << mode << " with " << uri;
 
-	std::replace(uri.begin(), uri.end(), '%', ' ');
-
-	if (direction == "day")
+	if (mode == MYSQL_DAY ||
+		mode == MYSQL_WEEK ||
+		mode == MYSQL_MONTH ||
+		mode == MYSQL_YEAR)
 	{
-		return buildOrdersJSON(database->getOrdersByDate(uri, MYSQL_DAY));
+		res = buildOrdersJSON(database->getOrdersByDate(uri, mode));
 	}
-	else if (direction == "week")
+	else if (mode == "EMPLOYEE")
 	{
-		return buildOrdersJSON(database->getOrdersByDate(uri, MYSQL_WEEK));
-
+		const std::string employee = extractURISegment(uri);
+		res = buildOrdersJSON(database->getOrdersByEmployee(employee));
 	}
-	else if (direction == "month")
+	else if (mode == "METHOD")
 	{
-		return buildOrdersJSON(database->getOrdersByDate(uri, MYSQL_MONTH));
-
-	}
-	else if (direction == "year")
-	{
-		return buildOrdersJSON(database->getOrdersByDate(uri, MYSQL_YEAR));
-
+		const std::string method = extractURISegment(uri);
+		res = buildOrdersJSON(database->getOrdersByMethod(method));
 	}
 
 	return res;

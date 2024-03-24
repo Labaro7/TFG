@@ -1,11 +1,12 @@
 #include "..\headers\billApi.hpp"
+#include <regex>
 
 BillAPI::BillAPI(std::shared_ptr<Database> database)
 {
 	this->database = database;
 }
 
-std::string BillAPI::extractDirection(std::string& uri)
+std::string BillAPI::extractURISegment(std::string& uri)
 {
 	std::string direction;
 	int initial_pos = 0;
@@ -23,7 +24,7 @@ std::string BillAPI::extractDirection(std::string& uri)
 
 	direction = uri.substr(0, pos);
 
-	if (uri[pos] == '/' && pos < uri.length() - 1)
+	if (pos < uri.length() - 1 && uri[pos] == '/')
 	{
 		pos++;
 	}
@@ -33,23 +34,22 @@ std::string BillAPI::extractDirection(std::string& uri)
 	return direction;
 }
 
+crow::json::wvalue BillAPI::buildBillsJSON(std::vector<Order> orders)
+{
+	crow::json::wvalue::list data;
+
+
+
+	return data;
+}
+
 crow::json::wvalue BillAPI::processRequest(std::string& uri)
 {
 	crow::json::wvalue res;
-	std::string direction = extractDirection(uri);
 
-	if (direction == "order")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
-	else if (direction == "bill")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
-	else if (direction == "n_client")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
+	std::string mode = extractURISegment(uri);
+
+	CROW_LOG_INFO << "[BillAPI] Get orders by " << mode;
 
 	return res;
 }

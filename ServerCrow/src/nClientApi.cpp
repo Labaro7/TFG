@@ -1,11 +1,12 @@
 #include "..\headers\nClientApi.hpp"
+#include <regex>
 
 NClientAPI::NClientAPI(std::shared_ptr<Database> database)
 {
 	this->database = database;
 }
 
-std::string NClientAPI::extractDirection(std::string& uri)
+std::string NClientAPI::extractURISegment(std::string& uri)
 {
 	std::string direction;
 	int initial_pos = 0;
@@ -23,7 +24,7 @@ std::string NClientAPI::extractDirection(std::string& uri)
 
 	direction = uri.substr(0, pos);
 
-	if (uri[pos] == '/' && pos < uri.length() - 1)
+	if (pos < uri.length() - 1 && uri[pos] == '/')
 	{
 		pos++;
 	}
@@ -36,30 +37,14 @@ std::string NClientAPI::extractDirection(std::string& uri)
 crow::json::wvalue NClientAPI::processRequest(std::string& uri)
 {
 	crow::json::wvalue res;
-	std::string direction = extractDirection(uri);
+	std::string mode = extractURISegment(uri);
 
 	size_t pos = uri.find('/');
 	if (pos != std::string::npos)
 	{
-		direction = uri.substr(0, pos);
+		mode = uri.substr(0, pos);
 	}
 
-	if (direction == "order")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
-	else if (direction == "bill")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
-	else if (direction == "n_client")
-	{
-		//res = orderAPI.processRequest(direction);
-	}
-	else
-	{
-
-	}
 
 	return res;
 }

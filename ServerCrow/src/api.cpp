@@ -1,24 +1,14 @@
 #include "..\headers\api.hpp"
 
-struct CustomDeleter
-{
-	void operator()(int* ptr) const
-	{
-		std::cout << "Custom deleter: Deleting pointer at address: " << ptr << std::endl;
-		delete ptr; // Custom cleanup operation
-	}
-};
-
 API::API(std::shared_ptr<Database> database)
 {
 	this->database = database;
 	orderAPI = std::make_shared<OrderAPI>(database);
-	std::cout << "Const " << (this->database == nullptr) << std::endl;
 	billAPI = std::make_shared<BillAPI>(database);
 	nClientAPI = std::make_shared<NClientAPI>(database);
 }
 
-std::string API::extractDirection(std::string& uri)
+std::string API::extractURISegment(std::string& uri)
 {
 	std::string direction;
 	int initial_pos = 0;
@@ -36,7 +26,8 @@ std::string API::extractDirection(std::string& uri)
 
 	direction = uri.substr(0, pos);
 
-	if (uri[pos] == '/' && pos < uri.length() - 1)
+	std::cout << "yeeepa " << pos << " " << uri.length() << std::endl;
+	if (pos < (uri.length() - 1) && uri[pos] == '/')
 	{
 		pos++;
 	}
@@ -46,20 +37,47 @@ std::string API::extractDirection(std::string& uri)
 	return direction;
 }
 
+void API::decodeURI(std::string& uri)
+{
+	std::stringstream decoded;
+	for (size_t i = 0; i < uri.length(); ++i)
+	{
+		if (uri[i] == '%' && i + 2 < uri.length())
+		{
+			int hex;
+			sscanf_s(uri.substr(i + 1, 2).c_str(), "%x", &hex);
+			decoded << static_cast<char>(hex);
+			i += 2;
+		}
+		else if (uri[i] == '+')
+		{
+			decoded << ' ';
+		}
+		else
+		{
+			decoded << uri[i];
+		}
+	}
+
+	uri = decoded.str();
+}
+
 API::DirectionCode API::getDirectionCode(std::string& uri)
 {
 	DirectionCode res;
-	std::string direction = extractDirection(uri);
 
-	if (direction == "order")
+	decodeURI(uri);
+	std::string direction = extractURISegment(uri);
+
+	if (direction == "orders")
 	{
 		res = DirectionCode::ORDER;
 	}
-	else if (direction == "bill")
+	else if (direction == "bills")
 	{
 		res = DirectionCode::BILL;
 	}
-	else if (direction == "n_client")
+	else if (direction == "n_clients")
 	{
 		res = DirectionCode::NCLIENT;
 	}
@@ -70,8 +88,6 @@ API::DirectionCode API::getDirectionCode(std::string& uri)
 
 	return res;
 }
-
-
 
 crow::json::wvalue API::retrieveRequest(std::string& uri)
 {
@@ -86,22 +102,24 @@ crow::json::wvalue API::retrieveRequest(std::string& uri)
 			CROW_LOG_INFO << "[OrderAPI] Processing request with URI: " << uri;
 			res = orderAPI->processRequest(uri);
 
-			std::cout << res.dump() << std::endl;
 			break;
 
 		case DirectionCode::BILL:
 			CROW_LOG_INFO << "[BillAPI] Processing request with URI: " << uri;
 			res = billAPI->processRequest(uri);
+
 			break;
 
 		case DirectionCode::NCLIENT:
 			CROW_LOG_INFO << "[NClientAPI] Processing request with URI: " << uri;
 			res = nClientAPI->processRequest(uri);
+
 			break;
 
 		default:
 			CROW_LOG_WARNING << "[API] Not a valid URI for the API";
 			return res;
+
 			break;
 	}
 

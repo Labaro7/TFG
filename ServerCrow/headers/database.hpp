@@ -89,10 +89,9 @@ public:
 	std::vector<Order> getOrders() override;
 	//Order getOrderByTime(const std::string time) override;
 	std::vector<Order> getOrdersByDate(const std::string& date, const std::string& mode);
-	std::vector<Order> getOrdersByDay(const std::string& date);
-	std::vector<Order> getOrdersByWeek(const std::string date);
-	std::vector<Order> getOrdersByMonth(const std::string date);
-	std::vector<Order> getOrdersByYear(const std::string date);
+	std::vector<Order> getOrdersByEmployee(const std::string& employeeName);
+	std::vector<Order> getOrdersByMethod(const std::string& method);
+
 
 	std::vector<Ingredient> getIngredients() override;
 	Ingredient getIngredientByName(const std::string& name) override;
