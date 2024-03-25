@@ -75,20 +75,33 @@ function sortTicketAlphabetically() {
     ul.innerHTML += '<div id="divisionAddedProducts"><div class="horizontal-line"></div>ADDED<div class="horizontal-line"></div></div>'
 }
 
-function showIngredientsAndAllergens(secondRow) {
-    let lastOrder = document.getElementById("lastOrder");
-    let lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
-    let productList = document.querySelectorAll('div.products-names, li.product');
-    let ingredientsAndAllergensMenu = document.getElementById("ingredientsAndAllergensMenu");
-    let productsMenu = document.getElementById("productsMenu");
-    let tab = document.getElementsByClassName("tab");
-    let productName = document.getElementById("productName");
-    let ingredientsList = document.getElementById("ingredientsList");
-    let allergensList = document.getElementById("allergensList");
+function showIngredientsAndAllergens(clickedElement) {
+    event.stopPropagation(); // So the child onclick is on top of the parents'
 
-    if (lastOrder.textContent !== "-") {
+    const ingredientsAndAllergensMenu = document.getElementById("ingredientsAndAllergensMenu");
+    const ticketMenu = document.getElementById("ticketMenu");
+    const productsMenu = document.getElementById("productsMenu");
+    const tab = document.getElementsByClassName("tab");
+    const productName = document.getElementById("productName");
+    const ingredientsList = document.getElementById("ingredientsList");
+    const allergensList = document.getElementById("allergensList");
+
+    if (clickedElement.id === "secondRow" || clickedElement.id === "infoButton") {
+        let lastOrderName;
+
+        if (clickedElement.id === "secondRow") {
+            const lastOrder = document.getElementById("lastOrder");
+            lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
+        } else {
+            const selectedProductName = clickedElement.parentElement.parentElement.children[1].children[0].textContent;
+            lastOrderName = selectedProductName;
+        }
+
+        const productList = document.querySelectorAll('div.products-names, li.product');
+
         ingredientsAndAllergensMenu.style.display = "flex";
-
+        ticketMenu.style.pointerEvents = "none";
+        ticketMenu.style.filter = "blur(10px) grayscale(100%)";
         productsMenu.style.pointerEvents = "none";
         productsMenu.style.filter = "blur(10px) grayscale(100%)";
         document.body.style.backgroundColor.filter = "grayscale(100%)";
@@ -100,43 +113,50 @@ function showIngredientsAndAllergens(secondRow) {
         ingredientsList.innerHTML = "";
         allergensList.innerHTML = "";
 
-        productList.forEach(function (product) {
+        productList.forEach(product => {
             if (product.textContent === lastOrderName) {
-                let productIngredients = product.parentElement.children[2].children;
-                let productAllergens = product.parentElement.children[3].children;
+                const productIngredients = product.parentElement.children[2].children;
+                const productAllergens = product.parentElement.children[3].children;
 
                 if (productIngredients.length) {
                     for (let productIngredient of productIngredients) {
-                        let productIngredientName = productIngredient.textContent;
-
-                        console.log(productIngredientName);
-                        let newIngredient = document.createElement("li");
-                        newIngredient.className = "ingredient";
-                        newIngredient.textContent = productIngredientName;
-                        ingredientsList.appendChild(newIngredient);
+                        const productIngredientName = productIngredient.textContent;
+                        addListElement(ingredientsList, "ingredient", productIngredientName);
                     }
                 }
 
                 if (productAllergens.length) {
                     for (let productAllergen of productAllergens) {
-                        let productAllergenName = productAllergen.textContent;
-
-                        console.log(productAllergenName);
-                        let newAllergen = document.createElement("li");
-                        newAllergen.className = "allergen";
-                        newAllergen.textContent = productAllergenName;
-                        allergensList.appendChild(newAllergen);
+                        const productAllergenName = productAllergen.textContent;
+                        addListElement(allergensList, "allergen", productAllergenName);
                     }
                 }
             }
         });
+
+        if (clickedElement.id === "infoButton") {
+            productName.textContent = clickedElement.parentElement.parentElement.children[1].children[0].textContent;
+        }
+    } else {
+        console.log("No ingredients nor allergens to display");
+        ingredientsList.innerHTML = "";
+        allergensList.innerHTML = "";
     }
+}
+
+function addListElement(list, className, textContent) {
+    console.log(textContent);
+    const newElement = document.createElement("li");
+    newElement.className = className;
+    newElement.textContent = textContent;
+    list.appendChild(newElement);
 }
 
 function goBackToTable() {
     let ingredientsAndAllergensMenu = document.getElementById("ingredientsAndAllergensMenu");
     let productsMenu = document.getElementById("productsMenu");
     let tab = document.getElementsByClassName("tab");
+    let ticketMenu = document.getElementById("ticketMenu");
 
     ingredientsAndAllergensMenu.style.display = "none";
     productsMenu.style.pointerEvents = "auto";
@@ -145,6 +165,8 @@ function goBackToTable() {
     tab[0].style.pointerEvents = "auto";
     tab[0].style.filter = "blur(0px) grayscale(0%)";
     document.body.style.backgroundColor = "#aaccff";
+    ticketMenu.style.pointerEvents = "auto";
+    ticketMenu.style.filter = "blur(0px) grayscale(0%)";
 }
 
 function goBack() {
@@ -899,12 +921,13 @@ function cancelModifyDeleteMenu() {
 function selectProductToDelete(clickedElement) {
     event.stopPropagation(); // So the child onclick is on top of the parents'
 
+    let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
     let a = document.getElementById("modifyDeleteMenu").parentNode;
 
     if (a.style.backgroundColor === "rgb(255, 120, 151)") {
         if (a.className === "ticketProduct") {
-            a.style.backgroundColor = "white";
-            a.style.color = "black";
+            a.style.backgroundColor = "rgb(28, 89, 176)";
+            a.style.color = "white";
         }
         else {
             a.style.backgroundColor = "orange";
@@ -951,7 +974,7 @@ function selectProductToDelete(clickedElement) {
             }
             else lastProduct.textContent = "-", addedDivision.style.display = "none";
 
-            let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
+            modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
             modifyDeleteMenu.style.display = "none";
             document.body.appendChild(modifyDeleteMenu);
 

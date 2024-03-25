@@ -86,7 +86,7 @@ function showIngredientsAndAllergens(clickedElement) {
     const ingredientsList = document.getElementById("ingredientsList");
     const allergensList = document.getElementById("allergensList");
 
-    if (clickedElement.id === "secondRow" || clickedElement.id === "infoButton") {
+    if ((clickedElement.id === "infoButton") || (lastOrder.textContent != "-" && clickedElement.id == "secondRow")) {
         let lastOrderName;
 
         if (clickedElement.id === "secondRow") {
