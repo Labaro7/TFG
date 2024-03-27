@@ -45,6 +45,7 @@ crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 	for (const auto& order : orders)
 	{
 		crow::json::wvalue order_json;
+		order_json["id"] = order.id;
 		order_json["n_table"] = order.n_table;
 		order_json["n_clients"] = order.n_clients;
 		order_json["bill"] = order.bill;

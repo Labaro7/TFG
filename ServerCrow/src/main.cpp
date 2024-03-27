@@ -203,6 +203,7 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 auto json_data = crow::json::load(req.body);
+			 const int id = json_data["id"].i();
 			 const int n_table = json_data["n_table"].i();
 			 const int n_clients = json_data["n_clients"].i();
 			 const double bill = std::stod(json_data["bill"].s());
@@ -218,6 +219,7 @@ int main()
 			 }
 
 			 Order order = {
+				 id,
 				 n_table,
 				 n_clients,
 				 bill,
@@ -275,9 +277,11 @@ int main()
 	CROW_ROUTE(app, "/api/<path>")
 		([&server](const crow::request& req, std::string path)
 		 {
-			 const crow::json::wvalue data = server.retrieveRequest(path);
+			 const crow::json::wvalue& data = server.retrieveRequest(path);
 
-			 return data.dump();
+			 crow::response res(data.dump());
+			 res.set_header("Content-Type", "application/json");
+			 return res;
 		 });
 
 	CROW_CATCHALL_ROUTE(app)

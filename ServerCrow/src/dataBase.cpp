@@ -1260,7 +1260,7 @@ std::vector<Order> Database::getOrders()
 				}
 			}
 
-			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1355,7 +1355,7 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 				}
 			}
 
-			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1423,7 +1423,7 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 				}
 			}
 
-			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1491,7 +1491,7 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 				}
 			}
 
-			Order o = { n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 

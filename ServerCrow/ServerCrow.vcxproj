@@ -137,6 +137,11 @@
     <None Include="ssl\server.key" />
     <None Include="static\edit.css" />
     <None Include="static\edit.js" />
+    <None Include="static\edit_config.js" />
+    <None Include="static\edit_employees.js" />
+    <None Include="static\edit_products.js" />
+    <None Include="static\edit_productsAndAllergens.js" />
+    <None Include="static\edit_stats.js" />
     <None Include="static\index.css" />
     <None Include="static\index.js" />
     <None Include="static\login.css" />

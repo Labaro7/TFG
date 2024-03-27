@@ -166,10 +166,6 @@ body {
     cursor: pointer;
 }
 
-#allOrders {
-    background-color: rgb(28, 89, 176);
-}
-
 #ordersText {
     display: flex;
     justify-content: center;

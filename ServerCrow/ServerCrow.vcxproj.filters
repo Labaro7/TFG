@@ -34,6 +34,9 @@
     <Filter Include="Archivos de encabezado\api">
       <UniqueIdentifier>{bad504e8-2a39-4d25-9bd3-c1a434f09760}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de recursos\js\editModules">
+      <UniqueIdentifier>{6e065d4a-845c-4787-ad31-b37026d97deb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -92,6 +95,21 @@
     </None>
     <None Include="static\stats.js">
       <Filter>Archivos de recursos\js</Filter>
+    </None>
+    <None Include="static\edit_config.js">
+      <Filter>Archivos de recursos\js\editModules</Filter>
+    </None>
+    <None Include="static\edit_employees.js">
+      <Filter>Archivos de recursos\js\editModules</Filter>
+    </None>
+    <None Include="static\edit_products.js">
+      <Filter>Archivos de recursos\js\editModules</Filter>
+    </None>
+    <None Include="static\edit_productsAndAllergens.js">
+      <Filter>Archivos de recursos\js\editModules</Filter>
+    </None>
+    <None Include="static\edit_stats.js">
+      <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

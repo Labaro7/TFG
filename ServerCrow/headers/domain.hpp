@@ -114,7 +114,7 @@ using table_unordered_map = std::unordered_map<int, Table, TableHashFunction>;
 /* ------------------------------------------- ORDER ------------------------------------------- */
 struct Order
 {
-	//int id;
+	int id;
 	int n_table;
 	int n_clients;
 	double bill;
@@ -126,7 +126,7 @@ struct Order
 	std::string date;
 
 	Order();
-	Order(const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date);
+	Order(const int& id, const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date);
 
 	bool operator==(const Order& other) const
 	{

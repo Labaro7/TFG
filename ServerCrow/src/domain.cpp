@@ -137,7 +137,8 @@ Order::Order() :
 {
 }
 
-Order::Order(const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date) :
+Order::Order(const int& id,  const int& n_table, const int& n_clients, const double& bill, const double& paid, const double& discount, const std::string& method, const std::vector<std::pair<Product, int>>& products, const std::string& employee, const std::string& date) :
+	id(id),
 	n_table(n_table),
 	n_clients(n_clients),
 	bill(bill),

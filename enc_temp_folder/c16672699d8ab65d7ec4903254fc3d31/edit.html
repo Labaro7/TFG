@@ -29,23 +29,22 @@
         </div>
 
         <div class="page" id="statsPage" data-page="1">
-            <div class="statsSection" id="ordersSection">
+            <div class="statsSection" id="ordersSection" onclick="asd()">
                 <div id="orders">
                     <div class="statsMenu" id="ordersMenu">
                         <div class="statsHeader" id="ordersHeader">
                             Orders
                         </div>
                         <div class="statsFilter" id="ordersFilters">
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="ordersText">Filter by:</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="allOrders">All</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="idOrders">Id</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="dateOrders">Date</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="weekOrders">Week</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="monthOrders">Month</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="yearOrders">Year</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="methodOrders">N. table</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="methodOrders">Method</div>
-                            <div class="statsFilterElement" onclick="selectFilter(this)" id="employeeOrders">Employee</div>
+                            <div class="statsFilterElement" id="ordersText">Filter by:</div>
+                            <div class="statsFilterElement" id="allOrders">All</div>
+                            <div class="statsFilterElement" id="dateOrders">Date</div>
+                            <div class="statsFilterElement" id="weekOrders">Week</div>
+                            <div class="statsFilterElement" id="monthOrders">Month</div>
+                            <div class="statsFilterElement" id="yearOrders">Year</div>
+                            <div class="statsFilterElement" id="methodOrders">N. table</div>
+                            <div class="statsFilterElement" id="methodOrders">Method</div>
+                            <div class="statsFilterElement" id="employeeOrders">Employee</div>
 
                             <div class="searchIcon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1">
@@ -63,7 +62,7 @@
                                     <line class="cls-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39"></line>
                                 </svg>
                             </div>
-                            <input class="inputFilter" id="ordersFilterInput">
+                            <input class="inputFilter" id="ingredientFilter">
                             <div class="searchButton" id="searchOrdersButton" onclick="searchOrders()">Search</div>
 
                         </div>
@@ -72,7 +71,7 @@
                             <table class="statsTable" id="ordersTable">
                                 <thead>
                                     <tr class="tableMainRow" id="ordersMainRow">
-                                        <th>Id</th>
+                                        <th>#</th>
                                         <th>Date</th>
                                         <th>Table</th>
                                         <th>Clients</th>
@@ -92,7 +91,7 @@
                 <div class="graphMenu" id="ordersGraph">
                     Orders graph
                 </div>
-
+                
             </div>
             <div id="billsSection">
                 bills
@@ -449,7 +448,6 @@
 
         </div>
 
-        <script src="..\static\edit_stats.js"></script>
-        <script src="..\static\edit.js"></script>
+        <script type="module" src="..\static\edit.js"></script>
 </body>
 </html>

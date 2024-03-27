@@ -1,8 +1,10 @@
-/*import * as Stats from "./edit_stats.js";
+import * as Stats from "./edit_stats.js";
 import * as Products from "./edit_products.js";
 import * as Employees from "./edit_employees.js";
 import * as ProductsAndAllergens from "./edit_productsAndAllergens.js";
-import * as Config from "./edit_config.js";*/
+import * as Config from "./edit_config.js";
+
+Stats.populateTable();
 
 const SELECTED_BACKGROUND_COLOR = "rgb(28, 89, 176)";
 const SELECTED_TEXT_COLOR = "white";

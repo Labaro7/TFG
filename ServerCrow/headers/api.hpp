@@ -37,9 +37,9 @@ protected:
 
 	std::shared_ptr<Database> database;
 
-	std::shared_ptr<OrderAPI> orderAPI;
-	std::shared_ptr<BillAPI> billAPI;
-	std::shared_ptr<NClientAPI> nClientAPI;
+	std::shared_ptr<OrderAPI> orderAPI;		// /api/orders
+	std::shared_ptr<BillAPI> billAPI;		// /api/bills
+	std::shared_ptr<NClientAPI> nClientAPI; // /api/n_clients
 };
 
 #endif
