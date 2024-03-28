@@ -1250,7 +1250,7 @@ std::vector<Order> Database::getOrders()
 				if (res3->next())
 				{
 					std::string name = res3->getString("name");
-					int price = res3->getInt("price");
+					double price = res3->getDouble("price");
 					std::string color = res3->getString("color");
 					int page = res3->getInt("page");
 					int deployable = res3->getInt("deployable");
@@ -1345,7 +1345,7 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 				if (res3->next())
 				{
 					std::string name = res3->getString("name");
-					int price = res3->getInt("price");
+					double price = res3->getDouble("price");
 					std::string color = res3->getString("color");
 					int page = res3->getInt("page");
 					int deployable = res3->getInt("deployable");
@@ -1413,7 +1413,7 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 				if (res3->next())
 				{
 					std::string name = res3->getString("name");
-					int price = res3->getInt("price");
+					double price = res3->getDouble("price");
 					std::string color = res3->getString("color");
 					int page = res3->getInt("page");
 					int deployable = res3->getInt("deployable");
@@ -1481,7 +1481,7 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 				if (res3->next())
 				{
 					std::string name = res3->getString("name");
-					int price = res3->getInt("price");
+					double price = res3->getDouble("price");
 					std::string color = res3->getString("color");
 					int page = res3->getInt("page");
 					int deployable = res3->getInt("deployable");
@@ -1504,6 +1504,76 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 		return orders;
 	}
 }
+
+std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
+{
+	CROW_LOG_INFO << "[DB] getOrdersByNTable";
+
+	int nTable = std::stoi(n_table);
+	std::vector<Order> orders;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT * FROM orders WHERE n_table = '" << nTable << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		while (res->next())
+		{
+			int order_id = res->getInt("order_id");
+			int n_table = res->getInt("n_table");
+			int n_clients = res->getInt("n_clients");
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
+			std::string employee = res->getString("employee");
+			std::string date = res->getString("date");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			std::vector<std::pair<Product, int>> products;
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				int amount = res2->getInt("amount");
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					std::string name = res3->getString("name");
+					double price = res3->getDouble("price");
+					std::string color = res3->getString("color");
+					int page = res3->getInt("page");
+					int deployable = res3->getInt("deployable");
+
+					Product p(name, price, color, page, deployable);
+					products.push_back({ p, amount });
+				}
+			}
+
+			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			orders.push_back(o);
+		}
+
+		return orders;
+	}
+	catch (const sql::SQLException& e)
+		{
+			CROW_LOG_WARNING << "[EXCEPTION] Could not get orders by n_table. Error message: " << e.what();
+
+			return orders;
+		}
+}
+
 
 std::vector<BillAndPaid> Database::getBillsAndPaids()
 {
@@ -2190,7 +2260,7 @@ void Database::moveTable(const int& current_n_table,
 					query.str("");
 
 					res3->next();
-					int current_table_product_price = res3->getInt("price");
+					int current_table_product_price = res3->getDouble("price");
 					new_table_bill += (current_table_product_price * current_table_product_amount);
 
 					pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");

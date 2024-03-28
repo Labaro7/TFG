@@ -73,11 +73,12 @@
                                 <thead>
                                     <tr class="tableMainRow" id="ordersMainRow">
                                         <th>Id</th>
-                                        <th>Date</th>
+                                        <th id="ordersDate">Date</th>
                                         <th>Table</th>
                                         <th>Clients</th>
                                         <th>Bill</th>
                                         <th>Paid</th>
+                                        <th>Diff</th>
                                         <th>Discount</th>
                                         <th>Method</th>
                                         <th>Employee</th>
@@ -87,6 +88,26 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                <div class="productsMenu" id="productsMenu">
+                    <div id="productsMenuHeader">
+                        Products from selected order
+                    </div>
+                    <div id="productsContent">
+                        <table class="productsTable" id="productsTable">
+                            <thead>
+                                <tr class="tableMainRow" id="ordersMainRow">
+                                    <th id="productsListName">Name</th>
+                                    <th id="productsListPrice">Price</th>
+                                    <th id="productsListAmount">Amount</th>
+                                    <th id="productsListTotal">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productList">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="graphMenu" id="ordersGraph">

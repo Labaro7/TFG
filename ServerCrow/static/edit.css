@@ -118,13 +118,13 @@ body {
 
 #ordersSection {
     display: flex;
-    gap: 25%;
+    gap: 2%;
     height: 70%;
 }
 
 #orders{
     display: flex;
-    width: 70%;
+    width: 1000px;
 }
 
 #ordersGraph{
@@ -135,7 +135,7 @@ body {
     display: flex;
     flex-direction: column;
     border: 1px solid black;
-    flex: 1;
+    width: 1000px;
 }
 
 .statsHeader {
@@ -185,12 +185,43 @@ body {
     min-height: 15px;
 }
 
+#productsMenu {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(9, 43, 92);
+    color: white;
+    border: 1px solid black;
+    width: 500px;
+}
+
+#productsMenuHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid white;
+    padding: 5px;
+}
+
+#productsContent {
+    background-color: white;
+    flex: 1;
+    margin-bottom: 35px;
+    border-bottom: 1px solid black;
+    overflow: auto;
+}
+
+.prod {
+    color: black;   
+    display: flex;
+}
+
 .graphMenu {
     border: 1px solid black;
 }
 
 .statsContent {
     overflow: scroll;
+    background-color: white;
 }
 
 .statsTable {
@@ -206,17 +237,20 @@ body {
     overflow: auto;
     padding: 5px;
     background-color: rgb(9, 43, 92);
+    color: white;
     border-bottom: 1px solid black;
 }
 
 .statsTable th, statsTable td {
-
+    padding: 5px;
     text-align: left;
 }
 
-.statsTable tr{
+.statsTable tr {
     border-bottom: 1px solid rgba(0, 0, 0, 1);
     margin-left: -5px;
+    background-color: white;
+    color: black;
 }
 
 .statsTable tbody tr:nth-child(even) {
@@ -224,10 +258,8 @@ body {
 }
 
 .statsTable td {
-    color: black;
-    background-color: white;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 5px;
+    padding-right: 15px;
     margin: 0;
     font-weight: 600;
 }
@@ -236,9 +268,40 @@ body {
     flex: 1;
 }
 
-.tableMainRow {
+#ordersDate {
+    width: 175px;
+}
 
-    color: white; 
+.tableMainRow {
+    background-color: rgb(9, 43, 92);
+    color: white;
+    padding: 5px;
+    font-size: medium;
+    text-align: left;
+}
+
+#productsTable {
+    border-collapse: collapse;
+    width: 100%;
+    padding: 5px;
+}
+
+.productListRow {
+    width: 100%;
+    border-bottom: 1px solid black;
+    font-weight: 600;
+}
+
+#productsTable th:first-child{
+    width: 70%;
+}
+
+#productsTable th{
+    padding: 5px;
+}
+
+#productsTable td{
+    padding: 5px;
 }
 
 .content {

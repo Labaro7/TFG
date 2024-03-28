@@ -90,6 +90,7 @@ public:
 	std::vector<Order> getOrdersByDate(const std::string& date, const std::string& mode);
 	std::vector<Order> getOrdersByEmployee(const std::string& employeeName);
 	std::vector<Order> getOrdersByMethod(const std::string& method);
+	std::vector<Order> getOrdersByNTable(const std::string& n_table);
 	std::vector<BillAndPaid> getBillsAndPaids();
 	std::vector<BillAndPaid> getBillsAndPaidsByDate(const std::string& date, const std::string& mode);
 	std::vector<BillAndPaid> getBillsAndPaidsByEmployee(const std::string& employeeName);

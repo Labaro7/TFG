@@ -8,7 +8,7 @@ BillAPI::BillAPI(std::shared_ptr<Database> database)
 
 std::string BillAPI::extractURISegment(std::string& uri)
 {
-	std::string direction;
+	std::string direction = "";
 	int initial_pos = 0;
 
 	if (uri[0] == '/')
@@ -34,6 +34,11 @@ std::string BillAPI::extractURISegment(std::string& uri)
 	}
 
 	uri = uri.substr(pos);
+
+	if (uri == "/")
+	{
+		uri = " ";
+	}
 
 	return direction;
 }

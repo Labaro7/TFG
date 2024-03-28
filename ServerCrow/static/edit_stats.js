@@ -1,5 +1,7 @@
 let selectedFilterElement = document.getElementById("allOrders");
 let selectedFilter = selectedFilterElement.textContent;
+let selectedRow;
+let currentOrders;
 
 retrieveOrders();
 async function retrieveOrders() {
@@ -55,6 +57,58 @@ async function retrieveOrdersByDate(date, mode) {
     }
 }
 
+async function retrieveOrdersByNTable(n_table) {
+    const baseUrl = window.location.href.replace(window.location.pathname, '');
+    const fetchPath = '/api/orders/n_table/' + n_table;
+    const url = baseUrl + fetchPath;
+    console.log(url);
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+
+        populateTable(jsonData);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+async function retrieveOrdersByMethod(method) {
+    const baseUrl = window.location.href.replace(window.location.pathname, '');
+    const fetchPath = '/api/orders/method/' + method;
+    const url = baseUrl + fetchPath;
+    console.log(url);
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+
+        populateTable(jsonData);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 async function retrieveOrdersByEmployee(employee) {
     const baseUrl = window.location.href.replace(window.location.pathname, '');
     const fetchPath = '/api/orders/employee/' + employee;
@@ -81,15 +135,91 @@ async function retrieveOrdersByEmployee(employee) {
     }
 }
 
+function selectRow(clickedRow) {
+    console.log(clickedRow);
+
+    if (!selectedRow) { // If it is the first clicked element
+        selectedRow = clickedRow;
+
+        clickedRow.style.backgroundColor = "rgb(28, 89, 176)";
+        clickedRow.style.color = "white";
+    }
+    else {
+        selectedRow.style.backgroundColor = "white";
+        selectedRow.style.color = "black";
+
+        if (selectedRow !== clickedRow) { // If the selectedRow is clicked
+            selectedRow = clickedRow;
+
+            clickedRow.style.backgroundColor = "rgb(28, 89, 176)";
+            clickedRow.style.color = "white";
+        }
+        else {
+            selectedRow = null;
+            let productList = document.getElementById("productList");
+            productList.innerHTML = "";
+
+            clickedRow.style.backgroundColor = "white";
+            clickedRow.style.color = "black";
+        }
+    }
+
+    if (selectedRow !== null) {
+        let order_id = clickedRow.children[0].textContent;
+        getProductsFromOrder(order_id);
+    }
+}
+
+function getProductsFromOrder(order_id) {
+    let res;
+    let order = currentOrders.find(ord => ord.id == order_id);
+    let orderProducts = order["products"];
+    let productList = document.getElementById("productList");
+
+    orderProducts.sort((a, b) => a.name.localeCompare(b.name));
+    productList.innerHTML = "";
+
+    for (let product of orderProducts) {
+        let prod = document.createElement('tr');
+        prod.className = "productListRow";
+
+        let prodNameElement = document.createElement('td');
+        prodNameElement.class = "prodName";
+        prodNameElement.textContent = product["name"];
+
+        let prodPriceElement = document.createElement('td');
+        prodPriceElement.class = "prodPrice";
+        prodPriceElement.textContent = product["price"].toFixed(2);
+
+        let prodAmountElement = document.createElement('td');
+        prodAmountElement.class = "prodAmount";
+        prodAmountElement.textContent = product["amount"];
+
+        let prodTotalElement = document.createElement('td');
+        prodTotalElement.class = "prodTotal";
+        prodTotalElement.textContent = (parseFloat(prodPriceElement.textContent) * parseFloat(prodAmountElement.textContent)).toFixed(2);
+
+        prod.appendChild(prodNameElement);
+        prod.appendChild(prodPriceElement);
+        prod.appendChild(prodAmountElement);
+        prod.appendChild(prodTotalElement);
+
+        productList.appendChild(prod);
+    }
+}
+
 async function populateTable(data) {
     let orders = await data;
     const statsTable = document.getElementById("ordersTable").children[1];
     statsTable.innerHTML = "";
     console.log("orders ", orders);
 
+    currentOrders = orders;
+    console.log("currentOrders ", currentOrders);
     let i = 0;
     for (let order of orders) {
-        const newRow = document.createElement('tr');
+        let newRow = document.createElement('tr');
+        newRow.onclick = function () { selectRow(newRow) };
 
         const id = document.createElement('td');
         id.textContent = order["id"];
@@ -108,11 +238,24 @@ async function populateTable(data) {
 
         let paid = document.createElement('td');
         paid.textContent = order["paid"].toFixed(2);
-        if (parseFloat(bill.textContent) < parseFloat(paid.textContent)) paid.style.color = "green";
-        if (parseFloat(bill.textContent) > parseFloat(paid.textContent)) paid.className = "decrement";
+
+        let diff = document.createElement('td');
+        diff.textContent = (parseFloat(paid.textContent) - parseFloat(bill.textContent)).toFixed(2);
+        if (parseFloat(diff.textContent) > 0) {
+            diff.textContent = "+" + diff.textContent;
+            diff.style.color = "green";
+        }
+        else if (parseFloat(diff.textContent < 0)) {
+            diff.textContent = "-" + diff.textContent
+            diff.style.color = "red";
+        }
+        else {
+            diff.textContent = "";
+        }
 
         const discount = document.createElement('td');
-        discount.textContent = "-" + order["discount"] + "%";
+        discount.textContent = "-" + order["discount"].toFixed(2) + "%";
+        if (discount.textContent == "-0.00%") discount.textContent = "";
 
         const method = document.createElement('td');
         method.textContent = order["method"];
@@ -120,12 +263,16 @@ async function populateTable(data) {
         const employee = document.createElement('td');
         employee.textContent = order["employee"];
 
+        //console.log(order["products"]);
+        //console.log(products.textContent);
+
         newRow.appendChild(id);
         newRow.appendChild(date);
         newRow.appendChild(n_table);
         newRow.appendChild(n_clients);
         newRow.appendChild(bill);
         newRow.appendChild(paid);
+        newRow.appendChild(diff);
         newRow.appendChild(discount);
         newRow.appendChild(method);
         newRow.appendChild(employee);
@@ -171,10 +318,10 @@ async function searchOrders() {
             retrieveOrdersByDate(input, "year");
             break;
         case "N. table":
-            //retrieveOrdersByNTable(input, n_table);
+            retrieveOrdersByNTable(input);
             break;
         case "Method":
-            //retrieveOrdersMethod(input, method);
+            retrieveOrdersByMethod(input);
             break;
         case "Employee":
             res = await retrieveOrdersByEmployee(input);

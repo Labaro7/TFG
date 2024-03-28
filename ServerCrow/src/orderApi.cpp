@@ -8,7 +8,7 @@ OrderAPI::OrderAPI(std::shared_ptr<Database> database)
 
 std::string OrderAPI::extractURISegment(std::string& uri)
 {
-	std::string direction;
+	std::string direction = "";
 	int initial_pos = 0;
 
 	if (uri[0] == '/')
@@ -35,12 +35,19 @@ std::string OrderAPI::extractURISegment(std::string& uri)
 
 	uri = uri.substr(pos);
 
+	if (uri == "/")
+	{
+		uri = " ";
+	}
+
 	return direction;
 }
 
 crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 {
 	crow::json::wvalue::list data;
+
+	std::reverse(orders.begin(), orders.end());
 
 	for (const auto& order : orders)
 	{
@@ -94,6 +101,11 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 	{
 		const std::string employeeName = extractURISegment(uri);
 		data = buildOrdersJSON(database->getOrdersByEmployee(employeeName));
+	}
+	else if (mode == "N_TABLE")
+	{
+		const std::string n_table = extractURISegment(uri);
+		data = buildOrdersJSON(database->getOrdersByNTable(n_table));
 	}
 	else if (mode == "METHOD")
 	{
