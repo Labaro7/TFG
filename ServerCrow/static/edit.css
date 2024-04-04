@@ -124,7 +124,7 @@ body {
 
 #orders{
     display: flex;
-    width: 1000px;
+    width: 1200px;
 }
 
 #ordersGraph{
@@ -135,7 +135,7 @@ body {
     display: flex;
     flex-direction: column;
     border: 1px solid black;
-    width: 1000px;
+    width: 1200px;
 }
 
 .statsHeader {
@@ -158,7 +158,8 @@ body {
 }
 
 .statsFilterElement {
-    padding: 5px;
+
+    width: 90px;
     border-right: 1px solid white;
     display: flex;
     justify-content: center;
@@ -253,9 +254,6 @@ body {
     color: black;
 }
 
-.statsTable tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
 
 .statsTable td {
     padding: 5px;

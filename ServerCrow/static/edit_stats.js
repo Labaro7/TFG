@@ -136,7 +136,7 @@ async function retrieveOrdersByEmployee(employee) {
 }
 
 function selectRow(clickedRow) {
-    console.log(clickedRow);
+    console.log(selectedRow);
 
     if (!selectedRow) { // If it is the first clicked element
         selectedRow = clickedRow;
@@ -145,7 +145,10 @@ function selectRow(clickedRow) {
         clickedRow.style.color = "white";
     }
     else {
-        selectedRow.style.backgroundColor = "white";
+        let selectedRowId = selectedRow.children[0].textContent;
+        let bgColor = (parseInt(selectedRowId) % 2) !== 0 ? "#d6d6d6" : "white";
+
+        selectedRow.style.backgroundColor = bgColor;
         selectedRow.style.color = "black";
 
         if (selectedRow !== clickedRow) { // If the selectedRow is clicked
@@ -159,7 +162,7 @@ function selectRow(clickedRow) {
             let productList = document.getElementById("productList");
             productList.innerHTML = "";
 
-            clickedRow.style.backgroundColor = "white";
+            clickedRow.style.backgroundColor = bgColor;
             clickedRow.style.color = "black";
         }
     }
@@ -276,6 +279,8 @@ async function populateTable(data) {
         newRow.appendChild(discount);
         newRow.appendChild(method);
         newRow.appendChild(employee);
+
+        if (parseInt(id.textContent) % 2 !== 0) newRow.style.backgroundColor = "#d6d6d6";
 
         if (statsTable) statsTable.appendChild(newRow);
 

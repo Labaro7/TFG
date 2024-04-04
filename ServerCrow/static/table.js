@@ -86,10 +86,10 @@ function showIngredientsAndAllergens(clickedElement) {
     const ingredientsList = document.getElementById("ingredientsList");
     const allergensList = document.getElementById("allergensList");
 
-    if ((clickedElement.id === "infoButton") || (lastOrder.textContent != "-" && clickedElement.id == "secondRow")) {
+    if ((clickedElement.id === "infoButton") || (lastOrder.textContent != "-" && clickedElement.id == "ingsAllergsButton")) {
         let lastOrderName;
 
-        if (clickedElement.id === "secondRow") {
+        if (clickedElement.id === "ingsAllergsButton") {
             const lastOrder = document.getElementById("lastOrder");
             lastOrderName = lastOrder.textContent.substring(lastOrder.textContent.indexOf(" ") + 1, lastOrder.textContent.indexOf(" ", lastOrder.textContent.lastIndexOf(" |")));
         } else {

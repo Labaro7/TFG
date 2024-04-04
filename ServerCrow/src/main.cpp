@@ -203,7 +203,6 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 auto json_data = crow::json::load(req.body);
-			 const int id = json_data["id"].i();
 			 const int n_table = json_data["n_table"].i();
 			 const int n_clients = json_data["n_clients"].i();
 			 const double bill = std::stod(json_data["bill"].s());
@@ -219,7 +218,7 @@ int main()
 			 }
 
 			 Order order = {
-				 id,
+				 0,
 				 n_table,
 				 n_clients,
 				 bill,
