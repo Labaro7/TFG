@@ -203,6 +203,7 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 auto json_data = crow::json::load(req.body);
+			 std::cout << json_data << std::endl;
 			 const int n_table = json_data["n_table"].i();
 			 const int n_clients = json_data["n_clients"].i();
 			 const double bill = std::stod(json_data["bill"].s());

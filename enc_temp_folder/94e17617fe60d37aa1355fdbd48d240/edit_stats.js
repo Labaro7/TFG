@@ -244,13 +244,12 @@ async function populateTable(data) {
 
         let diff = document.createElement('td');
         diff.textContent = (parseFloat(paid.textContent) - parseFloat(bill.textContent)).toFixed(2);
-        console.log(diff.textContent);
-        if (parseFloat(diff.textContent) > 0.0) {
+        if (parseFloat(diff.textContent) > 0) {
             diff.textContent = "+" + diff.textContent;
             diff.style.color = "green";
         }
-        else if (parseFloat(diff.textContent) < 0.0) {
-            diff.textContent = diff.textContent
+        else if (parseFloat(diff.textContent < 0)) {
+            diff.textContent = "-" + diff.textContent
             diff.style.color = "red";
         }
         else {

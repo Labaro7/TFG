@@ -632,7 +632,7 @@ function formatDate(date) {
 
 function payTable() {
     let billPrice = price.textContent.slice(0, -2);
-    const paidPrice = document.getElementById("paidInput").value;
+    const paidPrice = document.getElementById("payTableMenu").value;
 
     if (paidPrice === "") paidPrice = 0.0;
 
