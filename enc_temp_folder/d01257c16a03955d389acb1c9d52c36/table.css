@@ -103,7 +103,7 @@ body {
     background-color: #aaccff;
 }
 
-.firstRow, .secondRow, .thirdRow, #fourthRow, .fifthRow, .sixthRow {
+.firstRow, .secondRow, .thirdRow, .fourthRow, .fifthRow, .sixthRow {
     display: flex;
     font-size: 30px;
 }
@@ -117,6 +117,7 @@ body {
     background-color: white;
     height: 50px;
     width: 50px;
+    border: 1px solid black;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,13 +138,11 @@ body {
     border: 1px solid black;
     padding-right: 5px;
     padding-left: 5px;
-    height: 40px;
-    width: 20%;
 }
 
 #numClientsIcon {
     display: flex;
-    justify-content: right;
+    justify-content: center;
     align-items: center;
     height: 100%;
     width: 50%;
@@ -153,9 +152,11 @@ body {
 
 #numberOfClients {
     display: flex;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
     width: 50%;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 #numTable {
@@ -167,15 +168,13 @@ body {
     align-items: center;
     padding-left: 10px;
     padding-right: 10px;
-    width: 33%;
-    font-size: 25px;
 }
 
 .secondRow {
     justify-content: center;
     background-color: rgb(9, 43, 92);
     color: white;
-    margin-top: -1px;
+    margin: 10px 0px;
     border: 1px solid black;
     white-space: nowrap;
     transition: background-color 0s ease-in-out;
@@ -195,15 +194,13 @@ body {
 }
 
 .thirdRow {
+    margin: 10px 0px;
     cursor: pointer;
-    margin-left: 1px;
-    margin-right: 1px;
 }
 
 .thirdRowButton {
     height: 60px;
     width: 30%;
-    max-width: calc(100% / 6);
     font-size: 20px;
     display: flex;
     justify-content: center;
@@ -230,17 +227,14 @@ body {
 }
 
 
-#fourthRow {
+.fourthRow {
     display: flex;
+    margin-top: 0px;
     align-content: center;
     text-align: center;
     margin: 0px 0px;
-    margin-top: 10px;
     cursor: pointer;
-    height: 60px;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    border-top: 1px solid black;
+    height: 50px;
 }
 
 .productsPagesButton {
@@ -248,59 +242,37 @@ body {
     background-color: rgb(9, 43, 92);
     color: white;
     border-left: 1px solid white;
-    border-bottom: 1px solid white;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-bottom: 1px solid black;
+    border: 1px 1px 1px 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: -1px;
-}
-
-#fourthRow:first-child {
-}
-
-#fourthRow:last-child {
-    border-right: 6px solid red;
-}
-
-#productsPagesButton1 {
-    background-color: rgb(28, 89, 176);
-    border-bottom: 0;
-    border-left: 0;
-    margin-left: 0;
+    margin: -1px;
 }
 
 .fifthRow {
     position: relative;
-    height: calc(100% - 282px);
+    height: 100%;
     cursor: pointer;
-    padding: 3px;
-    background-color: rgb(28, 89, 176);
-    border: 1px solid black;
-    border-top: 0px;
-    margin: 0px;
-    margin-top: 0px;
-    margin-bottom: -1px;
 }
 
 .content {
     position: relative;
     width: 100%;
-    flex: 1;
+    height: 430px;
     border: 0px solid rgb(9, 43, 92);
-    padding: 5px;
-    padding-left: 7px;
-    padding-top: 7px;
+    margin-top: 5px;
 }
 
 .contentGrid {
     display: flex;
     flex-wrap: wrap;
-    padding: 0px;
+    padding: 0;
     width: 100%;
     gap: 3px;
-    margin-top: 0px;
-    overflow: auto;
-    max-height: calc(100% - 0px);
+    margin-top: 5px;
 }
 
 .grid-product, .grid-product-small {
@@ -366,11 +338,6 @@ body {
     display: none;
 }
 
-#sixthRow {
-    position: relative;
-    bottom: 0;
-}
-
 
 /* -------------- TICKET MENU -------------- */
 #ticketMenu {
@@ -378,8 +345,8 @@ body {
     position: relative;
     flex-direction: column;
     flex: 1;
-    max-height: calc(100% - 60px);
-    height: calc(100% - 60px);
+    max-height: calc(100% - 39px);
+    height: calc(100% - 39px);
     padding: 0px 10px;
     background-color: #aaccff;
 }
@@ -416,17 +383,8 @@ body {
 
 #divisionAddedProducts {
     margin: 0;
+    padding: 5px;
     border-top: 1px solid black;
-}
-
-#addedProducts {
-    display: none;
-    padding: 0;
-    border: 1px solid black;
-}
-
-#addedProducts:last-child {
-    border-bottom: 0;
 }
 
 .horizontal-line {
@@ -434,15 +392,12 @@ body {
     width: 50%;
     height: 2px;
     background-color: #000;
-    top: 10px;
+    top: 8px;
     transform: translateY(-50%);
 }
 
 .addedTicketProduct {
     background-color: #d7fcda;
-    border: 0px;
-    border-bottom: 1px solid black;
-    margin-bottom: 0;
 }
 
 .times, .productTimes, .newProductTimes {
@@ -452,7 +407,6 @@ body {
 
 .productNames, .container {
     flex: 1;
-    white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     box-sizing: border-box;
@@ -499,7 +453,8 @@ body {
     color: white;
     border: 1px solid black;
     border-bottom: 0;
-    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-top: -1px;
 }
 
 #discount {
@@ -824,8 +779,6 @@ body {
 
 #operations {
     display: flex;
-    margin-bottom: 10px;
-    border: 1px solid black;
 }
 
 #payTableButton, #deleteTableButton {
@@ -835,16 +788,16 @@ body {
     align-items: center;
     text-align: center;
     font-size: 30px;
-    font-weight: bold;
     color: white;
+    border: 1px solid rgba(0, 0, 0, 0.7);
     height: 50px;
     bottom: 0;
-
+    margin: 0 -10px;
 }
 
 #payTableButton {
     background-color: green;
-    border-left: 1px solid black;
+    border-right: 0px;
 }
 
 /* Delete table warning menu */

@@ -1,7 +1,7 @@
 // Init
 let currentGridNumber = 1;
 let currentButton = document.getElementById("productsPagesButton" + 1);
-currentButton.style.backgroundColor = "#0a3677";
+currentButton.style.backgroundColor = "rgb(28, 89, 176)";
 currentButton.style.color = "white";
 currentButton.style.border = "1px solid black";
 
@@ -341,15 +341,28 @@ function openDeployable(clickedDeployable) {
 
 
 function changeToProductsTab() {
-    const productsTab = document.getElementById("products");
-    const ticketTab = document.getElementById("ticket");
+    const productsTab = document.getElementById("productsTab");
+    const products = document.getElementById("products")
+    const productsIcon = document.getElementById("productsIcon");
+    const ticketTab = document.getElementById("ticketTab");
+    const ticket = document.getElementById("ticket");
+    const ticketIcon = document.getElementById("ticketIconPath");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    productsTab.style.backgroundColor = "rgb(9, 43, 92)";
-    productsTab.style.color = "white";
-    ticketTab.style.backgroundColor = "white";
-    ticketTab.style.color = "black";
+    productsTab.style.backgroundColor = "#aaccff";
+    productsTab.style.borderTop = "5px solid rgb(28, 89, 176)";
 
+    products.style.color = "black";
+
+    productsIcon.style.fill = "black";
+
+    ticketTab.style.backgroundColor = "rgb(9, 43, 92)";
+    ticketTab.style.borderTop = "0px";
+    ticketTab.style.borderTop = "5px solid rgb(9, 43, 92)";
+
+    ticket.style.color = "white";
+
+    ticketIcon.style.stroke = "white";
 
     modifyDeleteMenu.style.visibility = 'hidden';
 
@@ -361,14 +374,28 @@ function changeToProductsTab() {
 
 
 function changeToTicketTab() {
-    const productsTab = document.getElementById("products");
-    const ticketTab = document.getElementById("ticket");
+    const productsTab = document.getElementById("productsTab");
+    const products = document.getElementById("products")
+    const productsIcon = document.getElementById("productsIcon");
+    const ticketTab = document.getElementById("ticketTab");
+    const ticket = document.getElementById("ticket");
+    const ticketIcon = document.getElementById("ticketIconPath");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    productsTab.style.backgroundColor = "white";
-    productsTab.style.color = "black";
-    ticketTab.style.backgroundColor = "rgb(9, 43, 92)";
-    ticketTab.style.color = "white";
+    productsTab.style.backgroundColor = "rgb(9, 43, 92)";
+    productsTab.style.borderTop = "0px";
+    productsTab.style.borderTop = "5px solid rgb(9, 43, 92)";
+
+    products.style.color = "white";
+
+    productsIcon.style.fill = "white";
+
+    ticketTab.style.backgroundColor = "#aaccff";
+    ticketTab.style.borderTop = "5px solid rgb(28, 89, 176)";
+
+    ticket.style.color = "black";
+
+    ticketIcon.style.stroke = "black";
 
     modifyDeleteMenu.style.visibility = 'visible';
 
@@ -394,15 +421,13 @@ function showPage(pageId) {
 
 function selectButton(number) {
     let button = document.getElementById("productsPagesButton" + number);
-    currentButton.style.backgroundColor = "white";
-    currentButton.style.color = "black";
-    currentButton.style.border = "1px solid #0a3677";
+    currentButton.style.backgroundColor = "rgb(9, 43, 92)";
+    currentButton.style.color = "white";
     currentButton = button;
 
     button = document.getElementById("productsPagesButton" + number);
-    button.style.backgroundColor = "#0a3677";
+    button.style.backgroundColor = "rgb(28, 89, 176)";
     button.style.color = "white";
-    currentButton.style.border = "1px solid black";
 }
 
 
@@ -580,9 +605,9 @@ function moveTable() {
                     const warning = document.getElementById("moveTableWarningMenu");
 
                     tab[0].style.pointerEvents = "none";
-                    tab[0].style.filter = "blur(5px)";
+                    tab[0].style.filter = "blur(5px) grayscale(100%)";
                     productsMenu.style.pointerEvents = "none";
-                    productsMenu.style.filter = "blur(5px)";
+                    productsMenu.style.filter = "blur(5px) grayscale(100%)";
                     warning.style.display = "flex";
 
                     return;
@@ -632,7 +657,7 @@ function formatDate(date) {
 
 function payTable() {
     let billPrice = price.textContent.slice(0, -2);
-    const paidPrice = document.getElementById("payTableMenu").value;
+    const paidPrice = document.getElementById("paidInput").value;
 
     if (paidPrice === "") paidPrice = 0.0;
 
@@ -672,26 +697,34 @@ function payTable() {
 function openDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
     let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
     let ticketMenu = document.getElementById("ticketMenu");
 
     deleteTableWarningMenu.style.display = "flex";
     tab[0].style.pointerEvents = "none";
-    tab[0].style.filter = "blur(5px)";
+    tab[0].style.filter = "blur(5px) grayscale(100%)";
     ticketMenu.style.pointerEvents = "none";
-    ticketMenu.style.filter = "blur(5px)";
+    ticketMenu.style.filter = "blur(5px) grayscale(100%)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(5px) grayscale(100%)";
+    document.body.style.backgroundColor = "#aaccff";
 }
 
 function cancelDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
     let tab = document.getElementsByClassName("tab");
     let ticketMenu = document.getElementById("ticketMenu");
+    let productsMenu = document.getElementById("productsMenu");
 
     deleteTableWarningMenu.style.display = "none";
     tab[0].style.pointerEvents = "auto";
-    tab[0].style.filter = "blur(0px)";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
     ticketMenu.style.pointerEvents = "auto";
-    ticketMenu.style.filter = "blur(0px)";
-}
+    ticketMenu.style.filter = "blur(0px) grayscale(0%)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#b0b0b0";
+;}
 
 function deleteTable() {
     let data = {

@@ -1,9 +1,6 @@
 // Init
 let currentGridNumber = 1;
 let currentButton = document.getElementById("productsPagesButton" + 1);
-currentButton.style.backgroundColor = "#0a3677";
-currentButton.style.color = "white";
-currentButton.style.border = "1px solid black";
 
 // First row
 const n_table = document.getElementById("numTable");
@@ -51,7 +48,8 @@ sortTicketAlphabetically();
 function sortTicketAlphabetically() {
     const ul = document.getElementById('ticketList');
     const li = document.querySelectorAll('#ticketList li');
-    const li_array = Array.from(li);
+    let li_array = Array.from(li);
+    li_array = li_array.slice(0, -1);
 
     li_array.sort((a, b) => {
         const nameA = a.querySelector('.productNames').textContent.toLowerCase();
@@ -235,6 +233,7 @@ function toggleMultiplier() {
 
 function addProductToTicket(clickedProduct) {
     const secondRow = document.getElementById("secondRow");
+    let addedProducts = document.getElementById("addedProducts")
     secondRow.classList.toggle('clicked');
     setTimeout(function () {
         secondRow.classList.remove('clicked');
@@ -246,7 +245,10 @@ function addProductToTicket(clickedProduct) {
     let last = "x" + + added_ticket[added_ticket.length - 1];
     let found = added_ticket.find(prod => (prod.name === (clickedProduct.children)[0].textContent && prod.details === ""));
 
-    if (added_ticket.length === 0) document.getElementById("divisionAddedProducts").style.display = "flex";
+    if (added_ticket.length === 0) {
+        document.getElementById("divisionAddedProducts").style.display = "flex";
+        addedProducts.style.display = "flex";
+    }
 
     let currency = " " + price.textContent[price.textContent.length - 1];
     if (found) {
@@ -320,7 +322,8 @@ function addProductToTicket(clickedProduct) {
         child_total_price.textContent = (product["times"] * product["price"]).toFixed(2);
         child.appendChild(child_total_price);
 
-        ticketList.appendChild(child);
+        console.log(addedProducts);
+        addedProducts.appendChild(child);
 
         price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
     }
@@ -341,15 +344,28 @@ function openDeployable(clickedDeployable) {
 
 
 function changeToProductsTab() {
-    const productsTab = document.getElementById("products");
-    const ticketTab = document.getElementById("ticket");
+    const productsTab = document.getElementById("productsTab");
+    const products = document.getElementById("products")
+    const productsIcon = document.getElementById("productsIcon");
+    const ticketTab = document.getElementById("ticketTab");
+    const ticket = document.getElementById("ticket");
+    const ticketIcon = document.getElementById("ticketIconPath");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    productsTab.style.backgroundColor = "rgb(9, 43, 92)";
-    productsTab.style.color = "white";
-    ticketTab.style.backgroundColor = "white";
-    ticketTab.style.color = "black";
+    productsTab.style.backgroundColor = "#aaccff";
+    productsTab.style.borderTop = "5px solid rgb(28, 89, 176)";
 
+    products.style.color = "black";
+
+    productsIcon.style.fill = "black";
+
+    ticketTab.style.backgroundColor = "rgb(9, 43, 92)";
+    ticketTab.style.borderTop = "0px";
+    ticketTab.style.borderTop = "5px solid rgb(9, 43, 92)";
+
+    ticket.style.color = "white";
+
+    ticketIcon.style.stroke = "white";
 
     modifyDeleteMenu.style.visibility = 'hidden';
 
@@ -361,14 +377,28 @@ function changeToProductsTab() {
 
 
 function changeToTicketTab() {
-    const productsTab = document.getElementById("products");
-    const ticketTab = document.getElementById("ticket");
+    const productsTab = document.getElementById("productsTab");
+    const products = document.getElementById("products")
+    const productsIcon = document.getElementById("productsIcon");
+    const ticketTab = document.getElementById("ticketTab");
+    const ticket = document.getElementById("ticket");
+    const ticketIcon = document.getElementById("ticketIconPath");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    productsTab.style.backgroundColor = "white";
-    productsTab.style.color = "black";
-    ticketTab.style.backgroundColor = "rgb(9, 43, 92)";
-    ticketTab.style.color = "white";
+    productsTab.style.backgroundColor = "rgb(9, 43, 92)";
+    productsTab.style.borderTop = "0px";
+    productsTab.style.borderTop = "5px solid rgb(9, 43, 92)";
+
+    products.style.color = "white";
+
+    productsIcon.style.fill = "white";
+
+    ticketTab.style.backgroundColor = "#aaccff";
+    ticketTab.style.borderTop = "5px solid rgb(28, 89, 176)";
+
+    ticket.style.color = "black";
+
+    ticketIcon.style.stroke = "black";
 
     modifyDeleteMenu.style.visibility = 'visible';
 
@@ -394,15 +424,15 @@ function showPage(pageId) {
 
 function selectButton(number) {
     let button = document.getElementById("productsPagesButton" + number);
-    currentButton.style.backgroundColor = "white";
-    currentButton.style.color = "black";
-    currentButton.style.border = "1px solid #0a3677";
+    currentButton.style.backgroundColor = "rgb(9, 43, 92)";
+    currentButton.style.color = "white";
+    currentButton.style.borderBottom = "1px solid white";
     currentButton = button;
 
     button = document.getElementById("productsPagesButton" + number);
-    button.style.backgroundColor = "#0a3677";
+    button.style.backgroundColor = "rgb(28, 89, 176)";
     button.style.color = "white";
-    currentButton.style.border = "1px solid black";
+    button.style.borderBottom = "0px";
 }
 
 
@@ -493,12 +523,12 @@ function appendNumber(number) {
     const display3 = document.getElementById("paidInput");
 
     if (number !== ".") {
-        if (display.value <= 999) display.value += number;
-        if (display2.value <= 999) display2.value += number;
-        if (display3.value <= 999) display3.value += number;
+        if (display.value.length < 5) display.value += number;
+        if (display2.length < 5) display2.value += number;
+        display3.value += number;
     }
     else {
-        if (display3.value.indexOf(".") === -1 && display3.value !== "") {
+        if (display3.value.indexOf(".") === -1 && display3.value !== "" ) {
             display3.value += ".";  
         }
     }
@@ -580,9 +610,9 @@ function moveTable() {
                     const warning = document.getElementById("moveTableWarningMenu");
 
                     tab[0].style.pointerEvents = "none";
-                    tab[0].style.filter = "blur(5px)";
+                    tab[0].style.filter = "blur(5px) grayscale(100%)";
                     productsMenu.style.pointerEvents = "none";
-                    productsMenu.style.filter = "blur(5px)";
+                    productsMenu.style.filter = "blur(5px) grayscale(100%)";
                     warning.style.display = "flex";
 
                     return;
@@ -672,26 +702,34 @@ function payTable() {
 function openDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
     let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
     let ticketMenu = document.getElementById("ticketMenu");
 
     deleteTableWarningMenu.style.display = "flex";
     tab[0].style.pointerEvents = "none";
-    tab[0].style.filter = "blur(5px)";
+    tab[0].style.filter = "blur(5px) grayscale(100%)";
     ticketMenu.style.pointerEvents = "none";
-    ticketMenu.style.filter = "blur(5px)";
+    ticketMenu.style.filter = "blur(5px) grayscale(100%)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(5px) grayscale(100%)";
+    document.body.style.backgroundColor = "#aaccff";
 }
 
 function cancelDeleteTableWarningMenu() {
     const deleteTableWarningMenu = document.getElementById("deleteTableWarningMenu");
     let tab = document.getElementsByClassName("tab");
     let ticketMenu = document.getElementById("ticketMenu");
+    let productsMenu = document.getElementById("productsMenu");
 
     deleteTableWarningMenu.style.display = "none";
     tab[0].style.pointerEvents = "auto";
-    tab[0].style.filter = "blur(0px)";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
     ticketMenu.style.pointerEvents = "auto";
-    ticketMenu.style.filter = "blur(0px)";
-}
+    ticketMenu.style.filter = "blur(0px) grayscale(0%)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#b0b0b0";
+;}
 
 function deleteTable() {
     let data = {
@@ -746,6 +784,7 @@ function cancelPayTableMenu() {
 
 function openModifyDeleteMenu(clickedProduct) {
     let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
+    let individualPrice = clickedProduct.children[3];
 
     clickedProduct.appendChild(document.getElementById("modifyDeleteMenu"));
 
@@ -756,6 +795,8 @@ function openModifyDeleteMenu(clickedProduct) {
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "white";
                 clickedProduct.style.color = "black";
+
+                individualPrice.style.borderLeft = "1px solid black";
             }
             else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#D7FCDA";
@@ -776,6 +817,8 @@ function openModifyDeleteMenu(clickedProduct) {
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "rgb(28, 89, 176)";
                 clickedProduct.style.color = "white";
+
+                individualPrice.style.borderLeft = "1px solid white";
             }
             else if (clickedProduct.className == "addedTicketProduct") {
                 clickedProduct.style.backgroundColor = "#e9fe6d";
