@@ -1,7 +1,7 @@
 ## 📄 Description
 
 <div align="center">
-  <img src="https://github.com/Labaro7/TFG/assets/59017230/24f2e5c8-f87c-43e6-b938-f9963e0cf734" width="50%">
+  <img src="https://github.com/Labaro7/TFG/assets/59017230/8d51efaa-4db7-4b3e-a706-5bdcd5d6deb7" width="50%">
 </div></br>
 
 DINET is a web-based system to manage a business. It is mainly focused on hospitality businesses (restaurants, bars, pubs, etc).
