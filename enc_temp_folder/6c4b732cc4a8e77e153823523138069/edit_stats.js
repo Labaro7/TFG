@@ -167,7 +167,6 @@ function selectRow(clickedRow) {
     }
     else {
         let selectedRowId = selectedRow.children[0].textContent;
-        const clickedRowStyle = window.getComputedStyle(clickedRow);
         let bgColor = (parseInt(selectedRowId) % 2) !== 0 ? "rgb(237, 237, 237)" : "white";
 
         selectedRow.style.backgroundColor = bgColor;
@@ -529,125 +528,6 @@ async function populateProductsTable(jsonData) {
     }
 }
 
-function extractDataFromOrdersTable() {
-    let table = document.getElementById("ordersTable");
-    let rows = table.children[1].getElementsByTagName('tr');
-    let data = [];
-    let tableHeaders = table.children[0].querySelectorAll("th");
-
-    for (let i = 0; i < rows.length; i++) {
-        let cells = rows[i].getElementsByTagName('td');
-        let rowData = {};
-
-        for (let j = 0; j < cells.length; j++) {
-            const currentHeader = tableHeaders[j % tableHeaders.length].children[0].textContent;
-
-            rowData[currentHeader] = cells[j].textContent.trim();
-
-            if (currentHeader === "Diff") {
-                if (cells[j].textContent === "") rowData[currentHeader] = "0";
-            }
-            else if (currentHeader === "Discount") {
-                rowData[currentHeader] = rowData[currentHeader].slice(1, -1);
-
-                if (cells[j].textContent === "") rowData[currentHeader] = "0";
-            }
-        }
-
-        data.push(rowData);
-    }
-
-    return data;
-}
-
-function sortOrdersBy(clickedHeader) {
-    let res = switchUpOrDown(clickedHeader);
-    let headerNumber = 0;
-    const tableHeaders = clickedHeader.parentNode.children;
-    const parent = clickedHeader.parentNode;
-    const table = document.getElementById("ordersTable");
-
-    for (let i in tableHeaders) {
-        if (clickedHeader === tableHeaders[i]) {
-            headerNumber = i;
-            break;
-        }
-    }
-
-    let data = extractDataFromOrdersTable();
-    console.log("data", data);
-    const clickedHeaderTextContent = clickedHeader.children[0].textContent;
-    console.log("index", clickedHeaderTextContent);
-    switch (res[0]) {
-        case "asc":
-            if (clickedHeaderTextContent === "Diff") {
-                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
-            }
-            else if (clickedHeaderTextContent === "Discount") {
-                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
-            }
-            else {
-                data.sort((a, b) => { return (b[clickedHeaderTextContent] - a[clickedHeaderTextContent]) });
-            }
-            console.log("asc");
-            table.children[1].innerHTML = "";
-
-            break;
-        case "desc":
-            if (clickedHeaderTextContent === "Diff") {
-                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
-            }
-            else if (clickedHeaderTextContent === "Discount") {
-                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
-            }
-            else {
-                data.sort((a, b) => { return (a[clickedHeaderTextContent] - b[clickedHeaderTextContent]) });
-            }
-            console.log("desc");
-            table.children[1].innerHTML = "";
-
-            break;
-        default:
-            table.children[1].innerHTML = res[1];
-            console.log("none");
-
-            break;
-    }
-
-    if (table.children[1].innerHTML === "") {
-        let i = 0;
-        for (let row of data) {
-            let tr = document.createElement("tr");
-            for (let col in row) {
-                let td = document.createElement("td");
-                td.textContent = row[col];
-
-                if (col === "Diff") {
-                    if (td.textContent[0] === "+") td.style.color = "green";
-                    else if (td.textContent[0] === "-") td.style.color = "red";
-                    else { td.textContent = ""; }
-                }
-                else if (col === "Discount") {
-                    if (td.textContent === "0") td.textContent = "";
-                    else {
-                        td.textContent = "-" + td.textContent + "%";
-                    }
-                }
-
-                tr.onclick = function() { selectRow(tr); };
-                tr.appendChild(td);
-            }
-
-            if (i % 2 === 0) tr.style.backgroundColor = "rgb(237, 237, 237)";
-            i++;
-
-            table.children[1].appendChild(tr);
-        }
-    }
-
-    console.log(data);
-}
-
 async function searchProducts() {
     let input = document.getElementById("productsFilterInput").value;
     let res;
@@ -703,12 +583,7 @@ function switchUpOrDown(clickedHeader) {
     }
 
     if (upStyle.display === "none" && downStyle.display === "none") {
-        if (parent.parentNode.parentNode.id === "ordersTable") {
-            initialState = document.getElementById("ordersTable").children[1].innerHTML;
-        }
-        else if (parent.parentNode.parentNode.id === "productsTable") {
-            initialState = document.getElementById("productsTable").innerHTML;
-        }
+        initialState = document.getElementById("productsTable").innerHTML;
         up.style.display = "flex";
 
         return ["asc", initialState];
@@ -743,6 +618,7 @@ function extractDataFromProductsTable() {
 
             rowData[currentHeader] = cells[j].textContent.trim();
             if (rowData[currentHeader][rowData[currentHeader].length - 1] === "%"){
+                console.log("fff");
                 rowData[currentHeader] = rowData[currentHeader].slice(0, -1);
             }
         }
