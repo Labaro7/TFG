@@ -1,6 +1,7 @@
 #include "..\headers\database.hpp"
 #include "..\headers\crow_all.hpp"
 #include "..\headers\domain.hpp"
+#include <unordered_map>
 
 Database::Database() : pstmt()
 {
@@ -274,7 +275,6 @@ void Database::initialize()
 	initializeIngredientsTable();
 	initializeAllergensTable();
 	initializeOrdersTable();
-
 }
 
 void Database::dropAllTables()
@@ -298,6 +298,7 @@ void Database::dropAllTables()
 		stmt->execute("DROP TABLE IF EXISTS products;");
 		stmt->execute("DROP TABLE IF EXISTS tables;");
 		stmt->execute("DROP TABLE IF EXISTS restaurants;");
+		stmt->execute("DROP TABLE IF EXISTS orderedproducts;");
 
 		CROW_LOG_INFO << "[REMOVED] All tables dropped.";
 	}
@@ -374,7 +375,6 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
 			pstmt->setString(9, generateSessionToken());
-
 			pstmt->setString(10, oldEmployee.firstName);
 			pstmt->setString(11, oldEmployee.lastName);
 			pstmt->setInt(12, oldEmployee.level);
@@ -775,6 +775,37 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 	catch (const sql::SQLException& e)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not save product/allergen. Error message: " << e.what();
+	}
+}
+
+void Database::saveOrderedProduct(const OrderedProduct& orderedProduct)
+{
+	CROW_LOG_INFO << "[DB] saveOrderedProduct";
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		if (true/*getOrderedProductByName(orderedProduct.name).isEmpty()*/)
+		{
+			pstmt = con->prepareStatement("INSERT INTO orderedproducts(name, price, percent, revenue, totalRevenue) VALUES(?, ?, ?, ?, ?)");
+			pstmt->setString(1, orderedProduct.name);
+			pstmt->setDouble(2, orderedProduct.price);
+			pstmt->setDouble(3, orderedProduct.percent);
+			pstmt->setDouble(4, orderedProduct.revenue);
+			pstmt->setDouble(5, orderedProduct.totalRevenue);
+			pstmt->execute();
+
+			CROW_LOG_INFO << "[ADDED] OrderedProduct with name " << orderedProduct.name;
+		}
+		else
+		{
+			CROW_LOG_WARNING << "[EXCEPTION] Allergen is already in the database.";
+		}
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not save orderedProduct. Error message: " << e.what();
 	}
 }
 
@@ -1300,6 +1331,76 @@ std::vector<Order> Database::getOrders()
 	return order;
 }*/
 
+Order Database::getOrderById(const int& id)
+{
+	CROW_LOG_INFO << "[DB] getOrderById";
+
+	Order order;
+
+	try
+	{
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT * FROM orders WHERE order_id = '" << id << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		if (res->next())
+		{
+			int order_id = id;
+			int n_table = res->getInt("n_table");
+			int n_clients = res->getInt("n_clients");
+			double bill = res->getDouble("bill");
+			double paid = res->getDouble("paid");
+			double discount = res->getDouble("discount");
+			std::string method = res->getString("method");
+			std::string employee = res->getString("employee");
+			std::string date = res->getString("date");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			std::vector<std::pair<Product, int>> products;
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				int amount = res2->getInt("amount");
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					std::string name = res3->getString("name");
+					double price = res3->getDouble("price");
+					std::string color = res3->getString("color");
+					int page = res3->getInt("page");
+					int deployable = res3->getInt("deployable");
+
+					Product p(name, price, color, page, deployable);
+					products.push_back({ p, amount });
+				}
+			}
+
+			std::cout << "lolo" << order_id << std::endl;
+
+			order = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+		}
+
+		return order;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get order by id. Error message: " << e.what();
+
+		return order;
+	}
+}
+
+
 std::vector<Order> Database::getOrdersByDate(const std::string& date, const std::string& mode)
 {
 	CROW_LOG_INFO << "[DB] getOrdersByDate";
@@ -1770,6 +1871,333 @@ int Database::getNClientsByEmployee(const std::string& employeeName)
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get number of clients by employee. Error message: " << e.what();
 
 		return totalNClients;
+	}
+}
+
+std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
+{
+	CROW_LOG_INFO << "[DB] getOrderedProducts";
+
+	using ProductId = int;
+	std::unordered_map<ProductId, OrderedProduct> products;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT * FROM orders";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int order_id = res->getInt("order_id");
+
+				query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res2->next())
+				{
+					int product_id = res2->getInt("product_id");
+					int amount = res2->getInt("amount");
+
+					query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+					sql::ResultSet* res3 = stmt->executeQuery(query.str());
+					query.str("");
+
+					if (res3->next())
+					{
+						std::string name = res3->getString("name");
+						double price = res3->getDouble("price");
+
+						products[product_id].id = product_id;
+						products[product_id].name = name;
+						products[product_id].price = price;
+						products[product_id].sold += amount;
+						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
+						products[product_id].revenue = 0;
+						products[product_id].totalRevenue += (amount * products[product_id].revenue);
+					}
+				}
+			}
+
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orders. Error message: " << e.what();
+
+		return products;
+	}
+}
+
+OrderedProduct Database::getOrderedProductById(const int& product_id)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductById";
+
+	OrderedProduct product;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT order_id FROM orders";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int order_id = res->getInt("order_id");
+
+				query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				product.id = product_id;
+
+				while (res2->next())
+				{
+					int product_id = res2->getInt("product_id");
+					int amount = res2->getInt("amount");
+
+					query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+					sql::ResultSet* res3 = stmt->executeQuery(query.str());
+					query.str("");
+
+					if (res3->next())
+					{
+						std::string name = res3->getString("name");
+						double price = res3->getDouble("price");
+
+						product.name = name;
+						product.price = price;
+						product.sold += amount;
+						product.percent = (product.sold / (double)totalAmount) * 100.0;
+						product.revenue = 0;
+						product.totalRevenue = (amount * product.revenue);
+					}
+				}
+			}
+		}
+
+		return product;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProduct by id. Error message: " << e.what();
+
+		return product;
+	}
+}
+
+OrderedProduct Database::getOrderedProductByName(const std::string& name)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductByName";
+
+	OrderedProduct product;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT * FROM products WHERE name = '" << name << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			if (res->next())
+			{
+				int product_id = res->getInt("product_id");
+				product.id = product_id;
+				product.name = name;
+				product.price = res->getDouble("price");
+				product.revenue = 0;
+
+				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+				res = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res->next())
+				{
+					query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
+					sql::ResultSet* res2 = stmt->executeQuery(query.str());
+					query.str("");
+
+					product.sold += res->getInt("amount");
+					product.percent = (product.sold / (double)totalAmount) * 100.0;
+					product.totalRevenue = (product.sold * product.revenue);	
+				}
+			}
+		}
+
+		return product;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProduct by name. Error message: " << e.what();
+
+		return product;
+	}
+}
+
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const int& price)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductByPrice";
+
+	using ProductId = int;
+	std::unordered_map<ProductId, OrderedProduct> products;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT * FROM products WHERE price = '" << price << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int product_id = res->getInt("product_id");
+				products[product_id].id = product_id;
+				products[product_id].name = res->getString("name");
+				products[product_id].price = price;
+				products[product_id].revenue = 0;
+
+				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res2->next())
+				{
+					products[product_id].sold += res2->getInt("amount");
+					products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
+					products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+				}
+			}
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProducts by price. Error message: " << e.what();
+
+		return products;
+	}
+}
+
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const std::string& date, const std::string& mode)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductsByDate";
+
+	std::unordered_map<int, OrderedProduct> products;
+
+	try
+	{
+		CROW_LOG_INFO << "[DB] getOrdersByDate " << date << ".";
+		//std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		while (res->next())
+		{
+			int order_id = res->getInt("order_id");
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res2->next())
+			{
+				query << "SELECT amount from orderproduct WHERE order_id = '" << order_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res3->next())
+				{
+					totalAmount += res3->getInt("amount");
+				}
+			}
+
+			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res2->next())
+			{
+				int product_id = res2->getInt("product_id");
+				products[product_id].id = product_id;
+				int amount = res2->getInt("amount");
+				products[product_id].sold += amount;
+				products[product_id].percent = (products[product_id].sold / totalAmount) * 100.0;
+
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res3->next())
+				{
+					products[product_id].name = res3->getString("name");
+					products[product_id].price = res3->getDouble("price");
+					products[product_id].revenue = 0;
+					products[product_id].totalRevenue = products[product_id].sold * products[product_id].revenue;
+				}
+			}
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProducts by date. Error message: " << e.what();
+
+		return products;
 	}
 }
 
@@ -2687,5 +3115,27 @@ void Database::modifyProduct(const Product& oldProduct,
 	catch (const sql::SQLException& e)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not modify product. Error message: " << e.what();
+	}
+}
+
+void Database::changeNumClients(const Table& table, const int& n_clients)
+{
+	CROW_LOG_INFO << "[DB] changeNumClients";
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "UPDATE tables SET n_clients = ? WHERE n_table = ?";
+		pstmt = con->prepareStatement(query.str());
+		query.str("");
+		pstmt->setInt(1, n_clients);
+		pstmt->setInt(2, table.n_table);
+		pstmt->execute();
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not change number of clients. Error message: " << e.what();
 	}
 }

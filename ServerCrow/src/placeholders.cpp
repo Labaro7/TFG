@@ -17,7 +17,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	for (const auto& t : tables)
 	{
 		const std::string last_modified = server.getLastModifiedFromTable(t);
-		ss << "<li class='table'><a class='tableNumber' href='" << TABLE_NUMBER_HREF << t.n_table << "'>Table: " << t.n_table << "<div class='lastModified'>" << last_modified << "</div></a><div class = 'tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY_SYMBOL << "</div></li>";
+		ss << "<li class='table'><a href='" << TABLE_NUMBER_HREF << t.n_table << "'><div class = 'tableNumber'>Table: " << t.n_table << "<div class = 'lastModified'>" << last_modified << "</div></div><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY_SYMBOL << "</div></a></li>";
 	}
 
 	std::string tablesPricesHTML = ss.str();
@@ -34,7 +34,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 }
 
 // table.html
-std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int n_table, const std::vector<Product> products, Server& server)
+std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int& n_table, const std::vector<Product> products, Server& server)
 {
 	// Data to insert into HTML
 	// 1. Table number
@@ -56,10 +56,33 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 	std::ostringstream ss;
 
+	// 1. HTML with the number of clients
+	Table t = server.getTableByNumber(n_table);
+	int n_clients;
+	if (t.isEmpty())
+	{
+		n_clients = 0;
+	}
+	else
+	{
+		n_clients = t.n_clients;
+	}
+
+	ss << n_clients << std::endl;
+	std::string numClientsHTML = ss.str();
+	ss.str(""); // Important to clear here
+
+	// 1. Insert previous HTML piece with the number of clients into HTML
+	size_t numClientsPlaceholderPos = contentHTML.find(NUMBER_OF_CLIENTS_PLACEHOLDER);
+	if (numClientsPlaceholderPos != std::string::npos)
+	{
+		contentHTML.replace(numClientsPlaceholderPos, strlen(NUMBER_OF_CLIENTS_PLACEHOLDER), numClientsHTML);
+	}
+
 	// 1. HTML with the table number
 	ss << "<div id='numTable'>Table: " << n_table << "</div>" << std::endl;
 	std::string tableNumberHTML = ss.str();
-	ss.str(""); // Important to clear here
+	ss.str("");
 
 	// 1. Insert previous HTML piece with the table number into HTML
 	size_t tableNumberPlaceholderPos = contentHTML.find(TABLE_NUMBER_PLACEHOLDER);
@@ -118,7 +141,14 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 				if (product_name.size() <= 15)
 				{
-					ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div><ul class='ingredients>" << std::endl; // We use this because std::to_string() eliminates the precision set
+					if (allergens.size() > 0)
+					{
+						ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div><ul class='ingredients>" << std::endl; // We use this because std::to_string() eliminates the precision set
+					}
+					else
+					{
+						ss << std::fixed << std::setprecision(2) << "<li class ='grid-product' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div>" << std::endl;
+					}
 
 					for (const auto& q : p.second)
 					{
@@ -141,9 +171,11 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 							ss << "</li>";
 						}
 					}
+
+					ss << "</ul><div class='allergenAlertOn'></div>";
 				}
 				else
-					ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div><ul class='ingredients'>" << std::endl;
+					ss << std::fixed << std::setprecision(2) << "<li class ='grid-product-small' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class='products-names'>" << product_name << "</div>" << "<div class='products-prices'>" << product_price << "</div><ul class='ingredients'>";
 
 				for (const auto& q : p.second)
 				{
@@ -178,7 +210,15 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 						std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(server.getProductByName(q.name));
 						std::vector<Allergen> allergens = server.getAllergensFromProduct(server.getProductByName(q.name));
 
-						ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><ul class='ingredients'>";
+						if (allergens.size() > 0)
+						{
+							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><div class='allergenAlertOn'></div><ul class='ingredients'>";
+
+						}
+						else
+						{
+							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><ul class='ingredients'>";
+						}
 
 						for (const auto& ingredient : ingredients)
 						{
@@ -249,6 +289,17 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	size_t ticketBillPlaceholderPos = contentHTML.find(TICKET_BILL_PLACEHOLDER);
 	contentHTML.replace(ticketBillPlaceholderPos, strlen(TICKET_BILL_PLACEHOLDER), ticketBillHTML);
 
+	// 5. Insert HTML piece with the image of DINET
+	ss << "<img src='" << BRAND_IMAGE_URL << "'";
+
+	std::string brandImageHTML = ss.str();
+	ss.str("");
+
+	size_t brandImagePlaceholderPos = contentHTML.find(BRAND_IMAGE_URL_PLACEHOLDER);
+	if (brandImagePlaceholderPos != std::string::npos)
+	{
+		contentHTML.replace(brandImagePlaceholderPos, strlen(BRAND_IMAGE_URL_PLACEHOLDER), ticketProductsHTML);
+	}
 
 	return contentHTML;
 }

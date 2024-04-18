@@ -8,6 +8,7 @@
 #include "orderApi.hpp"
 #include "billApi.hpp"
 #include "nClientApi.hpp"
+#include "productApi.hpp"
 
 class Database;
 
@@ -22,6 +23,7 @@ public:
 		ORDER = 0,
 		BILL = 1,
 		NCLIENT = 2,
+		PRODUCTS = 3
 	};
 
 	std::string extractURISegment(std::string& uri);
@@ -40,6 +42,7 @@ protected:
 	std::shared_ptr<OrderAPI> orderAPI;		// /api/orders
 	std::shared_ptr<BillAPI> billAPI;		// /api/bills
 	std::shared_ptr<NClientAPI> nClientAPI; // /api/n_clients
+	std::shared_ptr<ProductAPI> productAPI; // /api/products
 };
 
 #endif

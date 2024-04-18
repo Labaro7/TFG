@@ -285,6 +285,11 @@ void Server::modifyProduct(const Product& oldProduct,
 	database->modifyProduct(oldProduct, newProduct);
 }
 
+void Server::changeNumClients(const Table& table, const int& n_clients)
+{
+	database->changeNumClients(table, n_clients);
+}
+
 // Save
 void Server::saveTable(const Table& table)
 {
@@ -356,6 +361,11 @@ void Server::saveTableProduct(Table& table,
 void Server::saveProductAllergen(const Product& product, const Allergen& allergen)
 {
 	database->saveProductAllergen(product, allergen);
+}
+
+void Server::saveOrderedProduct(const OrderedProduct& orderedProduct)
+{
+	database->saveOrderedProduct(orderedProduct);
 }
 
 

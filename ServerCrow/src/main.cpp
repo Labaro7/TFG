@@ -101,13 +101,16 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 auto page = crow::mustache::load_text("table.html");
-			 std::string n_table = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
-			 if (n_table == "") n_table = "0";
-			 Table t(stoi(n_table));
+			 std::string nTable = req.url_params.get("tableInput"); // This has to match the name of the input that is being sent to get its value correctly.
+			 int n_table; 
+			 if (nTable == "") n_table = 0;
+			 else n_table = std::stoi(nTable);
+
+			 Table t = server.getTableByNumber(n_table);
 			 std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 
 			 std::ifstream file(TABLE_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, stoi(n_table), products, server);
+			 std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, n_table, products, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -135,6 +138,7 @@ int main()
 			 auto json_data = crow::json::load(req.body);
 
 			 int n_table = json_data["n_table"].i();
+			 int n_clients = json_data["n_clients"].i();
 			 auto order = json_data["order"];
 			 auto added = json_data["added"];
 			 auto modified = json_data["modified"];
@@ -146,8 +150,12 @@ int main()
 
 			 if (t.isEmpty())
 			 {
-				 t = { n_table, 3, product_unordered_map(), 0.0 };
+				 t = { n_table, n_clients, product_unordered_map(), 0.0 };
 				 server.saveTable(t);
+			 }
+			 else
+			 {
+				 server.changeNumClients(t, n_clients);
 			 }
 
 			 for (const auto& object : added)
@@ -203,7 +211,6 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 auto json_data = crow::json::load(req.body);
-			 std::cout << json_data << std::endl;
 			 const int n_table = json_data["n_table"].i();
 			 const int n_clients = json_data["n_clients"].i();
 			 const double bill = std::stod(json_data["bill"].s());

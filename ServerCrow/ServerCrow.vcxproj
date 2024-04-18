@@ -170,6 +170,7 @@
     <ClInclude Include="headers\nClientApi.hpp" />
     <ClInclude Include="headers\orderApi.hpp" />
     <ClInclude Include="headers\placeholders.hpp" />
+    <ClInclude Include="headers\productApi.hpp" />
     <ClInclude Include="headers\server.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +184,7 @@
     <ClCompile Include="src\nClientApi.cpp" />
     <ClCompile Include="src\orderApi.cpp" />
     <ClCompile Include="src\placeholders.cpp" />
+    <ClCompile Include="src\productApi.cpp" />
     <ClCompile Include="src\server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

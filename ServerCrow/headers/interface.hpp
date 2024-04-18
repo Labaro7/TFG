@@ -38,6 +38,7 @@ public:
 	virtual void saveOrderProduct(const Order& order, const int& product_id, const int& amount) = 0;
 	virtual void saveProductIngredient(const Product& product, const Ingredient& ingredient) = 0;
 	virtual void saveProductAllergen(const Product& product, const Allergen& allergen) = 0;
+	virtual void saveOrderedProduct(const OrderedProduct& orderedProduct) = 0;
 
 
 	// Get
@@ -48,7 +49,6 @@ public:
 	virtual std::vector<Table> getTables() = 0;
 	virtual Table getTableByNumber(const int n_table) = 0;
 	virtual std::string getLastModifiedFromTable(const Table& table) = 0;
-
 
 	virtual std::vector<Employee> getEmployees() = 0;
 	virtual Employee getEmployeeByName(const std::string& fullName) = 0;

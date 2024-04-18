@@ -6,6 +6,7 @@ API::API(std::shared_ptr<Database> database)
 	orderAPI = std::make_shared<OrderAPI>(database);
 	billAPI = std::make_shared<BillAPI>(database);
 	nClientAPI = std::make_shared<NClientAPI>(database);
+	productAPI = std::make_shared<ProductAPI>(database);
 }
 
 std::string API::extractURISegment(std::string& uri)
@@ -90,6 +91,10 @@ API::DirectionCode API::getDirectionCode(std::string& uri)
 	{
 		res = DirectionCode::NCLIENT;
 	}
+	else if (direction == "products")
+	{
+		res = DirectionCode::PRODUCTS;
+	}
 	else
 	{
 		res = DirectionCode::ERR;
@@ -124,6 +129,12 @@ crow::json::wvalue API::retrieveRequest(std::string& uri)
 			case DirectionCode::NCLIENT:
 				CROW_LOG_INFO << "[NClientAPI] Processing request with URI: " << uri;
 				res = nClientAPI->processRequest(uri);
+
+				break;
+
+			case DirectionCode::PRODUCTS:
+				CROW_LOG_INFO << "[ProductAPI] Processing request with URI: " << uri;
+				res = productAPI->processRequest(uri);
 
 				break;
 

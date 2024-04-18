@@ -48,6 +48,7 @@ public:
 	void saveOrderProduct(const Order& order, const int& product_id, const int& amount) override;
 	void saveProductIngredient(const Product& product, const Ingredient& ingredient) override;
 	void saveProductAllergen(const Product& product, const Allergen& allergen) override;
+	void saveOrderedProduct(const OrderedProduct& orderedProduct) override;
 
 
 	// Get
@@ -86,6 +87,7 @@ public:
 	void moveTable(const int& current_n_table, const int& new_n_table) override;
 	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount) override;
 	void modifyProduct(const Product& oldProduct, const Product& newProduct) override;
+	void changeNumClients(const Table& table, const int& n_clients);
 
 
 	// Remove

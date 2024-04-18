@@ -66,6 +66,7 @@ public:
 	void saveOrderProduct(const Order& order, const int& product_id, const int& amount) override;
 	void saveProductIngredient(const Product& product, const Ingredient& ingredient) override;
 	void saveProductAllergen(const Product& product, const Allergen& allergen) override;
+	void saveOrderedProduct(const OrderedProduct& orderedProduct) override;
 
 
 	// Get
@@ -87,6 +88,7 @@ public:
 	int getProductIdByName(const std::string name) override;
 
 	std::vector<Order> getOrders() override;
+	Order getOrderById(const int& id);
 	std::vector<Order> getOrdersByDate(const std::string& date, const std::string& mode);
 	std::vector<Order> getOrdersByEmployee(const std::string& employeeName);
 	std::vector<Order> getOrdersByMethod(const std::string& method);
@@ -97,6 +99,12 @@ public:
 	int getNClients();
 	int getNClientsByDate(const std::string& date, const std::string& mode);
 	int getNClientsByEmployee(const std::string& employeeName);
+
+	std::unordered_map<int, OrderedProduct> getOrderedProducts();
+	OrderedProduct getOrderedProductById(const int& id);
+	OrderedProduct getOrderedProductByName(const std::string& name);
+	std::unordered_map<int, OrderedProduct> getOrderedProductsByPrice(const int& price);
+	std::unordered_map<int, OrderedProduct> getOrderedProductsByDate(const std::string& date, const std::string& mode);
 
 	std::vector<Ingredient> getIngredients() override;
 	Ingredient getIngredientByName(const std::string& name) override;
@@ -111,6 +119,7 @@ public:
 	void moveTable(const int& current_n_table, const int& new_n_table)  override;
 	void changeTableProductAmount(const Table& table, const Product& product, const int& new_amount)  override;
 	void modifyProduct(const Product& oldProduct, const Product& newProduct) override;
+	void changeNumClients (const Table& table, const int& n_clients);
 
 
 	// Remove

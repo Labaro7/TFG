@@ -17,9 +17,6 @@ const BUTTON_TEXT_COLOR = "white";
 let tabNumber = 1;
 let currentGridNumber = 1;
 let currentButton = document.getElementById("productsPagesButton" + 1);
-currentButton.style.backgroundColor = "rgb(28, 89, 176)";
-currentButton.style.color = "white";
-currentButton.style.border = "1px solid black";
 let selectedDeployable = 0;
 let selectedPage = 1;
 
@@ -57,17 +54,30 @@ selectAllIngredients();
 
 function changeTab(clickedTab) {
     const currentTab = document.querySelector('div[data-tab="' + tabNumber + '"]');
+    const currentSelectedTabIcon = currentTab.querySelector(".selectedTabIcon");
+    const currentUnselectedTabIcon = currentTab.querySelector(".unselectedTabIcon");
     const currentPage = document.querySelector('div[data-page="' + tabNumber + '"]');
-    currentTab.style.backgroundColor = "white";
-    currentTab.style.color = "black";
+    currentTab.style.backgroundColor = "rgb(9, 43, 92)";
+    currentTab.style.color = "white";
+    currentTab.style.borderTop = "5px solid rgb(9, 43, 92)";
+    currentTab.style.borderBottom = "1px solid white";
+    currentSelectedTabIcon.style.display = "none";
+    currentUnselectedTabIcon.style.display = "flex";
     currentPage.style.display = "none";
 
     tabNumber = clickedTab.getAttribute("data-tab");
 
     const newTab = document.querySelector('div[data-tab="' + tabNumber + '"]');
+    const newSelectedTabIcon = newTab.querySelector(".selectedTabIcon");
+    const newUnselectedTabIcon = newTab.querySelector(".unselectedTabIcon");
     const newPage = document.querySelector('div[data-page="' + tabNumber + '"]');
-    newTab.style.backgroundColor = "rgb(9, 43, 92)";
-    newTab.style.color = "white";
+    newTab.style.backgroundColor = "#aaccff";
+    newTab.style.color = "black";
+    newTab.style.borderTop = "5px solid rgb(28, 89, 176)";  
+    newTab.style.borderBottom = "0px";
+    newSelectedTabIcon.style.display = "flex";
+    newUnselectedTabIcon.style.display = "none";
+
     newPage.style.display = "flex";
 }
 
@@ -108,15 +118,13 @@ function displayMenu(clickedButton) {
 
 function selectButton(number) {
     let button = document.getElementById("productsPagesButton" + number);
-    currentButton.style.backgroundColor = "white";
-    currentButton.style.color = "black";
-    currentButton.style.border = "1px solid black";
+    currentButton.style.backgroundColor = "rgb(9, 43, 92)";
+    currentButton.style.borderBottom = "1px solid white";
     currentButton = button;
 
     button = document.getElementById("productsPagesButton" + number);
     button.style.backgroundColor = "rgb(28, 89, 176)";
-    button.style.color = "white";
-    currentButton.style.border = "1px solid black";
+    currentButton.style.borderBottom = "0px";
 }
 
 function openDeployable(clickedDeployable) {

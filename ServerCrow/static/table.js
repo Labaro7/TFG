@@ -3,6 +3,7 @@ let currentGridNumber = 1;
 let currentButton = document.getElementById("productsPagesButton" + 1);
 
 // First row
+const n_clients = document.getElementById("numberOfClients");
 const n_table = document.getElementById("numTable");
 
 // Third row
@@ -233,7 +234,6 @@ function toggleMultiplier() {
 
 function addProductToTicket(clickedProduct) {
     const secondRow = document.getElementById("secondRow");
-    let addedProducts = document.getElementById("addedProducts")
     secondRow.classList.toggle('clicked');
     setTimeout(function () {
         secondRow.classList.remove('clicked');
@@ -247,7 +247,6 @@ function addProductToTicket(clickedProduct) {
 
     if (added_ticket.length === 0) {
         document.getElementById("divisionAddedProducts").style.display = "flex";
-        addedProducts.style.display = "flex";
     }
 
     let currency = " " + price.textContent[price.textContent.length - 1];
@@ -322,8 +321,7 @@ function addProductToTicket(clickedProduct) {
         child_total_price.textContent = (product["times"] * product["price"]).toFixed(2);
         child.appendChild(child_total_price);
 
-        console.log(addedProducts);
-        addedProducts.appendChild(child);
+        ticketList.appendChild(child);
 
         price.textContent = (parseFloat(price.textContent) + (parseFloat(last.price) * multiplier_array[multiplier_index] * (1.0 - parseFloat(discount) / 100.0))).toFixed(2) + currency;
     }
@@ -408,6 +406,51 @@ function changeToTicketTab() {
     ticketMenu.style.display = 'flex';
 }
 
+function openNumClientsMenu() {
+    const numClientsMenu = document.getElementById("numClientsMenu");
+    let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
+
+    numClientsInput.value = "";
+    numClientsMenu.style.display = "flex";
+    tab[0].style.pointerEvents = "none";
+    tab[0].style.filter = "blur(5px) grayscale(100%)";
+    productsMenu.style.pointerEvents = "none";
+    productsMenu.style.filter = "blur(5px) grayscale(100%)";
+    document.body.style.backgroundColor = "#b0b0b0";
+}
+
+function cancelNumClientsMenu() {
+    let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
+    let numClientsMenu = document.getElementById("numClientsMenu");
+
+    numClientsMenu.style.display = "none";
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
+    productsMenu.style.pointerEvents = "auto";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#aaccff";
+}
+
+function setNumClients() {
+    let tab = document.getElementsByClassName("tab");
+    let productsMenu = document.getElementById("productsMenu");
+    const numClientsInput = document.getElementById("numClientsInput");
+    const numberOfClients = document.getElementById("numberOfClients");
+    const numClientsMenu = document.getElementById("numClientsMenu");
+
+    if (numClientsInput.value === "") numClientsInput.value = "0";
+
+    numberOfClients.textContent = numClientsInput.value;
+
+    numClientsMenu.style.display = "none";
+    tab[0].style.pointerEvents = "auto";
+    tab[0].style.filter = "blur(0px) grayscale(0%)";
+    productsMenu.style.pointerEvents = "auto";
+    productsMenu.style.filter = "blur(0px) grayscale(0%)";
+    document.body.style.backgroundColor = "#aaccff";
+}
 
 function showPage(pageId) {
     const pages = document.querySelectorAll('.page');
@@ -472,12 +515,15 @@ function displayMenu(clickedButton) {
 function saveOrder() {
     const n_table = parseInt((document.getElementById("numTable").textContent).substr(7)); // Use substr(7) to eliminate "Table: "
 
+    if (n_clients.textContent === null || n_clients.textContent === "") n_clients.textContent = "0";
+
     const data = {
         order: current_ticket,
         added: added_ticket,
         modified: modified_ticket,
         deleted: deleted_ticket,
         n_table: n_table,
+        n_clients: parseInt(n_clients.textContent),
         employee: getCookie("employee_name")
     };
 
@@ -521,11 +567,14 @@ function appendNumber(number) {
     const display = document.getElementById('tableInput');
     const display2 = document.getElementById('amountInput');
     const display3 = document.getElementById("paidInput");
+    const display4 = document.getElementById("numClientsInput");
 
     if (number !== ".") {
         if (display.value.length < 5) display.value += number;
-        if (display2.length < 5) display2.value += number;
+        if (display2.value.length < 5) display2.value += number;
         display3.value += number;
+        if (display4.value.length < 5) display4.value += number;
+
     }
     else {
         if (display3.value.indexOf(".") === -1 && display3.value !== "" ) {
@@ -538,10 +587,12 @@ function clearDisplay() {
     const display = document.getElementById('tableInput');
     const display3 = document.getElementById("paidInput");
     const display2 = document.getElementById('amountInput');
+    const display4 = document.getElementById("numClientsInput");
 
     display.value = "";
     display2.value = "";
     display3.value = "";
+    display4.value = "";
 }
 
 function acceptMoveTableMenu() {
@@ -664,11 +715,13 @@ function payTable() {
     let billPrice = price.textContent.slice(0, -2);
     const paidPrice = document.getElementById("paidInput").value;
 
+    if (n_clients.textContent === null || n_clients.textContent === "") n_clients.textContent = "0";
+
     if (paidPrice === "") paidPrice = 0.0;
 
     let data = {
         n_table: n_table.textContent.substr(7),
-        n_clients: 2,
+        n_clients: parseInt(n_clients.textContent),
         ticket: current_ticket,
         bill: billPrice,
         paid: paidPrice,
@@ -790,8 +843,7 @@ function openModifyDeleteMenu(clickedProduct) {
 
     if (modifyingProduct == clickedProduct) { // First selected item?
         modifyingProduct = null;
-
-        if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
+        if (clickedProduct.style.backgroundColor !== "rgb(196, 31, 31)") {
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "white";
                 clickedProduct.style.color = "black";
@@ -802,18 +854,18 @@ function openModifyDeleteMenu(clickedProduct) {
                 clickedProduct.style.backgroundColor = "#D7FCDA";
             }
             else {
-                clickedProduct.style.backgroundColor = "orange";
-                clickedProduct.style.color = "black";
+                clickedProduct.style.backgroundColor = "rgb(222, 85, 0)";
+                clickedProduct.style.color = "white";
             }
         }
         else {
-            clickedProduct.style.backgroundColor = "rgb(255, 120, 151)";
+            clickedProduct.style.backgroundColor = "rgb(196, 31, 31)";
         }
 
         modifyDeleteMenu.style.display = "none";
     }
     else {
-        if (clickedProduct.style.backgroundColor !== "rgb(255, 120, 151)") { // Not deleted item?
+        if (clickedProduct.style.backgroundColor !== "rgb(196, 31, 31)") { // Not deleted item?
             if (clickedProduct.className == "ticketProduct") {
                 clickedProduct.style.backgroundColor = "rgb(28, 89, 176)";
                 clickedProduct.style.color = "white";
@@ -824,8 +876,8 @@ function openModifyDeleteMenu(clickedProduct) {
                 clickedProduct.style.backgroundColor = "#e9fe6d";
             }
             else {
-                clickedProduct.style.backgroundColor = "orange";
-                clickedProduct.style.color = "black";
+                clickedProduct.style.backgroundColor = "rgb(222, 85, 0)";
+                clickedProduct.style.color = "white";
             }
         }
         else {
@@ -836,22 +888,22 @@ function openModifyDeleteMenu(clickedProduct) {
             modifyDeleteMenu.style.display = "flex";
         }
         else {
-            if (modifyingProduct.style.backgroundColor !== "rgb(255, 120, 151)") {
+            if (modifyingProduct.style.backgroundColor !== "rgb(196, 31, 31)") {
                 if (modifyingProduct.className == "ticketProduct") {
-                    modifyingProduct.style.backgroundColor = "white";    
+                    modifyingProduct.style.backgroundColor = "white"; 
+                    modifyingProduct.style.color = "black";
                 }
                 else if (modifyingProduct.className == "addedTicketProduct") {
                     modifyingProduct.style.backgroundColor = "#D7FCDA";
+                    modifyingProduct.style.color = "black";
                 }
                 else {
-                    modifyingProduct.style.backgroundColor = "orange";
-                    clickedProduct.style.color = "black";
+                    modifyingProduct.style.backgroundColor = "rgb(222, 85, 0)";
+                    if(modifyingProduct === null) clickedProduct.style.color = "white";
                 }
-
-                modifyingProduct.style.color = "black";
             }
             else {
-                modifyingProduct.style.backgroundColor = "rgb(255, 120, 151)";
+                modifyingProduct.style.backgroundColor = "rgb(196, 31, 31)";
             }
             modifyDeleteMenu.style.display = "flex";
         }
@@ -881,16 +933,16 @@ function modifyProduct() {
     let amountInput = document.getElementById("amountInput");
     let productTimes = modifyingProduct.children[0].children[0];
     let oldProductTimes = modifyingProduct.children[0].children[1];
+    let individualPrice = modifyingProduct.children[3];
 
-    console.log(amountInput.value, oldProductTimes.textContent.substr(1), (amountInput.value) === oldProductTimes.textContent.substr(1));
     if (amountInput.value === "") {
         amountInput = "0";
     }
     else if (amountInput.value === oldProductTimes.textContent.substr(1) || amountInput.value === productTimes.textContent.substr(1)) {
-        console.log("jeyu");
         modifyingProduct.style.backgroundColor = "rgb(28, 89, 176)";
         modifyingProduct.style.color = "white";
         modifyingProduct.className = "ticketProduct";
+        individualPrice.style.borderLeft = "1px solid white";
 
         if (oldProductTimes.textContent !== "") {
             productTimes.textContent = oldProductTimes.textContent;
@@ -899,8 +951,9 @@ function modifyProduct() {
         }     
     }
     else {
-        modifyingProduct.style.backgroundColor = "orange";
-        modifyingProduct.style.color = "black";
+        modifyingProduct.style.backgroundColor = "rgb(222, 85, 0)";
+        modifyingProduct.style.color = "white";
+        individualPrice.style.borderLeft = "1px solid black";
 
         if (modifyingProduct.children[0].children[1].textContent === "") {
             modifyingProduct.className = "modifiedProduct"; 
@@ -940,9 +993,24 @@ function modifyProduct() {
 }
 
 function openAddDetailsMenu() {
-    event.stopPropagation(); // So the child onclick is on top of the parents'
+    //event.stopPropagation(); // So the child onclick is on top of the parents'
+    let lastOrderDetails = document.getElementById("lastOrderDetails");
+    let lastOrderDetailsStyle = window.getComputedStyle(lastOrderDetails);
+    console.log(lastOrderDetailsStyle.borderTop);
+    if (lastOrderDetailsStyle.borderTop === "1px solid rgb(9, 43, 92)") {
+        lastOrderDetails.style.borderTop = "1px solid white";
+        lastOrderDetails.style.pointerEvents = "auto";
+        lastOrderDetails.focus();
+    }
+    else {
+        lastOrderDetails.style.borderTop = "1px solid rgb(9, 43, 92)";
+        lastOrderDetails.style.pointerEvents = "none";
+        lastOrderDetails.value = "";
+        console.log("!a");
+    }
 
-    if (modifyingProduct.className === "addedTicketProduct" || modifyingProduct.className === "modifiedProduct") {
+
+    /*if (modifyingProduct.className === "addedTicketProduct" || modifyingProduct.className === "modifiedProduct") {
         let previous_details = modifyingProduct.children[1].children[1].textContent
         modifyingProduct.children[1].children[1].textContent = "Sample";
 
@@ -950,7 +1018,7 @@ function openAddDetailsMenu() {
         if (found) {
             found["details"] = "Sample";
         }
-    }
+    }*/
 }
 
 function addDetails() {
@@ -980,21 +1048,25 @@ function selectProductToDelete(clickedElement) {
 
     let modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
     let a = document.getElementById("modifyDeleteMenu").parentNode;
+    let individualPrice = modifyingProduct.children[3];
 
-    if (a.style.backgroundColor === "rgb(255, 120, 151)") {
+    if (a.style.backgroundColor === "rgb(196, 31, 31)") {
         if (a.className === "ticketProduct") {
             a.style.backgroundColor = "rgb(28, 89, 176)";
             a.style.color = "white";
+            individualPrice.style.borderLeft = "1px solid white";
         }
         else {
-            a.style.backgroundColor = "orange";
-            a.style.color = "black";
+            a.style.backgroundColor = "rgb(222, 85, 0)";
+            a.style.color = "white";
+            individualPrice.style.borderLeft = "1px solid black";
         }
     }
 
     else {
-        a.style.backgroundColor = "#ff7897";
+        a.style.backgroundColor = "rgb(196, 31, 31)";
         a.style.color = "white";
+        individualPrice.style.borderLeft = "1px solid white";
     }
 
     if (a.className === "ticketProduct") {

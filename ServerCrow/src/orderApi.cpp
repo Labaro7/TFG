@@ -47,34 +47,39 @@ crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 {
 	crow::json::wvalue::list data;
 
-	std::reverse(orders.begin(), orders.end());
-
-	for (const auto& order : orders)
+	if (orders.size() > 0)
 	{
-		crow::json::wvalue order_json;
-		order_json["id"] = order.id;
-		order_json["n_table"] = order.n_table;
-		order_json["n_clients"] = order.n_clients;
-		order_json["bill"] = order.bill;
-		order_json["paid"] = order.paid;
-		order_json["discount"] = order.discount;
-		order_json["method"] = order.method;
-		order_json["employee"] = order.employee;
-		order_json["date"] = order.date;
+		std::cout << "build " << orders[0].id << std::endl;
 
-		crow::json::wvalue::list orderProducts_json;
-		for (const auto& product : order.products)
+		std::reverse(orders.begin(), orders.end());
+
+		for (const auto& order : orders)
 		{
-			crow::json::wvalue orderProduct_json;
-			orderProduct_json["name"] = product.first.name;
-			orderProduct_json["price"] = product.first.price;
-			orderProduct_json["amount"] = product.second;
+			crow::json::wvalue order_json;
+			order_json["id"] = order.id;
+			order_json["n_table"] = order.n_table;
+			order_json["n_clients"] = order.n_clients;
+			order_json["bill"] = order.bill;
+			order_json["paid"] = order.paid;
+			order_json["discount"] = order.discount;
+			order_json["method"] = order.method;
+			order_json["employee"] = order.employee;
+			order_json["date"] = order.date;
 
-			orderProducts_json.push_back(orderProduct_json);
+			crow::json::wvalue::list orderProducts_json;
+			for (const auto& product : order.products)
+			{
+				crow::json::wvalue orderProduct_json;
+				orderProduct_json["name"] = product.first.name;
+				orderProduct_json["price"] = product.first.price;
+				orderProduct_json["amount"] = product.second;
+
+				orderProducts_json.push_back(orderProduct_json);
+			}
+			order_json["products"] = std::move(orderProducts_json);
+
+			data.push_back(order_json);
 		}
-		order_json["products"] = std::move(orderProducts_json);
-
-		data.push_back(order_json);
 	}
 
 	return data;
@@ -96,6 +101,23 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 	{
 		const std::string& date = extractURISegment(uri);
 		data = buildOrdersJSON(database->getOrdersByDate(date, mode));
+	}
+	else if (mode == "ID")
+	{
+		int id = std::stoi(extractURISegment(uri));
+		std::cout << id << std::endl;
+		std::cout << "xd " << database->getOrderById(id).id << std::endl;
+		const Order& order = database->getOrderById(id);
+
+		if (!order.isEmpty())
+		{
+			data = buildOrdersJSON({ order });
+		}
+		else
+		{
+			const std::vector<Order> emptyVector;
+			data = buildOrdersJSON(emptyVector);
+		}
 	}
 	else if (mode == "EMPLOYEE")
 	{

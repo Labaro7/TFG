@@ -62,6 +62,36 @@ struct ProductHashFunction
 using product_unordered_map = std::unordered_map<Product, int, ProductHashFunction>;
 
 
+struct OrderedProduct
+{
+	int id;
+	std::string name;
+	double price;
+	int sold;
+	double percent;
+	double revenue;
+	double totalRevenue;
+
+	OrderedProduct();
+	OrderedProduct(const int& id, const std::string& name, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue);
+
+	bool isEmpty();
+
+	bool operator==(const OrderedProduct& p) const
+	{
+		return (id == p.id) && (name == p.name) && (price == p.price) && (sold == p.sold) && (percent == p.percent) && (revenue == p.revenue) && (totalRevenue == p.totalRevenue);
+	}
+};
+
+struct OrderedProductHashFunction
+{
+	std::size_t operator()(const OrderedProduct& p) const
+	{
+		return std::hash<std::string>()(p.name) ^ (std::hash<double>()(p.price) << 1) ^ (std::hash<int>()(p.sold) << 1) ^ (std::hash<double>()(p.percent) << 1) ^ (std::hash<double>()(p.revenue) << 1) ^ (std::hash<double>()(p.totalRevenue) << 1);
+	}
+};
+
+
 /* ------------------------------------------- TABLE ------------------------------------------- */
 struct Table
 {
@@ -141,7 +171,7 @@ struct Order
 			date == other.date;
 	}
 
-	bool isEmpty();
+	bool isEmpty() const;
 	void copyDataFromTable(const Table& t);
 };
 

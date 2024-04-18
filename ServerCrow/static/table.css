@@ -138,7 +138,6 @@ body {
     padding-right: 5px;
     padding-left: 5px;
     height: 40px;
-    width: 20%;
 }
 
 #numClientsIcon {
@@ -156,6 +155,7 @@ body {
     justify-content: left;
     align-items: center;
     width: 50%;
+    padding: 0px 5px;
 }
 
 #numTable {
@@ -172,6 +172,8 @@ body {
 }
 
 .secondRow {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     background-color: rgb(9, 43, 92);
     color: white;
@@ -191,8 +193,23 @@ body {
     font-size: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 10px 10px;
+    margin-top: 5px;
 }
+
+#lastOrderDetails {
+    background-color: transparent;
+    border: 0;
+    border-top: 1px solid rgb(9, 43, 92);
+    color: white;
+    outline: none;
+    margin: 0;
+    pointer-events: none;
+}
+
+#lastOrderDetails::placeholder {
+    color: rgba(255,255,255, 0.5);
+}
+
 
 .thirdRow {
     cursor: pointer;
@@ -271,7 +288,7 @@ body {
 
 .fifthRow {
     position: relative;
-    height: calc(100% - 282px);
+    height: calc(100% - 284px);
     cursor: pointer;
     padding: 3px;
     background-color: rgb(28, 89, 176);
@@ -366,9 +383,36 @@ body {
     display: none;
 }
 
+.allergenAlertOn{
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    left: 5px;
+    top: 5px;
+    background-color: rgba(255, 0, 0, 0.7);
+    border-radius: 50%;
+}
+
 #sixthRow {
-    position: relative;
+    position: absolute;
+    display: flex;
+    width: calc(100% - 22px);
+    margin-bottom: 10px;
     bottom: 0;
+    background-color: rgb(9, 43, 92);
+    color: white;
+    border: 1px solid black;
+}
+
+#goBack1 {
+    margin: -1px;
+}
+
+#brandImage {
+    width: 100px;
+    position: absolute;
+    right: 10px;
+    top: calc(50% - 15px);
 }
 
 
@@ -414,6 +458,10 @@ body {
     font-weight: bold;
 }
 
+.noMarker {
+    list-style-type: none;
+}
+
 #divisionAddedProducts {
     margin: 0;
     border-top: 1px solid black;
@@ -441,8 +489,8 @@ body {
 .addedTicketProduct {
     background-color: #d7fcda;
     border: 0px;
-    border-bottom: 1px solid black;
-    margin-bottom: 0;
+    border: 1px solid black;
+    margin-bottom: -1px;
 }
 
 .times, .productTimes, .newProductTimes {
@@ -522,6 +570,60 @@ body {
     align-self: flex-end;
 }
 
+#numClientsMenu {
+    position: absolute;
+    background-color: #aaccff;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 7%;
+    left: 5%;
+    width: 90%;
+    background-color: #aaccff;
+    border: 1px solid black;
+}
+
+#numClientsMenuHeader {
+    background-color: rgb(9, 43, 92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 30px;
+    width: calc(100% - 10px);
+    border-bottom: 1px solid black;
+}
+
+#numClientsInput {
+    background-color: rgb(9, 43, 92);
+    border: 1px solid rgb(12, 9, 34);
+    height: 10%;
+    width: 83%;
+    margin-top: 5%;
+    text-align: center;
+    font-size: 40px;
+    color: white;
+    pointer-events: none;
+}
+
+#numClientsMenuButtons {
+    display: flex;
+    background-color: rgb(9, 43, 92);
+    color: white;
+    width: 100%;
+    justify-content: right;
+    font-size: 30px;
+    border-top: 1px solid black;
+}
+
+#numClientsMenuAcceptButton, #numClientsMenuCancelButton {
+    padding: 5px 10px;
+    border-left: 1px solid white;
+}
+
 #modifyDeleteMenu {
     background-color: white;
     display: none;
@@ -592,14 +694,21 @@ body {
     align-items: center;
     text-align: center;
     color: white;
-    border-left: 1px solid white;
-    padding: 5px;
+    padding: 5px 10px;
+    text-shadow: #000000 1px 0 3px;
+    flex: 1;
+    font-size: 30px;
+    font-weight: 600;
+    padding: 10px;
 }
 
 #modifyProductMenuAcceptButton {
+    background-color: #15bf9f;
 }
 
 #modifyProductMenuCancelButton {
+    background-color: #bf1515;
+    border-right: 1px solid black;
 }
 
 #infoButton {
@@ -658,36 +767,46 @@ body {
     color: white;
     font-size: 30px;
     width: 100%;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 10px 0px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid black;
 }
 
+#moveTableMenuInput {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px;
+    background-color: rgb(9, 43, 92);
+    width: 90%;
+}
+
+#moveTableMenuBrandImage {
+    width: 35%;
+    top: calc(50% - 15px);
+    margin-left: 10px;
+}
+
 #tableInput {
     background-color: rgb(9, 43, 92);
-    border: 1px solid rgb(12, 9, 34);
-    height: 10%;
-    width: 83%;
-    margin-top: 5%;
-    text-align: center;
+    border: 0px;
+    width: 65%;
+    text-align: right;
     font-size: 40px;
+    font-weight: 600;
     color: white;
     pointer-events: none;
+    margin-right: 10px;
 }
 
 .button-grid {
     flex: 1;
     display: grid;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-    width: 85%;
+    margin-bottom: 11px;
+    width: 90%;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
 }
 
 .gridItem {
@@ -696,6 +815,7 @@ body {
     height: attr(width);
     background-color: white;
     border: 1px solid rgb(12, 9, 34);
+    margin: -1px;
 }
 
 .button {
@@ -727,11 +847,23 @@ body {
     align-items: center;
     text-align: center;
     color: white;
-    padding: 5px;
+    padding: 10px 10px;
+    font-size: 30px;
+    font-weight: 600;
+    text-shadow: #000000 1px 0 3px;
 }
 
 #moveTableMenuAcceptButton, #moveTableMenuCancelButton {
-    border-left: 1px solid white;
+    flex: 1;
+}
+
+#moveTableMenuAcceptButton {
+    background-color: #15bf9f;
+}
+
+#moveTableMenuCancelButton {
+    background-color: #bf1515;
+    border-right: 1px solid black;
 }
 
 /* Move table warning menu */
@@ -839,11 +971,13 @@ body {
     color: white;
     height: 50px;
     bottom: 0;
-
+    text-shadow: #000000 1px 0 3px;
+    font-weight: 600;
+    font-size: 30px;
 }
 
 #payTableButton {
-    background-color: green;
+    background-color: #15bf9f;
     border-left: 1px solid black;
 }
 
@@ -964,11 +1098,6 @@ body {
     border: 3px solid rgb(9, 43, 92);
     flex-wrap: wrap;
 }
-
-#payTableButton {
-    background-color: green;
-}
-
 
 #payTableWarningMenuText {
     display: flex;

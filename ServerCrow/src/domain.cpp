@@ -123,7 +123,32 @@ bool Products::empty() {
 	products.clear();
 }*/
 
+OrderedProduct::OrderedProduct(): 
+	id(),
+	name(),
+	price(),
+	sold(),
+	percent(),
+	revenue(),
+	totalRevenue()
+{
+}
 
+OrderedProduct::OrderedProduct(const int& id, const std::string& name, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue) :
+	id(id),
+	name(name),
+	price(price),
+	sold(sold),
+	percent(percent),
+	revenue(revenue),
+	totalRevenue(totalRevenue)
+{
+}
+
+bool OrderedProduct::isEmpty()
+{
+	return name.empty() && price == 0.0 && sold == 0 && percent == 0.0 && revenue == 0.0 && totalRevenue == 0.0;
+}
 
 /* ------------------------------------------- ORDER ------------------------------------------- */
 Order::Order() :
@@ -151,7 +176,7 @@ Order::Order(const int& id,  const int& n_table, const int& n_clients, const dou
 {
 }
 
-bool Order::isEmpty()
+bool Order::isEmpty() const
 {
 	return !n_table && !n_clients && !bill && !discount && products.empty() && employee.empty() && date.empty();
 }
