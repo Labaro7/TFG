@@ -383,6 +383,7 @@ body {
     font-weight: 600;
     max-height: 30px;
     font-size: 13px;
+    max-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -447,15 +448,13 @@ body {
     margin-top: -1px;
 }
 
-#ordersTableFooterRow td {
+.ordersTableFooterCell {
     position: sticky;
     bottom: 0;
     margin-left: 10px;
-    font-size: 17px;
-    overflow: hidden;
-    text-overflow: unset;
-    word-wrap:break-word;
 }
+
+
 
 #completeFooter {
     flex: 1;

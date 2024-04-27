@@ -167,6 +167,7 @@ function selectRow(clickedRow) {
     }
     else {
         let selectedRowId = selectedRow.children[0].textContent;
+        const clickedRowStyle = window.getComputedStyle(clickedRow);
         let bgColor = (parseInt(selectedRowId) % 2) !== 0 ? "rgb(237, 237, 237)" : "white";
 
         selectedRow.style.backgroundColor = bgColor;
@@ -212,6 +213,7 @@ function getProductsFromOrder(order_id) {
     orderProducts.sort((a, b) => a.name.localeCompare(b.name));
     productList.innerHTML = "";
 
+    let i = 0;
     for (let product of orderProducts) {
         let prod = document.createElement('tr');
         prod.className = "productListRow";
@@ -239,7 +241,13 @@ function getProductsFromOrder(order_id) {
         prod.appendChild(prodAmountElement);
         prod.appendChild(prodTotalElement);
 
+        let bgColor = "rgb(237, 237, 237)";
+        if (i % 2 !== 0) bgColor = "white";
+
+        prod.style.backgroundColor = bgColor;
         productList.appendChild(prod);
+
+        i++;
     }
 
     productsMenuTotalAmount.textContent = totalAmount.toString();
@@ -258,24 +266,31 @@ async function populateTable(data) {
         newRow.onclick = function () { selectRow(newRow) };
 
         const id = document.createElement('td');
+        id.className = "orderId";
         id.textContent = order["id"];
 
         const date = document.createElement('td');
+        date.className = "orderDate";
         date.textContent = order["date"];
 
         const n_table = document.createElement('td');
+        n_table.className = "orderNTable";
         n_table.textContent = order["n_table"];
 
         const n_clients = document.createElement('td');
+        n_clients.className = "orderNClients";
         n_clients.textContent = order["n_clients"];
 
         const bill = document.createElement('td');
+        bill.className = "orderBill";
         bill.textContent = order["bill"].toFixed(2);
 
         let paid = document.createElement('td');
+        paid.className = "orderPaid";
         paid.textContent = order["paid"].toFixed(2);
 
         let diff = document.createElement('td');
+        diff.className = "orderDiff";
         diff.textContent = (parseFloat(paid.textContent) - parseFloat(bill.textContent)).toFixed(2);
 
         if (parseFloat(diff.textContent) > 0.0) {
@@ -316,6 +331,54 @@ async function populateTable(data) {
         if (statsTable) statsTable.appendChild(newRow);
 
         i++;
+    }
+
+    let fill = document.createElement('td');
+    fill.id = "fill";   
+    statsTable.appendChild(fill);
+
+    // Compute the totals of the table columns
+    let ordersCount = 0;
+    let clientsCount = 0;
+    let billsCount = 0;
+    let paidsCount = 0;
+    let diffsCount = 0
+    for (let order of statsTable.children) {
+        if (order.children.length > 0) {
+            ordersCount++;
+            if (order.children[3].textContent) clientsCount += parseInt(order.children[3].textContent);
+            if (order.children[4].textContent) billsCount += parseFloat(order.children[4].textContent);
+            if (order.children[5].textContent) paidsCount += parseFloat(order.children[5].textContent);
+            if (order.children[6].textContent) {
+                diffsCount += parseFloat(order.children[6].textContent);
+            }
+        }
+    }
+
+    const ordersTableTotalOrders = document.getElementById("ordersTableTotalOrders");
+    ordersTableTotalOrders.textContent = ordersCount;
+
+    const ordersTableTotalClients = document.getElementById("ordersTableTotalClients");
+    ordersTableTotalClients.textContent = clientsCount;
+
+    const ordersTableTotalBills = document.getElementById("ordersTableTotalBills");
+    billsCount = billsCount.toFixed(2);
+    ordersTableTotalBills.textContent = billsCount;
+
+    const ordersTableTotalPaids = document.getElementById("ordersTableTotalPaids");
+    paidsCount = paidsCount.toFixed(2);
+    ordersTableTotalPaids.textContent = paidsCount;
+
+    const ordersTableTotalDiffs = document.getElementById("ordersTableTotalDiffs");
+    diffsCount = diffsCount.toFixed(2);
+    if (diffsCount > 0) {
+        ordersTableTotalDiffs.textContent = "+" + diffsCount;
+    }
+    else if (diffsCount < 0) {
+        ordersTableTotalDiffs.textContent = "-" + diffsCount;
+    }
+    else {
+            ordersTableTotalDiffs.textContent = "";
     }
 }
 
@@ -374,6 +437,8 @@ async function searchOrders() {
             console.log("Error selecting filter");
             break;
     }
+
+    populateOrdersGraph();
 }
 
 async function retrieveProducts() {
@@ -528,6 +593,125 @@ async function populateProductsTable(jsonData) {
     }
 }
 
+function extractDataFromOrdersTable() {
+    let table = document.getElementById("ordersTable");
+    let rows = table.children[1].getElementsByTagName('tr');
+    let data = [];
+    let tableHeaders = table.children[0].querySelectorAll("th");
+
+    for (let i = 0; i < rows.length; i++) {
+        let cells = rows[i].getElementsByTagName('td');
+        let rowData = {};
+
+        for (let j = 0; j < cells.length; j++) {
+            const currentHeader = tableHeaders[j % tableHeaders.length].children[0].textContent;
+
+            rowData[currentHeader] = cells[j].textContent.trim();
+
+            if (currentHeader === "Diff") {
+                if (cells[j].textContent === "") rowData[currentHeader] = "0";
+            }
+            else if (currentHeader === "Discount") {
+                rowData[currentHeader] = rowData[currentHeader].slice(1, -1);
+
+                if (cells[j].textContent === "") rowData[currentHeader] = "0";
+            }
+        }
+
+        data.push(rowData);
+    }
+
+    return data;
+}
+
+function sortOrdersBy(clickedHeader) {
+    let res = switchUpOrDown(clickedHeader);
+    let headerNumber = 0;
+    const tableHeaders = clickedHeader.parentNode.children;
+    const parent = clickedHeader.parentNode;
+    const table = document.getElementById("ordersTable");
+
+    for (let i in tableHeaders) {
+        if (clickedHeader === tableHeaders[i]) {
+            headerNumber = i;
+            break;
+        }
+    }
+
+    let data = extractDataFromOrdersTable();
+    console.log("data", data);
+    const clickedHeaderTextContent = clickedHeader.children[0].textContent;
+    console.log("index", clickedHeaderTextContent);
+    switch (res[0]) {
+        case "asc":
+            if (clickedHeaderTextContent === "Diff") {
+                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
+            }
+            else if (clickedHeaderTextContent === "Discount") {
+                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
+            }
+            else {
+                data.sort((a, b) => { return (b[clickedHeaderTextContent] - a[clickedHeaderTextContent]) });
+            }
+            console.log("asc");
+            table.children[1].innerHTML = "";
+
+            break;
+        case "desc":
+            if (clickedHeaderTextContent === "Diff") {
+                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
+            }
+            else if (clickedHeaderTextContent === "Discount") {
+                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
+            }
+            else {
+                data.sort((a, b) => { return (a[clickedHeaderTextContent] - b[clickedHeaderTextContent]) });
+            }
+            console.log("desc");
+            table.children[1].innerHTML = "";
+
+            break;
+        default:
+            table.children[1].innerHTML = res[1];
+            console.log("none");
+
+            break;
+    }
+
+    if (table.children[1].innerHTML === "") {
+        let i = 0;
+        for (let row of data) {
+            let tr = document.createElement("tr");
+            for (let col in row) {
+                let td = document.createElement("td");
+                td.textContent = row[col];
+
+                if (col === "Diff") {
+                    if (td.textContent[0] === "+") td.style.color = "green";
+                    else if (td.textContent[0] === "-") td.style.color = "red";
+                    else { td.textContent = ""; }
+                }
+                else if (col === "Discount") {
+                    if (td.textContent === "0") td.textContent = "";
+                    else {
+                        td.textContent = "-" + td.textContent + "%";
+                    }
+                }
+
+                tr.onclick = function() { selectRow(tr); };
+                tr.appendChild(td);
+            }
+
+            if (i % 2 === 0) tr.style.backgroundColor = "rgb(237, 237, 237)";
+            i++;
+
+            table.children[1].appendChild(tr);
+        }
+    }
+
+    console.log(data);
+}
+
 async function searchProducts() {
     let input = document.getElementById("productsFilterInput").value;
     let res;
@@ -583,7 +767,12 @@ function switchUpOrDown(clickedHeader) {
     }
 
     if (upStyle.display === "none" && downStyle.display === "none") {
-        initialState = document.getElementById("productsTable").innerHTML;
+        if (parent.parentNode.parentNode.id === "ordersTable") {
+            initialState = document.getElementById("ordersTable").children[1].innerHTML;
+        }
+        else if (parent.parentNode.parentNode.id === "productsTable") {
+            initialState = document.getElementById("productsTable").innerHTML;
+        }
         up.style.display = "flex";
 
         return ["asc", initialState];
@@ -618,7 +807,6 @@ function extractDataFromProductsTable() {
 
             rowData[currentHeader] = cells[j].textContent.trim();
             if (rowData[currentHeader][rowData[currentHeader].length - 1] === "%"){
-                console.log("fff");
                 rowData[currentHeader] = rowData[currentHeader].slice(0, -1);
             }
         }
@@ -698,4 +886,194 @@ function sortProductsBy(clickedHeader) {
     }
 
     console.log(data);
+}
+
+
+
+// ORDERS GRAPH
+function getOrdersDataByLastYear() {
+
+}
+
+function getOrdersDataByDate() {
+    const ordersTableBody = document.getElementById("ordersTable").children[1];
+    let data = {
+        Mon: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Tue: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Wed: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Thu: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Fri: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Sat: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+        Sun: {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        },
+    }
+
+    for (let row of ordersTableBody.children) {
+        if (row.querySelector(".orderDate") !== null && row.querySelector(".orderBill") !== null && row.querySelector(".orderPaid") !== null && row.querySelector(".orderDiff") !== null) {
+            const rowDate = new Date(row.querySelector(".orderDate").textContent);
+            const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+            const rowBill = row.querySelector(".orderBill").textContent;
+            const rowPaid = row.querySelector(".orderPaid").textContent;
+            let rowDiff = row.querySelector(".orderDiff").textContent;
+
+            if (rowDiff[0] === '+') rowDiff = rowDiff.slice(1);
+            else if (rowDiff === "") rowDiff = "0.00";
+
+            data[weekDays[rowDate.getDay()]]["bill"] += parseFloat(rowBill);
+            data[weekDays[rowDate.getDay()]]["paid"] += parseFloat(rowPaid);
+            data[weekDays[rowDate.getDay()]]["diff"] += parseFloat(rowDiff);
+        }
+    }
+
+    return data;
+}
+
+function getOrdersDataByWeek() {
+
+}
+
+function getOrdersDataByMonth() {
+
+}
+
+function getOrdersDataByYear() {
+
+}
+
+
+function getOrdersData(mode) {
+    let data = {};
+
+    switch (mode) {
+        case "ALL":
+            data = getOrdersDataByLastYear();
+            break;
+        case "DATE":
+            data = getOrdersDataByDate();
+            break;
+        case "WEEK":
+            data = getOrdersDataByWeek();
+            break;
+        case "MONTH":
+            data = getOrdersDataByMonth();
+            break;
+        case "YEAR":
+            data = getOrdersDataByYear();
+            break;
+        default:
+            console.log("NOPE");
+            break
+    }
+
+    return data;
+}
+
+function populateOrdersGraph() {
+    let data = getOrdersData("DATE");
+    let labels = [];
+    let billsDataset = [];
+    let paidsDataset = [];
+    let diffsDataset = [];
+
+    for (let labelKey in data) {
+        labels.push(labelKey);
+
+        billsDataset.push(data[labelKey]["bill"]);
+        paidsDataset.push(data[labelKey]["paid"]);
+        diffsDataset.push(data[labelKey]["diff"]);
+    }
+
+    let datasets = [billsDataset, paidsDataset, diffsDataset];
+    let graphDatasets = [];
+    const colors = ['red', '#15bf9f', 'blue'];
+    let datasetsLabels = ["Bill", "Paid", "Diff"];
+    let i = 0;
+    for (let dtst in datasets) {
+        let dataset = {
+            label: datasetsLabels[i],
+            backgroundColor: colors[i],
+            borderColor: "black",
+            borderWidth: 0,
+            data: datasets[i]
+        };
+
+        graphDatasets.push(dataset);
+
+        i++;
+    }
+
+    let graphData = {
+        labels: labels,
+        datasets: graphDatasets
+    };
+
+    let ordersCtx = document.getElementById('ordersGraph');
+    let ordersGraph = new Chart(ordersCtx, {
+        type: 'bar',
+        data: graphData,
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 1)',
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 1)',
+                        width: '1px',
+                        beginAtZero: true,
+                        stepSize: 1,
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'All orders'
+                }
+            },
+            barPercentage: 1,
+            categoryPercentage: 0.8
+        }
+    });
 }

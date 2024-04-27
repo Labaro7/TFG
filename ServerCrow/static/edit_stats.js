@@ -50,6 +50,7 @@ async function retrieveOrderById(id) {
         }
         const jsonData = await response.json();
 
+        console.log(jsonData);
         populateTable(jsonData);
     }
     catch (error) {
@@ -213,6 +214,7 @@ function getProductsFromOrder(order_id) {
     orderProducts.sort((a, b) => a.name.localeCompare(b.name));
     productList.innerHTML = "";
 
+    let i = 0;
     for (let product of orderProducts) {
         let prod = document.createElement('tr');
         prod.className = "productListRow";
@@ -240,7 +242,13 @@ function getProductsFromOrder(order_id) {
         prod.appendChild(prodAmountElement);
         prod.appendChild(prodTotalElement);
 
+        let bgColor = "rgb(237, 237, 237)";
+        if (i % 2 !== 0) bgColor = "white";
+
+        prod.style.backgroundColor = bgColor;
         productList.appendChild(prod);
+
+        i++;
     }
 
     productsMenuTotalAmount.textContent = totalAmount.toString();
@@ -259,24 +267,31 @@ async function populateTable(data) {
         newRow.onclick = function () { selectRow(newRow) };
 
         const id = document.createElement('td');
+        id.className = "orderId";
         id.textContent = order["id"];
 
         const date = document.createElement('td');
+        date.className = "orderDate";
         date.textContent = order["date"];
 
         const n_table = document.createElement('td');
+        n_table.className = "orderNTable";
         n_table.textContent = order["n_table"];
 
         const n_clients = document.createElement('td');
+        n_clients.className = "orderNClients";
         n_clients.textContent = order["n_clients"];
 
         const bill = document.createElement('td');
+        bill.className = "orderBill";
         bill.textContent = order["bill"].toFixed(2);
 
         let paid = document.createElement('td');
+        paid.className = "orderPaid";
         paid.textContent = order["paid"].toFixed(2);
 
         let diff = document.createElement('td');
+        diff.className = "orderDiff";
         diff.textContent = (parseFloat(paid.textContent) - parseFloat(bill.textContent)).toFixed(2);
 
         if (parseFloat(diff.textContent) > 0.0) {
@@ -318,6 +333,54 @@ async function populateTable(data) {
 
         i++;
     }
+
+    let fill = document.createElement('td');
+    fill.id = "fill";   
+    statsTable.appendChild(fill);
+
+    // Compute the totals of the table columns
+    let ordersCount = 0;
+    let clientsCount = 0;
+    let billsCount = 0;
+    let paidsCount = 0;
+    let diffsCount = 0
+    for (let order of statsTable.children) {
+        if (order.children.length > 0) {
+            ordersCount++;
+            if (order.children[3].textContent) clientsCount += parseInt(order.children[3].textContent);
+            if (order.children[4].textContent) billsCount += parseFloat(order.children[4].textContent);
+            if (order.children[5].textContent) paidsCount += parseFloat(order.children[5].textContent);
+            if (order.children[6].textContent) {
+                diffsCount += parseFloat(order.children[6].textContent);
+            }
+        }
+    }
+
+    const ordersTableTotalOrders = document.getElementById("ordersTableTotalOrders");
+    ordersTableTotalOrders.textContent = ordersCount;
+
+    const ordersTableTotalClients = document.getElementById("ordersTableTotalClients");
+    ordersTableTotalClients.textContent = clientsCount;
+
+    const ordersTableTotalBills = document.getElementById("ordersTableTotalBills");
+    billsCount = billsCount.toFixed(2);
+    ordersTableTotalBills.textContent = billsCount;
+
+    const ordersTableTotalPaids = document.getElementById("ordersTableTotalPaids");
+    paidsCount = paidsCount.toFixed(2);
+    ordersTableTotalPaids.textContent = paidsCount;
+
+    const ordersTableTotalDiffs = document.getElementById("ordersTableTotalDiffs");
+    diffsCount = diffsCount.toFixed(2);
+    if (diffsCount > 0) {
+        ordersTableTotalDiffs.textContent = "+" + diffsCount;
+    }
+    else if (diffsCount < 0) {
+        ordersTableTotalDiffs.textContent = "-" + diffsCount;
+    }
+    else {
+            ordersTableTotalDiffs.textContent = "";
+    }
 }
 
 function selectFilter(clickedElement) {
@@ -325,7 +388,7 @@ function selectFilter(clickedElement) {
         selectedOrderFilterElement.style.backgroundColor = "rgb(9, 43, 92)";
 
         selectedOrderFilterElement = clickedElement;
-        selectedOrderFilter = clickedElement.textContent;
+        selectedOrderFilter = clickedElement.dataset.filter;
 
         selectedOrderFilterElement.style.backgroundColor = "rgb(28, 89, 176)";
     }
@@ -333,7 +396,7 @@ function selectFilter(clickedElement) {
         selectedProductFilterElement.style.backgroundColor = "rgb(9, 43, 92)";
 
         selectedProductFilterElement = clickedElement;
-        selectedProductFilter = clickedElement.textContent;
+        selectedProductFilter = clickedElement.dataset.filter;
 
         selectedProductFilterElement.style.backgroundColor = "rgb(28, 89, 176)";
     }
@@ -341,40 +404,42 @@ function selectFilter(clickedElement) {
 
 async function searchOrders() {
     let input = document.getElementById("ordersFilterInput").value;
-    let res;
 
     switch (selectedOrderFilter) {
         case "All":
-            res = await retrieveOrders();
+            await retrieveOrders();
             break;
         case "Id":
-            res = await retrieveOrderById(input);
+            await retrieveOrderById(input);
             break;
         case "Date":
-            res = await retrieveOrdersByDate(input, "date");
+            await retrieveOrdersByDate(input, "date");
             break;
         case "Week":
-            retrieveOrdersByDate(input, "week");
+            await retrieveOrdersByDate(input, "week");
             break;
         case "Month":
-            retrieveOrdersByDate(input, "month");
+            await retrieveOrdersByDate(input, "month");
             break;
         case "Year":
-            retrieveOrdersByDate(input, "year");
+            await retrieveOrdersByDate(input, "year");
             break;
-        case "N. table":
-            retrieveOrdersByNTable(input);
+        case "Table":
+            await retrieveOrdersByNTable(input);
             break;
         case "Method":
-            retrieveOrdersByMethod(input);
+            await retrieveOrdersByMethod(input);
             break;
         case "Employee":
-            res = await retrieveOrdersByEmployee(input);
+            await retrieveOrdersByEmployee(input);
             break;
         default:
             console.log("Error selecting filter");
+            return;
             break;
     }
+
+    populateOrdersGraph(selectedOrderFilter);
 }
 
 async function retrieveProducts() {
@@ -654,32 +719,32 @@ async function searchProducts() {
 
     switch (selectedProductFilter) {
         case "All":
-            res = await retrieveProducts();
+            await retrieveProducts();
             break;
         case "Id":
-            res = await retrieveProductById(input);
+            await retrieveProductById(input);
             break;
-
         case "Name":
-            res = await retrieveProductByName(input, "name");
+            await retrieveProductByName(input, "name");
             break;
         case "Price":
-            retrieveProductsByDate(input, "price");
+            await retrieveProductsByDate(input, "price");
             break;
         case "Date":
-            retrieveProductsByDate(input, "date");
+            await retrieveProductsByDate(input, "date");
             break;
         case "Week":
-            retrieveProductsByDate(input, "week");
+            await retrieveProductsByDate(input, "week");
             break;
         case "Month":
-            retrieveProductsByDate(input, "month");
+            await retrieveProductsByDate(input, "month");
             break;
         case "Year":
-            retrieveProductsByDate(input, "year");
+            await retrieveProductsByDate(input, "year");
             break;
         default:
             console.log("Error selecting filter");
+            console.log("aaaa", selectedOrderFilter);
             break;
     }
 }
@@ -822,4 +887,251 @@ function sortProductsBy(clickedHeader) {
     }
 
     console.log(data);
+}
+
+
+
+// ORDERS GRAPH
+function getOrdersDataByLastYear() {
+    let lastYearMonths = [];
+    let data = {};
+
+    for (let i = 11; i >= 0; i--) {
+        let currDate = new Date();
+        currDate.setMonth(currDate.getMonth() - i);
+
+        let monthName = currDate.toLocaleString('en-US', { month: 'short' });
+        lastYearMonths.push(monthName);
+    }
+
+    console.log(lastYearMonths);
+    data = traverseOrdersTable(lastYearMonths, "default");
+
+    return data;
+}
+
+function traverseOrdersTable(labels, mode) {
+    const ordersTableBody = document.getElementById("ordersTable").children[1];
+    let data = {};
+
+    for (let label of labels) {
+        data[label] = {
+            bill: 0,
+            paid: 0,
+            diff: 0
+        };
+    }
+
+    console.log("DATAA", data);
+    console.log("LABELS", labels);
+
+    for (let row of ordersTableBody.children) {
+        if (row.querySelector(".orderDate") !== null && row.querySelector(".orderBill") !== null && row.querySelector(".orderPaid") !== null && row.querySelector(".orderDiff") !== null) {
+            const rowDate = new Date(row.querySelector(".orderDate").textContent);
+
+            const rowBill = row.querySelector(".orderBill").textContent;
+            const rowPaid = row.querySelector(".orderPaid").textContent;
+            let rowDiff = row.querySelector(".orderDiff").textContent;
+
+            if (rowDiff[0] === '+') rowDiff = rowDiff.slice(1);
+            else if (rowDiff === "") rowDiff = "0.00";
+
+            let labelContent;
+            if (labels.length > 0) {
+                switch (mode) {
+                    case "Date":
+                        labelContent = rowDate.toLocaleString('en-US', { hour: '2-digit', hour12: false }) + ":00";
+                        break;
+                    case "Week":
+                        labelContent = rowDate.toLocaleString('en-US', { weekday: 'short' });
+                        break;
+                    case "Month":
+                        labelContent = parseInt(rowDate.toLocaleString('en-US', { day: 'numeric' }));
+                        //labelContent--; // Without this there is a translation of 1 to the right in the graph
+                        break;
+                    case "Year":
+                        labelContent = rowDate.toLocaleString('en-US', { month: 'short' });
+                        break;
+                    default:
+                        labelContent = rowDate.toLocaleString('en-US', { month: 'short' });
+                        break;
+                }
+                console.log("LABELCONTENT", labelContent);
+                if (data !== null) {
+                    console.log("A1");
+                    if (labels.length > 0) {
+                        console.log("A2");
+                        if (labelContent !== null) {
+                            console.log("A4", labels[labels.indexOf(labelContent)]);
+                            console.log("A5", labels.indexOf(labelContent));
+
+                            data[labels[labels.indexOf(labelContent)]]["bill"] += parseFloat(rowBill);
+                            data[labels[labels.indexOf(labelContent)]]["paid"] += parseFloat(rowPaid);
+                            data[labels[labels.indexOf(labelContent)]]["diff"] += parseFloat(rowDiff);
+
+                            console.log("A3", data[labels[labels.indexOf(labelContent)]]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return data;
+}
+
+function getOrdersDataByDate() {
+    const label = [
+        "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
+        "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+        "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+    ];
+
+    data = traverseOrdersTable(label, "Date");
+
+    return data;
+}
+
+function getOrdersDataByWeek() {
+    const label = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    data = traverseOrdersTable(label, "Week");
+
+    return data;
+}
+
+function getOrdersDataByMonth() {
+    const label = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+    ];
+
+    data = traverseOrdersTable(label, "Month");
+
+    return data;
+}
+
+function getOrdersDataByYear() {
+    const label = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    data = traverseOrdersTable(label, "Year");
+
+    return data;
+}
+
+
+function getOrdersData(mode) {
+    let data = {};
+
+    switch (mode) {
+        case "All":
+            data = getOrdersDataByLastYear();
+            break;
+        case "Date":
+            data = getOrdersDataByDate();
+            break;
+        case "Week":
+            data = getOrdersDataByWeek();
+            break;
+        case "Month":
+            data = getOrdersDataByMonth();
+            break;
+        case "Year":
+            data = getOrdersDataByYear();
+            break;
+        default:
+            console.log("NOPE");
+            data = getOrdersDataByLastYear();
+            break;
+    }
+
+    return data;
+}
+
+function populateOrdersGraph(selectedFilter) {
+    console.log("selectedFilter, ", selectedFilter);
+    let data = getOrdersData(selectedFilter);
+    let labels = [];
+    let billsDataset = [];
+    let paidsDataset = [];
+    let diffsDataset = [];
+
+    for (let labelKey in data) {
+        labels.push(labelKey);
+
+        billsDataset.push(data[labelKey]["bill"]);
+        paidsDataset.push(data[labelKey]["paid"]);
+        diffsDataset.push(data[labelKey]["diff"]);
+    }
+
+    let datasets = [billsDataset, paidsDataset, diffsDataset];
+    let graphDatasets = [];
+    const colors = ['red', '#15bf9f', 'blue'];
+    let datasetsLabels = ["Bill", "Paid", "Diff"];
+    let i = 0;
+    for (let dtst in datasets) {
+        let dataset = {
+            label: datasetsLabels[i],
+            backgroundColor: colors[i],
+            borderColor: "black",
+            borderWidth: 0,
+            data: datasets[i]
+        };
+
+        graphDatasets.push(dataset);
+
+        i++;
+    }
+
+    let graphData = {
+        labels: labels,
+        datasets: graphDatasets
+    };
+
+    let chartStatus = Chart.getChart("ordersGraph");
+    if (chartStatus !== undefined) chartStatus.destroy();
+    let ordersCtx = document.getElementById('ordersGraph');
+    ordersGraph = new Chart(ordersCtx, {
+        type: 'bar',
+        data: graphData,
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 1)',
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 1)',
+                        width: '1px',
+                        beginAtZero: true,
+                        stepSize: 1,
+                        beginAtZero: true,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'All orders'
+                }
+            },
+            barPercentage: 1,
+            categoryPercentage: 0.8
+        }
+    });
 }
