@@ -112,7 +112,7 @@
                             <table class="statsTable" id="ordersTable">
                                 <thead>
                                     <tr class="tableMainRow" id="ordersMainRow">
-                                        <th id="ordersNumHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersNumHeader"  data-name="Num"  onclick="sortOrdersBy(this)">
                                             <div >Num</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
@@ -125,7 +125,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersDateHeader" onclick="sortOrdersBy(this)" id="ordersDate">
+                                        <th id="ordersDateHeader" data-name="Date" onclick="sortOrdersBy(this)" id="ordersDate">
                                             <div>Date</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -137,7 +137,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersTableHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersTableHeader"  data-name="Table" onclick="sortOrdersBy(this)">
                                             <div>Table</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -149,7 +149,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersClientsHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersClientsHeader" data-name="Clts" onclick="sortOrdersBy(this)">
                                             <div>Clts</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -161,7 +161,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersBillHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersBillHeader" data-name="Bill" onclick="sortOrdersBy(this)">
                                             <div>Bill</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -173,7 +173,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersPaidHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersPaidHeader" data-name="Paid" onclick="sortOrdersBy(this)">
                                             <div>Paid</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -185,7 +185,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersDiffHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersDiffHeader" data-name="Diff" onclick="sortOrdersBy(this)">
                                             <div>Diff</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -197,7 +197,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersDiscHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersDiscHeader"  data-name="Disc" onclick="sortOrdersBy(this)">
                                             <div>Disc</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -209,7 +209,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersMethodHeader" onclick="sortOrdersBy(this)">
+                                        <th id="ordersMethodHeader" data-name="Mtd" onclick="sortOrdersBy(this)">
                                             <div>Mtd</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -221,7 +221,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersEmployeeHeader"onclick="sortOrdersBy(this)">
+                                        <th id="ordersEmployeeHeader" data-name="Employee" onclick="sortOrdersBy(this)">
                                             <div>Employee</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />

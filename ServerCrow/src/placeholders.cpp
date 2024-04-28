@@ -188,7 +188,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 							ss << "<li class='ingredient'>" << ingredient.name << "</li>";
 						}
 
-						ss << "</ul></li>";
+						ss << "</ul>";
+						if (allergens.size() > 0) ss << "<div class = 'allergenAlertOn'></div>";
+						ss << "</li>";
 					}
 				}
 			}
@@ -212,12 +214,12 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 						if (allergens.size() > 0)
 						{
-							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><div class='allergenAlertOn'></div><ul class='ingredients'>";
+							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><ul class='ingredients'>";
 
 						}
 						else
 						{
-							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style = 'background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><ul class='ingredients'>";
+							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-deployable='" << product_id << "' onclick='addProductToTicket(this)' style='background-color:" << product_color << ";'><div class = 'products-names'>" << q.name << "</div><div class = 'products-prices'>" << q.price << "</div><ul class='ingredients'>";
 						}
 
 						for (const auto& ingredient : ingredients)
@@ -232,7 +234,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 							ss << "<li class='allergen'>" << allergen.name << "</li>";
 						}
 
-						ss << "</ul></li>";
+						ss << "</ul>";
+						if (allergens.size() > 0) ss << "<div class = 'allergenAlertOn'></div>";
+						ss << "</li>";
 					}
 				}
 

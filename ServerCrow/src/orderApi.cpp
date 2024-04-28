@@ -104,9 +104,13 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 	}
 	else if (mode == "ID")
 	{
-		int id = std::stoi(extractURISegment(uri));
-		std::cout << id << std::endl;
-		std::cout << "xd " << database->getOrderById(id).id << std::endl;
+		const int id = 0;
+		try
+		{
+			int id = std::stoi(extractURISegment(uri));
+		}
+		catch (const std::invalid_argument& e){}
+
 		const Order& order = database->getOrderById(id);
 
 		if (!order.isEmpty())
@@ -126,7 +130,8 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 	}
 	else if (mode == "N_TABLE")
 	{
-		const std::string n_table = extractURISegment(uri);
+		std::string n_table = extractURISegment(uri);
+
 		data = buildOrdersJSON(database->getOrdersByNTable(n_table));
 	}
 	else if (mode == "METHOD")

@@ -1610,9 +1610,14 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 {
 	CROW_LOG_INFO << "[DB] getOrdersByNTable";
 
-	int nTable = std::stoi(n_table);
-	std::vector<Order> orders;
+	int nTable = 0;
+	try
+	{
+		nTable = std::stoi(n_table);
+	}
+	catch (const std::invalid_argument& e){}
 
+	std::vector<Order> orders;
 	try
 	{
 		//std::unique_lock<std::mutex> lock(mutex);

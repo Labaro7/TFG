@@ -6,8 +6,9 @@ let selectedRow;
 let currentOrders;
 let currentProducts;
 
-retrieveOrders();
-retrieveProducts();
+searchOrders();
+searchProducts();
+
 async function retrieveOrders() {
     const baseUrl = window.location.href.replace(window.location.pathname, '');
     const fetchPath = '/api/orders';
@@ -612,7 +613,7 @@ function extractDataFromOrdersTable() {
             if (currentHeader === "Diff") {
                 if (cells[j].textContent === "") rowData[currentHeader] = "0";
             }
-            else if (currentHeader === "Discount") {
+            else if (currentHeader === "Disc") {
                 rowData[currentHeader] = rowData[currentHeader].slice(1, -1);
 
                 if (cells[j].textContent === "") rowData[currentHeader] = "0";
@@ -640,41 +641,45 @@ function sortOrdersBy(clickedHeader) {
     }
 
     let data = extractDataFromOrdersTable();
-    console.log("data", data);
-    const clickedHeaderTextContent = clickedHeader.children[0].textContent;
-    console.log("index", clickedHeaderTextContent);
+    const clickedHeaderName = clickedHeader.dataset.name;
+
     switch (res[0]) {
         case "asc":
-            if (clickedHeaderTextContent === "Diff") {
-                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
+            if (clickedHeaderName === "Diff") {
+                data.sort((a, b) => { return parseFloat(b[clickedHeaderName]) - parseFloat(a[clickedHeaderName]); });
             }
-            else if (clickedHeaderTextContent === "Discount") {
-                data.sort((a, b) => { return parseFloat(b[clickedHeaderTextContent]) - parseFloat(a[clickedHeaderTextContent]); });
+            else if (clickedHeaderName === "Disc") {
+                data.sort((a, b) => { return parseFloat(b[clickedHeaderName]) - parseFloat(a[clickedHeaderName]); });
+            }
+            else if (clickedHeaderName === "Date") {
+                data.sort((a, b) => { return new Date(a[clickedHeaderName]) - new Date(b[clickedHeaderName]); });
             }
             else {
-                data.sort((a, b) => { return (b[clickedHeaderTextContent] - a[clickedHeaderTextContent]) });
+                data.sort((a, b) => { return (b[clickedHeaderName] - a[clickedHeaderName]) });
             }
-            console.log("asc");
+
             table.children[1].innerHTML = "";
 
             break;
         case "desc":
-            if (clickedHeaderTextContent === "Diff") {
-                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
+            if (clickedHeaderName === "Diff") {
+                data.sort((a, b) => { return parseFloat(a[clickedHeaderName]) - parseFloat(b[clickedHeaderName]); });
             }
-            else if (clickedHeaderTextContent === "Discount") {
-                data.sort((a, b) => { return parseFloat(a[clickedHeaderTextContent]) - parseFloat(b[clickedHeaderTextContent]); });
+            else if (clickedHeaderName === "Disc") {
+                data.sort((a, b) => { return parseFloat(a[clickedHeaderName]) - parseFloat(b[clickedHeaderName]); });
+            }
+            else if (clickedHeaderName === "Date") {
+                data.sort((a, b) => new Date(b[clickedHeaderName]) - new Date(a[clickedHeaderName]));
             }
             else {
-                data.sort((a, b) => { return (a[clickedHeaderTextContent] - b[clickedHeaderTextContent]) });
+                data.sort((a, b) => { return (a[clickedHeaderName] - b[clickedHeaderName]) });
             }
-            console.log("desc");
+
             table.children[1].innerHTML = "";
 
             break;
         default:
             table.children[1].innerHTML = res[1];
-            console.log("none");
 
             break;
     }
@@ -692,7 +697,7 @@ function sortOrdersBy(clickedHeader) {
                     else if (td.textContent[0] === "-") td.style.color = "red";
                     else { td.textContent = ""; }
                 }
-                else if (col === "Discount") {
+                else if (col === "Disc") {
                     if (td.textContent === "0") td.textContent = "";
                     else {
                         td.textContent = "-" + td.textContent + "%";
@@ -709,8 +714,6 @@ function sortOrdersBy(clickedHeader) {
             table.children[1].appendChild(tr);
         }
     }
-
-    console.log(data);
 }
 
 async function searchProducts() {
@@ -744,7 +747,6 @@ async function searchProducts() {
             break;
         default:
             console.log("Error selecting filter");
-            console.log("aaaa", selectedOrderFilter);
             break;
     }
 }
@@ -833,9 +835,8 @@ function sortProductsBy(clickedHeader) {
     }
 
     let data = extractDataFromProductsTable();
-    console.log(data);
     const clickedHeaderTextContent = clickedHeader.children[0].textContent;
-    console.log("index", clickedHeaderTextContent);
+
     switch (res[0]) {
         case "asc":
             if (clickedHeaderTextContent !== "Name") {
@@ -844,7 +845,7 @@ function sortProductsBy(clickedHeader) {
             else {
                 data.sort((a, b) => a.Name.localeCompare(b.Name));
             }
-            console.log("asc");
+
             table.children[1].innerHTML = "";
 
             break;
@@ -855,13 +856,12 @@ function sortProductsBy(clickedHeader) {
             else {
                 data.sort((a, b) => b.Name.localeCompare(a.Name));
             }
-            console.log("desc");
+
             table.children[1].innerHTML = "";
 
             break;
         default:
             table.innerHTML = res[1];
-            console.log("none");
 
             break;
     }
@@ -904,7 +904,6 @@ function getOrdersDataByLastYear() {
         lastYearMonths.push(monthName);
     }
 
-    console.log(lastYearMonths);
     data = traverseOrdersTable(lastYearMonths, "default");
 
     return data;
@@ -921,9 +920,6 @@ function traverseOrdersTable(labels, mode) {
             diff: 0
         };
     }
-
-    console.log("DATAA", data);
-    console.log("LABELS", labels);
 
     for (let row of ordersTableBody.children) {
         if (row.querySelector(".orderDate") !== null && row.querySelector(".orderBill") !== null && row.querySelector(".orderPaid") !== null && row.querySelector(".orderDiff") !== null) {
@@ -947,7 +943,6 @@ function traverseOrdersTable(labels, mode) {
                         break;
                     case "Month":
                         labelContent = parseInt(rowDate.toLocaleString('en-US', { day: 'numeric' }));
-                        //labelContent--; // Without this there is a translation of 1 to the right in the graph
                         break;
                     case "Year":
                         labelContent = rowDate.toLocaleString('en-US', { month: 'short' });
@@ -956,23 +951,10 @@ function traverseOrdersTable(labels, mode) {
                         labelContent = rowDate.toLocaleString('en-US', { month: 'short' });
                         break;
                 }
-                console.log("LABELCONTENT", labelContent);
-                if (data !== null) {
-                    console.log("A1");
-                    if (labels.length > 0) {
-                        console.log("A2");
-                        if (labelContent !== null) {
-                            console.log("A4", labels[labels.indexOf(labelContent)]);
-                            console.log("A5", labels.indexOf(labelContent));
 
-                            data[labels[labels.indexOf(labelContent)]]["bill"] += parseFloat(rowBill);
-                            data[labels[labels.indexOf(labelContent)]]["paid"] += parseFloat(rowPaid);
-                            data[labels[labels.indexOf(labelContent)]]["diff"] += parseFloat(rowDiff);
-
-                            console.log("A3", data[labels[labels.indexOf(labelContent)]]);
-                        }
-                    }
-                }
+                data[labels[labels.indexOf(labelContent)]]["bill"] += parseFloat(rowBill);
+                data[labels[labels.indexOf(labelContent)]]["paid"] += parseFloat(rowPaid);
+                data[labels[labels.indexOf(labelContent)]]["diff"] += parseFloat(rowDiff);
             }
         }
     }
@@ -1025,35 +1007,38 @@ function getOrdersDataByYear() {
 
 function getOrdersData(mode) {
     let data = {};
+    let titleText = "";
 
     switch (mode) {
-        case "All":
-            data = getOrdersDataByLastYear();
-            break;
         case "Date":
             data = getOrdersDataByDate();
+            titleText = "Orders by Date";
             break;
         case "Week":
             data = getOrdersDataByWeek();
+            titleText = "Orders by Week";
             break;
         case "Month":
             data = getOrdersDataByMonth();
+            titleText = "Orders by Month";
             break;
         case "Year":
             data = getOrdersDataByYear();
+            titleText = "Orders by Year";
             break;
         default:
-            console.log("NOPE");
             data = getOrdersDataByLastYear();
+            titleText = "Orders in the last 12 months";
             break;
     }
 
-    return data;
+    return [data, titleText];
 }
 
 function populateOrdersGraph(selectedFilter) {
     console.log("selectedFilter, ", selectedFilter);
-    let data = getOrdersData(selectedFilter);
+    
+    [data, titleText] = getOrdersData(selectedFilter);
     let labels = [];
     let billsDataset = [];
     let paidsDataset = [];
@@ -1127,7 +1112,7 @@ function populateOrdersGraph(selectedFilter) {
                 },
                 title: {
                     display: true,
-                    text: 'All orders'
+                    text: titleText
                 }
             },
             barPercentage: 1,
