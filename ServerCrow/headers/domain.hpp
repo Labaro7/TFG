@@ -66,6 +66,8 @@ struct OrderedProduct
 {
 	int id;
 	std::string name;
+	int page;
+	std::string menu;
 	double price;
 	int sold;
 	double percent;
@@ -73,7 +75,7 @@ struct OrderedProduct
 	double totalRevenue;
 
 	OrderedProduct();
-	OrderedProduct(const int& id, const std::string& name, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue);
+	OrderedProduct(const int& id, const std::string& name, const int& page, const std::string menu, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue);
 
 	bool isEmpty();
 

@@ -111,7 +111,7 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 		}
 		catch (const std::invalid_argument& e)
 		{
-			CROW_LOG_WARNING << "Invalid argument in std::stoi";
+			CROW_LOG_WARNING << "Invalid argument in st";
 		}
 
 		const Order& order = database->getOrderById(id);

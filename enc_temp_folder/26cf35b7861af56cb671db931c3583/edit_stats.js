@@ -1340,7 +1340,7 @@ function populateProductsGraph(selectedFilter) {
         }
     });
 
-    productsCtx.parentNode.addEventListener('mouseleave', () => {
+    productsCtx.addEventListener('mouseleave', () => {
         handleLeave(null, null, productsGraph.legend);
     });
 }

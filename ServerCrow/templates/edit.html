@@ -112,7 +112,7 @@
                             <table class="statsTable" id="ordersTable">
                                 <thead>
                                     <tr class="tableMainRow" id="ordersMainRow">
-                                        <th id="ordersNumHeader"  data-name="Num"  onclick="sortOrdersBy(this)">
+                                        <th id="ordersNumHeader" data-name="Num" onclick="sortOrdersBy(this)">
                                             <div >Num</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
@@ -137,7 +137,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersTableHeader"  data-name="Table" onclick="sortOrdersBy(this)">
+                                        <th id="ordersTableHeader" data-name="Table" onclick="sortOrdersBy(this)">
                                             <div>Table</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -197,7 +197,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="ordersDiscHeader"  data-name="Disc" onclick="sortOrdersBy(this)">
+                                        <th id="ordersDiscHeader" data-name="Disc" onclick="sortOrdersBy(this)">
                                             <div>Disc</div>                                            <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -292,9 +292,11 @@
 
                         <div class="statsFilter" id="productsFilters">
                             <div class="statsFilterElement" id="ordersText">Filter:</div>
-                            <div class="statsFilterElement allFilter" onclick="selectFilter(this)" id="allProducts"data-filter="All">All</div>
+                            <div class="statsFilterElement allFilter" onclick="selectFilter(this)" id="allProducts" data-filter="All">All</div>
                             <div class="statsFilterElement" onclick="selectFilter(this)" id="idProducts" data-filter="Id">Id</div>
                             <div class="statsFilterElement" onclick="selectFilter(this)" id="nameProducts" data-filter="Name">Name</div>
+                            <div class="statsFilterElement" onclick="selectFilter(this)" id="pageProducts" data-filter="Page">Page</div>
+                            <div class="statsFilterElement" onclick="selectFilter(this)" id="menuProducts" data-filter="Menu">Menu</div>
                             <div class="statsFilterElement" onclick="selectFilter(this)" id="priceProducts" data-filter="Price">Price</div>
                             <div class="statsFilterElement" onclick="selectFilter(this)" id="dateProducts" data-filter="Date">Date</div>
                             <div class="statsFilterElement" onclick="selectFilter(this)" id="weekProducts" data-filter="Week">Week</div>
@@ -325,8 +327,8 @@
                             <table class="statsTable" id="productsTable">
                                 <thead>
                                     <tr class="tableMainRow" id="productsMainRow">
-                                        <th onclick="sortProductsBy(this)">
-                                            <div>Id</div>
+                                        <th id="productsNumHeader" onclick="sortProductsBy(this)" data-name="Num">
+                                            <div>Num</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -338,7 +340,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th id="productsName" onclick="sortProductsBy(this)">
+                                        <th id="productsNameHeader" onclick="sortProductsBy(this)" data-name="Name">
                                             <div>Name</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
@@ -351,8 +353,8 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th onclick="sortProductsBy(this)">
-                                            <div>Sold</div>
+                                        <th id="productsPageHeader" onclick="sortProductsBy(this)" data-name="Page">
+                                            <div>Pg</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -364,8 +366,8 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th onclick="sortProductsBy(this)">
-                                            <div>Percent</div>
+                                        <th id="productsMenuHeader2" onclick="sortProductsBy(this)" data-name="Menu">
+                                            <div>Menu</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -377,7 +379,7 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th onclick="sortProductsBy(this)">
+                                        <th id="productsPriceHeader" onclick="sortProductsBy(this)" data-name="Price">
                                             <div>Price</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
@@ -390,8 +392,8 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th onclick="sortProductsBy(this)">
-                                            <div>Revenue</div>
+                                        <th id="productsSoldHeader" onclick="sortProductsBy(this)" data-name="Sold">
+                                            <div>Sold</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -403,8 +405,34 @@
                                                 </svg>
                                             </div>
                                         </th>
-                                        <th onclick="sortProductsBy(this)">
-                                            <div>Total Revenue</div>
+                                        <th id="productsPercentHeader" onclick="sortProductsBy(this)" data-name="Percent">
+                                            <div>Prcnt</div>
+                                            <div class="sortUp">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
+                                                </svg>
+                                            </div>
+                                            <div class="sortDown">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#FFFFFF" />
+                                                </svg>
+                                            </div>
+                                        </th>
+                                        <th id="productsRevenueHeader" onclick="sortProductsBy(this)" data-name="Revenue">
+                                            <div>Rvn</div>
+                                            <div class="sortUp">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
+                                                </svg>
+                                            </div>
+                                            <div class="sortDown">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#FFFFFF" />
+                                                </svg>
+                                            </div>
+                                        </th>
+                                        <th id="productsTotalRevenueHeader" onclick="sortProductsBy(this)" data-name="Total Revenue">
+                                            <div>TRvn</div>
                                             <div class="sortUp">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
                                                     <path d="M18.2929 15.2893C18.6834 14.8988 18.6834 14.2656 18.2929 13.8751L13.4007 8.98766C12.6195 8.20726 11.3537 8.20757 10.5729 8.98835L5.68257 13.8787C5.29205 14.2692 5.29205 14.9024 5.68257 15.2929C6.0731 15.6835 6.70626 15.6835 7.09679 15.2929L11.2824 11.1073C11.673 10.7168 12.3061 10.7168 12.6966 11.1073L16.8787 15.2893C17.2692 15.6798 17.9024 15.6798 18.2929 15.2893Z" fill="#FFFFFF" />
@@ -424,9 +452,14 @@
                         </div>
                     </div>
                 </div>
+                <div id="productsGraphMenu">
+                    <div class="statsMenuHeader" id="productsGraphHeader">Products Graph</div>
+                    <div id="productsGraphContent">
+                        <canvas id="productsGraph" width="400" height="200"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-
         <div class="page" id="productPage" data-page="2">
             <div class="productTab">
                 <div class="productContent">
@@ -541,7 +574,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 

@@ -1925,14 +1925,29 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 					{
 						std::string name = res3->getString("name");
 						double price = res3->getDouble("price");
+						int page = res3->getInt("page");
+						std::string menu = "";
 
 						products[product_id].id = product_id;
 						products[product_id].name = name;
+						products[product_id].page = page;
 						products[product_id].price = price;
 						products[product_id].sold += amount;
 						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
 						products[product_id].revenue = 0;
 						products[product_id].totalRevenue += (amount * products[product_id].revenue);
+
+						int deployable = res3->getInt("deployable");
+						query << "SELECT name from products WHERE product_id = '" << deployable << "'";
+						res3 = stmt->executeQuery(query.str());
+						query.str("");
+
+						if (res3->next())
+						{
+							menu = res3->getString("name");
+
+							products[product_id].menu = menu;
+						}
 					}
 				}
 			}
@@ -2077,6 +2092,132 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 	}
 }
 
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const int& page)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductByPage";
+
+	using ProductId = int;
+	std::unordered_map<ProductId, OrderedProduct> products;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT * FROM products WHERE page = '" << page << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res->next())
+			{
+				int product_id = res->getInt("product_id");
+				products[product_id].id = product_id;
+				products[product_id].name = res->getString("name");
+				products[product_id].page = page;
+				products[product_id].menu = res->getString("menu");
+				products[product_id].price = res->getDouble("price");
+				products[product_id].revenue = 0;
+
+				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+				sql::ResultSet* res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res2->next())
+				{
+					products[product_id].sold += res2->getInt("amount");
+					products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
+					products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+				}
+			}
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProducts by page. Error message: " << e.what();
+
+		return products;
+	}
+}
+
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const std::string& menu)
+{
+	CROW_LOG_INFO << "[DB] getOrderedProductByMenu";
+
+	using ProductId = int;
+	std::unordered_map<ProductId, OrderedProduct> products;
+
+	try
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+
+		std::stringstream query;
+		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+
+		int totalAmount = 0;
+		if (res->next())
+		{
+			totalAmount = res->getInt("totalAmount");
+
+			query << "SELECT product_id FROM products WHERE name = '" << menu << "'";
+			res = stmt->executeQuery(query.str());
+			query.str("");
+
+			if (res->next())
+			{
+				const int menuId = res->getInt("product_id");
+
+				query << "SELECT * FROM products WHERE deployable = '" << menuId << "'";
+				res = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res->next())
+				{
+					int product_id = res->getInt("product_id");
+
+					products[product_id].id = product_id;
+					products[product_id].name = res->getString("name");
+					products[product_id].page = res->getInt("page");
+					products[product_id].menu = menu;
+					products[product_id].price = res->getDouble("price");
+					products[product_id].revenue = 0;
+
+					query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+					sql::ResultSet* res2 = stmt->executeQuery(query.str());
+					query.str("");
+
+					while (res2->next())
+					{
+						products[product_id].sold += res2->getInt("amount");
+						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
+						products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+					}
+				}
+			}
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get orderedProducts by menu. Error message: " << e.what();
+
+		return products;
+	}
+}
+
 std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const int& price)
 {
 	CROW_LOG_INFO << "[DB] getOrderedProductByPrice";
@@ -2107,6 +2248,8 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 				int product_id = res->getInt("product_id");
 				products[product_id].id = product_id;
 				products[product_id].name = res->getString("name");
+				products[product_id].page = res->getInt("page");
+				products[product_id].menu = res->getString("menu");
 				products[product_id].price = price;
 				products[product_id].revenue = 0;
 
@@ -2189,6 +2332,8 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 				if (res3->next())
 				{
 					products[product_id].name = res3->getString("name");
+					products[product_id].page = res3->getInt("page");
+					products[product_id].menu = res3->getString("menu");
 					products[product_id].price = res3->getDouble("price");
 					products[product_id].revenue = 0;
 					products[product_id].totalRevenue = products[product_id].sold * products[product_id].revenue;

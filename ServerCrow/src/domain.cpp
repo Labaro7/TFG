@@ -126,6 +126,8 @@ bool Products::empty() {
 OrderedProduct::OrderedProduct(): 
 	id(),
 	name(),
+	page(),
+	menu(),
 	price(),
 	sold(),
 	percent(),
@@ -134,9 +136,11 @@ OrderedProduct::OrderedProduct():
 {
 }
 
-OrderedProduct::OrderedProduct(const int& id, const std::string& name, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue) :
+OrderedProduct::OrderedProduct(const int& id, const std::string& name, const int& page, const std::string menu, const double& price, const int& sold, const double& percent, const double& revenue, const double& totalRevenue) :
 	id(id),
 	name(name),
+	page(page),
+	menu(menu),
 	price(price),
 	sold(sold),
 	percent(percent),

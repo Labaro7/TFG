@@ -53,6 +53,8 @@ crow::json::wvalue ProductAPI::buildOrderedProductsJSON(const std::unordered_map
 		crow::json::wvalue products_json;
 		products_json["id"] = product.second.id;
 		products_json["name"] = product.second.name;
+		products_json["page"] = product.second.page;
+		products_json["menu"] = product.second.menu;
 		products_json["price"] = product.second.price;
 		products_json["sold"] = product.second.sold;
 		products_json["percent"] = product.second.percent;

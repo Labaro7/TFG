@@ -103,6 +103,8 @@ public:
 	std::unordered_map<int, OrderedProduct> getOrderedProducts();
 	OrderedProduct getOrderedProductById(const int& id);
 	OrderedProduct getOrderedProductByName(const std::string& name);
+	std::unordered_map<int, OrderedProduct> getOrderedProductsByPage(const int& page);
+	std::unordered_map<int, OrderedProduct> getOrderedProductsByMenu(const std::string& menu);
 	std::unordered_map<int, OrderedProduct> getOrderedProductsByPrice(const int& price);
 	std::unordered_map<int, OrderedProduct> getOrderedProductsByDate(const std::string& date, const std::string& mode);
 
