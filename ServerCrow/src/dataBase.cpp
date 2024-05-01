@@ -1984,41 +1984,33 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT order_id FROM orders";
+			query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
+			product.id = product_id;
+
 			while (res->next())
 			{
-				int order_id = res->getInt("order_id");
+				int product_id = res->getInt("product_id");
+				int amount = res->getInt("amount");
 
-				query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
+				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
 				query.str("");
 
-				product.id = product_id;
-
-				while (res2->next())
+				if (res2->next() && res2->getInt("deployable") != 0)
 				{
-					int product_id = res2->getInt("product_id");
-					int amount = res2->getInt("amount");
+					std::string name = res2->getString("name");
+					double price = res2->getDouble("price");
 
-					query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-					sql::ResultSet* res3 = stmt->executeQuery(query.str());
-					query.str("");
+					product.name = name;
+					product.price = price;
+					product.sold += amount;
 
-					if (res3->next())
-					{
-						std::string name = res3->getString("name");
-						double price = res3->getDouble("price");
-
-						product.name = name;
-						product.price = price;
-						product.sold += amount;
-						product.percent = (product.sold / (double)totalAmount) * 100.0;
-						product.revenue = 0;
-						product.totalRevenue = (amount * product.revenue);
-					}
+					product.percent = (product.sold / (double)totalAmount) * 100.0;
+					product.revenue = 0;
+					product.totalRevenue = (amount * product.revenue);
 				}
 			}
 		}
@@ -2057,9 +2049,11 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
-			if (res->next())
+			if (res->next() && res->getInt("deployable") != 0)
 			{
 				int product_id = res->getInt("product_id");
+				const int deployable = res->getInt("deployable");
+
 				product.id = product_id;
 				product.name = name;
 				product.price = res->getDouble("price");
@@ -2078,6 +2072,15 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 					product.sold += res->getInt("amount");
 					product.percent = (product.sold / (double)totalAmount) * 100.0;
 					product.totalRevenue = (product.sold * product.revenue);	
+				}
+
+				query << "SELECT name from products WHERE product_id = '" << deployable << "'";
+				res = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res->next())
+				{
+					product.menu = res->getString("name");
 				}
 			}
 		}
@@ -2119,23 +2122,37 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 
 			while (res->next())
 			{
-				int product_id = res->getInt("product_id");
-				products[product_id].id = product_id;
-				products[product_id].name = res->getString("name");
-				products[product_id].page = page;
-				products[product_id].menu = res->getString("menu");
-				products[product_id].price = res->getDouble("price");
-				products[product_id].revenue = 0;
-
-				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
-				sql::ResultSet* res2 = stmt->executeQuery(query.str());
-				query.str("");
-
-				while (res2->next())
+				if (res->getInt("deployable") != 0)
 				{
-					products[product_id].sold += res2->getInt("amount");
-					products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
-					products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+					int product_id = res->getInt("product_id");
+					const int deployable = res->getInt("deployable");
+					std::cout << product_id << std::endl;
+
+					products[product_id].id = product_id;
+					products[product_id].name = res->getString("name");
+					products[product_id].page = page;
+					products[product_id].price = res->getDouble("price");
+					products[product_id].revenue = 0;
+
+					query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+					sql::ResultSet* res2 = stmt->executeQuery(query.str());
+					query.str("");
+
+					while (res2->next())
+					{
+						products[product_id].sold += res2->getInt("amount");
+						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
+						products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+					}
+
+					query << "SELECT name from products WHERE product_id = '" << deployable << "'";
+					res2 = stmt->executeQuery(query.str());
+					query.str("");
+
+					if (res2->next())
+					{
+						products[product_id].menu = res2->getString("name");
+					}
 				}
 			}
 		}
@@ -2204,6 +2221,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
 						products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
 					}
+
 				}
 			}
 		}
@@ -2218,7 +2236,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const int& price)
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const double& price)
 {
 	CROW_LOG_INFO << "[DB] getOrderedProductByPrice";
 
@@ -2227,6 +2245,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 
 	try
 	{
+		std::cout << "aaaa" << std::endl;
 		std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
@@ -2243,13 +2262,14 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
-			while (res->next())
+			while (res->next() && res->getInt("deployable") != 0)
 			{
 				int product_id = res->getInt("product_id");
+				const int deployable = res->getInt("deployable");
+
 				products[product_id].id = product_id;
 				products[product_id].name = res->getString("name");
 				products[product_id].page = res->getInt("page");
-				products[product_id].menu = res->getString("menu");
 				products[product_id].price = price;
 				products[product_id].revenue = 0;
 
@@ -2262,6 +2282,15 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 					products[product_id].sold += res2->getInt("amount");
 					products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
 					products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
+				}
+
+				query << "SELECT name from products WHERE product_id = '" << deployable << "'";
+				res2 = stmt->executeQuery(query.str());
+				query.str("");
+
+				if (res2->next())
+				{
+					products[product_id].menu = res2->getString("name");
 				}
 			}
 		}
@@ -2329,14 +2358,24 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
 				query.str("");
 
-				if (res3->next())
+				if (res3->next() && res3->getInt("deployable"))
 				{
+					const int deployable = res3->getInt("deployable");
+
 					products[product_id].name = res3->getString("name");
 					products[product_id].page = res3->getInt("page");
-					products[product_id].menu = res3->getString("menu");
 					products[product_id].price = res3->getDouble("price");
 					products[product_id].revenue = 0;
 					products[product_id].totalRevenue = products[product_id].sold * products[product_id].revenue;
+
+					query << "SELECT name from products WHERE product_id = '" << deployable << "'";
+					res3 = stmt->executeQuery(query.str());
+					query.str("");
+
+					if (res3->next())
+					{
+						products[product_id].menu = res3->getString("name");
+					}
 				}
 			}
 		}

@@ -520,6 +520,81 @@ async function retrieveProductByName(name) {
     }
 }
 
+async function retrieveProductsByPage(page) {
+    const baseUrl = window.location.href.replace(window.location.pathname, '');
+    const fetchPath = '/api/products/page/' + page;
+    const url = baseUrl + fetchPath;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+
+        populateProductsTable(jsonData);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+async function retrieveProductsByMenu(menu) {
+    const baseUrl = window.location.href.replace(window.location.pathname, '');
+    const fetchPath = '/api/products/menu/' + menu;
+    const url = baseUrl + fetchPath;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+
+        populateProductsTable(jsonData);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+async function retrieveProductsByPrice(price) {
+    const baseUrl = window.location.href.replace(window.location.pathname, '');
+    const fetchPath = '/api/products/price/' + price;
+    const url = baseUrl + fetchPath;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+
+        populateProductsTable(jsonData);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 async function retrieveProductsByDate(date, mode) {
     const baseUrl = window.location.href.replace(window.location.pathname, '');
     const fetchPath = '/api/products/' + mode + "/" + date;
@@ -572,6 +647,7 @@ async function populateProductsTable(jsonData) {
             page.className = "productsTablePage";
 
             const menu = document.createElement('td');
+            product["menu"] = product["menu"].charAt(0).toUpperCase() + product["menu"].slice(1);
             menu.textContent = product["menu"];
             menu.className = "productsTableMenu";
 
@@ -748,8 +824,14 @@ async function searchProducts() {
         case "Name":
             await retrieveProductByName(input, "name");
             break;
+        case "Page":
+            await retrieveProductsByPage(input, "page");
+            break;
+        case "Menu":
+            await retrieveProductsByMenu(input, "menu");
+            break;
         case "Price":
-            await retrieveProductsByDate(input, "price");
+            await retrieveProductsByPrice(input, "price");
             break;
         case "Date":
             await retrieveProductsByDate(input, "date");
@@ -1220,28 +1302,28 @@ function getProductsDataBy(mode) {
 
     switch (mode) {
         case "Date":
-            titleText = "Products by date";
+            titleText = "Products sales by date";
             break;
         case "Week":
-            titleText = "Products by week";
+            titleText = "Products sales by week";
             break;
         case "Month":
-            titleText = "Products by month";
+            titleText = "Products sales by month";
             break;
         case "Year":
-            titleText = "Products by year";
+            titleText = "Products sales by year";
             break;
         case "Page":
-            titleText = "Products by page";
+            titleText = "Products sales by page";
             break;
         case "Menu":
-            titleText = "Products by menu";
+            titleText = "Products sales by menu";
             break;
         case "Price":
-            titleText = "Products by price";
+            titleText = "Products sales by price";
             break;
         default:
-            titleText = "Products in the last 12 months";
+            titleText = "Products sales in the last 12 months";
             break;
     }
 
@@ -1340,7 +1422,7 @@ function populateProductsGraph(selectedFilter) {
         }
     });
 
-    productsCtx.addEventListener('mouseleave', () => {
+    productsCtx.parentNode.addEventListener('mouseleave', () => {
         handleLeave(null, null, productsGraph.legend);
     });
 }

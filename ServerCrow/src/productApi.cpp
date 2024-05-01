@@ -129,11 +129,35 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 			data = buildOrderedProductsJSON(products);
 		}
 	}
-	else if (mode == "PRICE")
+	else if (mode == "PAGE")
 	{
 		if (isNumeric(uri))
 		{
+			const int page = std::stoi(extractURISegment(uri));
+			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPage(page);
+
+			if (!products.empty())
+			{
+				data = buildOrderedProductsJSON(products);
+			}
+		}
+	}
+	else if (mode == "MENU")
+	{
+		const std::string menu = extractURISegment(uri);
+		std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByMenu(menu);
+
+		if (!products.empty())
+		{
+			data = buildOrderedProductsJSON(products);
+		}
+	}
+	else if (mode == "PRICE")
+	{
+		try
+		{
 			const double price = std::stod(extractURISegment(uri));
+			std::cout << price << std::endl;
 			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPrice(price);
 
 			if (!products.empty())
@@ -141,11 +165,17 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 				data = buildOrderedProductsJSON(products);	
 			}
 		}
+		catch (const std::invalid_argument& e)
+		{
+			CROW_LOG_WARNING << "Invalid argument in std::stoi";
+		}
 	}
 	else if (mode == "")
 	{
 		data = buildOrderedProductsJSON(database->getOrderedProducts());
 	}
 
+
+	std::cout << data.dump() << std::endl;
 	return data;
 }
