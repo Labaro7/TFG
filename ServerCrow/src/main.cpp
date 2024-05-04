@@ -150,7 +150,7 @@ int main()
 
 			 if (t.isEmpty())
 			 {
-				 t = { n_table, n_clients, product_unordered_map(), 0.0 };
+				 t = { n_table, n_clients, domain::product_unordered_map(), 0.0 };
 				 server.saveTable(t);
 			 }
 			 else

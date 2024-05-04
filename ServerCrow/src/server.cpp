@@ -156,7 +156,7 @@ void Server::initialize()
 	std::tuple<Product, std::vector<Product>> tup20 = { p20, empty_deployable };
 	std::tuple<Product, std::vector<Product>> tup21 = { p21, empty_deployable };
 
-	product_unordered_map order1 = { {p35, 1}, {p37, 1} };
+	domain::product_unordered_map order1 = { {p35, 1}, {p37, 1} };
 	Table t1(60, 1, order1, 0.0);
 	saveTable(t1);
 	for (auto const& p : order1)
@@ -164,7 +164,7 @@ void Server::initialize()
 		saveTableProduct(t1, p.first, p.second, "", {});
 	}
 
-	product_unordered_map order2 = { {p31, 3}, {p26, 1} };
+	domain::product_unordered_map order2 = { {p31, 3}, {p26, 1} };
 	Table t2(12, 5, order2, 10.0);
 	saveTable(t2);
 	for (auto const& p : order2)

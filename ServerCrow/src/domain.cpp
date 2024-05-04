@@ -13,7 +13,7 @@ Table::Table() :
 {
 }
 
-Table::Table(int n_table) :
+Table::Table(const int& n_table) :
 	n_table(n_table),
 	n_clients(0),
 	products(),
@@ -23,11 +23,21 @@ Table::Table(int n_table) :
 {
 }
 
-Table::Table(int n_table, int n_clients, product_unordered_map products, double discount) :
+Table::Table(const int& n_table, const int& n_clients, const domain::product_unordered_map& products, const double& discount) :
 	n_table(n_table),
 	n_clients(n_clients),
 	products(products),
 	bill(0.0),
+	discount(discount),
+	bill_with_discount(0.0)
+{
+}
+
+Table::Table(const int& n_table, const int& n_clients, domain::product_unordered_map& products, const double& bill, const double& discount) :
+	n_table(n_table),
+	n_clients(n_clients),
+	products(products),
+	bill(bill),
 	discount(discount),
 	bill_with_discount(0.0)
 {

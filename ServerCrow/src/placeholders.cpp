@@ -262,7 +262,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 
 
 	// 4. Get ticket products and ticket bill
-	const product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
+	const domain::product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
 	double bill = server.getTableByNumber(n_table).bill;
 	double discount = server.getTableByNumber(n_table).discount;
 

@@ -231,7 +231,7 @@ void Database::initializeIngredientsTable()
 
 	for (const auto& name : ingredientNames)
 	{
-		Ingredient ingredient = { name };
+		const Ingredient ingredient = { name };
 		saveIngredient(ingredient);
 	}
 }
@@ -242,7 +242,7 @@ void Database::initializeAllergensTable()
 
 	for (const auto& name : allergenNames)
 	{
-		Allergen allergen = { name };
+		const Allergen allergen = { name };
 		saveAllergen(allergen);
 	}
 }
@@ -404,11 +404,11 @@ void Database::saveProduct(const Product& product)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		std::string name = product.name;
-		double price = product.price;
-		std::string color = product.color;
-		int page = product.page;
-		int deployable = product.deployable;
+		const std::string name = product.name;
+		const double price = product.price;
+		const std::string color = product.color;
+		const int page = product.page;
+		const int deployable = product.deployable;
 
 		if (getProductByName(name).isEmpty())
 		{
@@ -461,7 +461,7 @@ void Database::saveOrder(const Order& order)
 
 		if (res->next())
 		{
-			int table_id = res->getInt("table_id");
+			const int table_id = res->getInt("table_id");
 
 			query << "SELECT * FROM tableproduct WHERE table_id = '" << table_id << "'";
 			res = stmt->executeQuery(query.str());
@@ -506,7 +506,7 @@ void Database::saveOrderProduct(const Order& order, const int& product_id, const
 
 		if (res->next())
 		{
-			int order_id = res->getInt("order_id");
+			const int order_id = res->getInt("order_id");
 
 			pstmt = con->prepareStatement("INSERT INTO orderproduct(order_id, product_id, amount) VALUES(?,?,?)");
 			pstmt->setInt(1, order_id);
@@ -615,7 +615,7 @@ void Database::saveTableProduct(Table& table,
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		int table_id = 0;
-		int n_table = table.n_table;
+		const int n_table = table.n_table;
 		//double discount = table.discount;
 
 		int product_id = 0;
@@ -630,7 +630,7 @@ void Database::saveTableProduct(Table& table,
 		if (res->next())
 		{
 			table_id = res->getInt("table_id");
-			double new_bill = res->getDouble("bill") + (product.price * amount);
+			const double new_bill = res->getDouble("bill") + (product.price * amount);
 			const std::string employeeName = employee.firstName + " " + getLastNameInitials(employee.lastName);
 
 			pstmt = con->prepareStatement("UPDATE tables SET bill = ?, last_modified = ? WHERE table_id = ?");
@@ -656,7 +656,7 @@ void Database::saveTableProduct(Table& table,
 
 				if (res->next())
 				{
-					int new_amount = res->getInt("amount") + amount;
+					const int new_amount = res->getInt("amount") + amount;
 
 					pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ? AND details = ?");
 					pstmt->setInt(1, new_amount);
@@ -710,7 +710,7 @@ void Database::saveProductIngredient(const Product& product,
 
 		if (res->next())
 		{
-			int product_id = res->getInt("product_id");
+			const int product_id = res->getInt("product_id");
 
 			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
 			res = stmt->executeQuery(query.str());
@@ -718,7 +718,7 @@ void Database::saveProductIngredient(const Product& product,
 
 			if (res->next())
 			{
-				int ingredient_id = res->getInt("ingredient_id");
+				const int ingredient_id = res->getInt("ingredient_id");
 
 				pstmt = con->prepareStatement("INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
 				pstmt->setInt(1, product_id);
@@ -752,7 +752,7 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 
 		if (res->next())
 		{
-			int product_id = res->getInt("product_id");
+			const int product_id = res->getInt("product_id");
 
 			query << "SELECT allergen_id FROM allergens WHERE name = '" << allergen.name << "'";
 			res = stmt->executeQuery(query.str());
@@ -760,7 +760,7 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 
 			if (res->next())
 			{
-				int allergen_id = res->getInt("allergen_id");
+				const int allergen_id = res->getInt("allergen_id");
 
 				pstmt = con->prepareStatement("INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
 				pstmt->setInt(1, product_id);
@@ -821,17 +821,49 @@ std::vector<Table> Database::getTables()
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		sql::ResultSet* res = stmt->executeQuery("SELECT * FROM tables"); // TODO: change tables for a varible that corresponds to the table name
+		std::stringstream query;
 
+		query << "SELECT * FROM tables";
+		sql::ResultSet* res = stmt->executeQuery(query.str());
+		query.str("");
+		
 		while (res->next())
 		{
-			Table table;
+			const int id = res->getInt("table_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double discount = res->getDouble("discount");
 
-			int id = res->getInt("table_id");
-			table.n_table = res->getInt("n_table");
-			// TODO: Add std::unordered_map<std::string, int> products
-			table.bill = res->getDouble("bill");
-			table.discount = res->getDouble("discount");
+			domain::product_unordered_map products;
+			query << "SELECT * FROM orderproduct WHERE table_id = ";
+			sql::ResultSet* res2 = stmt->executeQuery(query.str());
+			query.str("");
+
+			while (res2->next())
+			{
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
+
+				query << "SELECT * FROM products WHERE product_id = " << product_id;
+				sql::ResultSet* res3 = stmt->executeQuery(query.str());
+				query.str("");
+
+				while (res3->next())
+				{
+
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
+
+					const Product product = {name, price, color, page, deployable};
+					products[product] = amount;
+				}
+			}
+
+			const Table table = { n_table, n_clients, products, bill, discount };
 
 			tables.push_back(table);
 		}
@@ -869,21 +901,21 @@ Table Database::getTableByNumber(const int n_table)
 
 		if (res->next())
 		{
-			int table_id = res->getInt("table_id");
-			int n = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double discount = res->getDouble("discount");
+			const int table_id = res->getInt("table_id");
+			const int n = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double discount = res->getDouble("discount");
 
 			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
-			product_unordered_map products;
+			domain::product_unordered_map products;
 			while (res->next())
 			{
-				int product_id = res->getInt("product_id");
-				int amount = res->getInt("amount");
+				const int product_id = res->getInt("product_id");
+				const int amount = res->getInt("amount");
 				std::string details = res->getString("details");
 
 				query << "SELECT * FROM products WHERE product_id = " << product_id;
@@ -892,7 +924,7 @@ Table Database::getTableByNumber(const int n_table)
 
 				if (res2->next())
 				{
-					Product p(res2->getString("name"), res2->getDouble("price"), res2->getString("color"), res2->getInt("page"), res2->getBoolean("deployable"), details);
+					const Product p(res2->getString("name"), res2->getDouble("price"), res2->getString("color"), res2->getInt("page"), res2->getBoolean("deployable"), details);
 
 					products[p] = amount;
 				}
@@ -959,17 +991,17 @@ std::vector<Employee> Database::getEmployees()
 
 		while (res->next())
 		{
-			std::string firstName = res->getString("firstName");
-			std::string lastName = res->getString("lastName");
-			std::string email = res->getString("email");
-			std::string id = res->getString("id");
-			std::string mobileNumber = res->getString("mobileNumber");
-			int level = res->getInt("level");
-			std::string username = res->getString("username");
-			std::string password_hash = res->getString("password");
-			std::string session_token = res->getString("session_token");
+			const std::string firstName = res->getString("firstName");
+			const std::string lastName = res->getString("lastName");
+			const std::string email = res->getString("email");
+			const std::string id = res->getString("id");
+			const std::string mobileNumber = res->getString("mobileNumber");
+			const int level = res->getInt("level");
+			const std::string username = res->getString("username");
+			const std::string password_hash = res->getString("password");
+			const std::string session_token = res->getString("session_token");
 
-			Employee employee = { firstName, lastName, email, id, mobileNumber, level, username, password_hash, session_token };
+			const Employee employee = { firstName, lastName, email, id, mobileNumber, level, username, password_hash, session_token };
 
 			//std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
 			employees.push_back(employee);
@@ -1110,13 +1142,13 @@ std::vector<Product> Database::getProducts()
 		while (res->next())
 		{
 			//int id = res->getInt("product_id");
-			std::string name = res->getString("name");
-			double price = res->getDouble("price");
-			std::string color = res->getString("color");
-			int page = res->getInt("page");
-			bool deployable = res->getBoolean("deployable");
+			const std::string name = res->getString("name");
+			const double price = res->getDouble("price");
+			const std::string color = res->getString("color");
+			const int page = res->getInt("page");
+			const bool deployable = res->getBoolean("deployable");
 
-			Product product = { name, price, color, page, deployable };
+			const Product product = { name, price, color, page, deployable };
 
 			//std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
 			products.push_back(product);
@@ -1207,13 +1239,13 @@ std::vector<Product> Database::getProductsByDeployableId(const int& deployable_i
 
 		while (res->next())
 		{
-			std::string name = res->getString("name");
-			double price = res->getDouble("price");
-			std::string color = res->getString("color");
-			int page = res->getInt("page");
-			int deployable = res->getInt("deployable");
+			const std::string name = res->getString("name");
+			const double price = res->getDouble("price");
+			const std::string color = res->getString("color");
+			const int page = res->getInt("page");
+			const int deployable = res->getInt("deployable");
 
-			Product p(name, price, color, page, deployable);
+			const Product p(name, price, color, page, deployable);
 			products.push_back(p);
 		}
 
@@ -1232,7 +1264,7 @@ std::pair<int, std::vector<Product>> Database::getProductsAndIds()
 
 	std::unique_lock<std::mutex> lock(mutex);
 
-	std::vector<Product> products = getProducts();
+	const std::vector<Product> products = getProducts();
 
 	return std::pair<int, std::vector<Product>>();
 }
@@ -1254,15 +1286,15 @@ std::vector<Order> Database::getOrders()
 
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = res->getInt("order_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1271,8 +1303,8 @@ std::vector<Order> Database::getOrders()
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1280,18 +1312,18 @@ std::vector<Order> Database::getOrders()
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			const Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1348,15 +1380,15 @@ Order Database::getOrderById(const int& id)
 
 		if (res->next())
 		{
-			int order_id = id;
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = id;
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1365,8 +1397,8 @@ Order Database::getOrderById(const int& id)
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1374,18 +1406,16 @@ Order Database::getOrderById(const int& id)
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
-
-			std::cout << "lolo" << order_id << std::endl;
 
 			order = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 		}
@@ -1419,15 +1449,15 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = res->getInt("order_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1436,8 +1466,8 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1445,18 +1475,18 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			const Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1487,15 +1517,15 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = res->getInt("order_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1504,8 +1534,8 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1513,18 +1543,18 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			const Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1555,15 +1585,15 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = res->getInt("order_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1572,8 +1602,8 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1581,18 +1611,18 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			const Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1629,15 +1659,15 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
-			int n_table = res->getInt("n_table");
-			int n_clients = res->getInt("n_clients");
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			double discount = res->getDouble("discount");
-			std::string method = res->getString("method");
-			std::string employee = res->getString("employee");
-			std::string date = res->getString("date");
+			const int order_id = res->getInt("order_id");
+			const int n_table = res->getInt("n_table");
+			const int n_clients = res->getInt("n_clients");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const double discount = res->getDouble("discount");
+			const std::string method = res->getString("method");
+			const std::string employee = res->getString("employee");
+			const std::string date = res->getString("date");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1646,8 +1676,8 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
-				int amount = res2->getInt("amount");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1655,18 +1685,18 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 
 				if (res3->next())
 				{
-					std::string name = res3->getString("name");
-					double price = res3->getDouble("price");
-					std::string color = res3->getString("color");
-					int page = res3->getInt("page");
-					int deployable = res3->getInt("deployable");
+					const std::string name = res3->getString("name");
+					const double price = res3->getDouble("price");
+					const std::string color = res3->getString("color");
+					const int page = res3->getInt("page");
+					const int deployable = res3->getInt("deployable");
 
-					Product p(name, price, color, page, deployable);
+					const Product p(name, price, color, page, deployable);
 					products.push_back({ p, amount });
 				}
 			}
 
-			Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
+			const Order o = { order_id, n_table, n_clients, bill, paid, discount, method, products, employee, date };
 			orders.push_back(o);
 		}
 
@@ -1698,9 +1728,9 @@ std::vector<BillAndPaid> Database::getBillsAndPaids()
 
 		while (res->next())
 		{
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			std::string date = res->getString("date");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const std::string date = res->getString("date");
 
 			billsAndPaids.push_back({ bill, paid, date });
 		}
@@ -1732,9 +1762,9 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& dat
 
 		while (res->next())
 		{
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			std::string date = res->getString("date");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const std::string date = res->getString("date");
 
 			billsAndPaids.push_back({ bill, paid, date });
 		}
@@ -1766,9 +1796,9 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string&
 
 		while (res->next())
 		{
-			double bill = res->getDouble("bill");
-			double paid = res->getDouble("paid");
-			std::string date = res->getString("date");
+			const double bill = res->getDouble("bill");
+			const double paid = res->getDouble("paid");
+			const std::string date = res->getString("date");
 
 			billsAndPaids.push_back({ bill, paid, date });
 		}
@@ -1800,9 +1830,7 @@ int Database::getNClients()
 
 		while (res->next())
 		{
-			int n_clients = res->getInt("n_clients");
-
-			totalNClients += n_clients;
+			totalNClients += res->getInt("n_clients");
 		}
 
 		return totalNClients;
@@ -1832,9 +1860,7 @@ int Database::getNClientsByDate(const std::string& date, const std::string& mode
 
 		while (res->next())
 		{
-			int n_clients = res->getInt("n_clients");
-
-			totalNClients += n_clients;
+			totalNClients += res->getInt("n_clients");
 		}
 
 		return totalNClients;
@@ -1864,9 +1890,7 @@ int Database::getNClientsByEmployee(const std::string& employeeName)
 
 		while (res->next())
 		{
-			int n_clients = res->getInt("n_clients");
-
-			totalNClients += n_clients;
+			totalNClients += res->getInt("n_clients");
 		}
 
 		return totalNClients;
@@ -1906,7 +1930,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 
 			while (res->next())
 			{
-				int order_id = res->getInt("order_id");
+				const int order_id = res->getInt("order_id");
 
 				query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -1914,8 +1938,8 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 
 				while (res2->next())
 				{
-					int product_id = res2->getInt("product_id");
-					int amount = res2->getInt("amount");
+					const int product_id = res2->getInt("product_id");
+					const int amount = res2->getInt("amount");
 
 					query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 					sql::ResultSet* res3 = stmt->executeQuery(query.str());
@@ -1923,35 +1947,30 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 
 					if (res3->next())
 					{
-						std::string name = res3->getString("name");
-						double price = res3->getDouble("price");
-						int page = res3->getInt("page");
-						std::string menu = "";
-
 						products[product_id].id = product_id;
-						products[product_id].name = name;
-						products[product_id].page = page;
-						products[product_id].price = price;
+						products[product_id].name = res3->getString("name");
+						products[product_id].page = res3->getInt("page");
+						products[product_id].price = res3->getDouble("price");
 						products[product_id].sold += amount;
 						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
 						products[product_id].revenue = 0;
 						products[product_id].totalRevenue += (amount * products[product_id].revenue);
 
-						int deployable = res3->getInt("deployable");
+						const int deployable = res3->getInt("deployable");
 						query << "SELECT name from products WHERE product_id = '" << deployable << "'";
 						res3 = stmt->executeQuery(query.str());
 						query.str("");
 
+						std::string menu = "";
 						if (res3->next())
 						{
 							menu = res3->getString("name");
-
-							products[product_id].menu = menu;
 						}
+
+						products[product_id].menu = menu;
 					}
 				}
 			}
-
 		}
 
 		return products;
@@ -1992,8 +2011,8 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 
 			while (res->next())
 			{
-				int product_id = res->getInt("product_id");
-				int amount = res->getInt("amount");
+				const int product_id = res->getInt("product_id");
+				const int amount = res->getInt("amount");
 
 				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -2001,11 +2020,9 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 
 				if (res2->next() && res2->getInt("deployable") != 0)
 				{
-					std::string name = res2->getString("name");
-					double price = res2->getDouble("price");
-
-					product.name = name;
-					product.price = price;
+					product.name = res2->getString("name");
+					product.price = res2->getDouble("price");
+					product.page = res2->getInt("page");
 					product.sold += amount;
 
 					product.percent = (product.sold / (double)totalAmount) * 100.0;
@@ -2056,6 +2073,7 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 
 				product.id = product_id;
 				product.name = name;
+				product.page = res->getInt("page");
 				product.price = res->getDouble("price");
 				product.revenue = 0;
 
@@ -2122,11 +2140,11 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 
 			while (res->next())
 			{
-				if (res->getInt("deployable") != 0)
+				const int deployable = res->getInt("deployable");
+
+				if (deployable != 0)
 				{
-					int product_id = res->getInt("product_id");
-					const int deployable = res->getInt("deployable");
-					std::cout << product_id << std::endl;
+					const int product_id = res->getInt("product_id");
 
 					products[product_id].id = product_id;
 					products[product_id].name = res->getString("name");
@@ -2149,10 +2167,13 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 					res2 = stmt->executeQuery(query.str());
 					query.str("");
 
+					std::string menu = "";
 					if (res2->next())
 					{
-						products[product_id].menu = res2->getString("name");
+						menu = res2->getString("name");
 					}
+
+					products[product_id].menu = menu;
 				}
 			}
 		}
@@ -2202,7 +2223,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 
 				while (res->next())
 				{
-					int product_id = res->getInt("product_id");
+					const int product_id = res->getInt("product_id");
 
 					products[product_id].id = product_id;
 					products[product_id].name = res->getString("name");
@@ -2221,7 +2242,6 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 						products[product_id].percent = (products[product_id].sold / (double)totalAmount) * 100.0;
 						products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
 					}
-
 				}
 			}
 		}
@@ -2245,7 +2265,6 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 
 	try
 	{
-		std::cout << "aaaa" << std::endl;
 		std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
@@ -2262,10 +2281,10 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 			res = stmt->executeQuery(query.str());
 			query.str("");
 
-			while (res->next() && res->getInt("deployable") != 0)
+			const int deployable = res->getInt("deployable");
+			while (res->next() && deployable != 0)
 			{
-				int product_id = res->getInt("product_id");
-				const int deployable = res->getInt("deployable");
+				const int product_id = res->getInt("product_id");
 
 				products[product_id].id = product_id;
 				products[product_id].name = res->getString("name");
@@ -2288,10 +2307,13 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 				res2 = stmt->executeQuery(query.str());
 				query.str("");
 
+				std::string menu = "";
 				if (res2->next())
 				{
-					products[product_id].menu = res2->getString("name");
+					menu = res2->getString("name");
 				}
+
+				products[product_id].menu = menu;
 			}
 		}
 
@@ -2324,7 +2346,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 		int totalAmount = 0;
 		while (res->next())
 		{
-			int order_id = res->getInt("order_id");
+			const int order_id = res->getInt("order_id");
 
 			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -2348,9 +2370,10 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 
 			while (res2->next())
 			{
-				int product_id = res2->getInt("product_id");
+				const int product_id = res2->getInt("product_id");
+				const int amount = res2->getInt("amount");
+
 				products[product_id].id = product_id;
-				int amount = res2->getInt("amount");
 				products[product_id].sold += amount;
 				products[product_id].percent = (products[product_id].sold / totalAmount) * 100.0;
 
@@ -2372,10 +2395,13 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 					res3 = stmt->executeQuery(query.str());
 					query.str("");
 
+					std::string menu = "";
 					if (res3->next())
 					{
-						products[product_id].menu = res3->getString("name");
+						menu = res3->getString("name");
 					}
+						
+					products[product_id].menu = menu;
 				}
 			}
 		}
@@ -2404,7 +2430,7 @@ std::vector<Ingredient> Database::getIngredients()
 
 		while (res->next())
 		{
-			std::string name = res->getString("name");
+			const std::string name = res->getString("name");
 			Ingredient ingredient = { name };
 			ingredients.push_back(ingredient);
 		}
@@ -2472,7 +2498,7 @@ std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& produ
 
 			while (res->next())
 			{
-				int ingredient_id = res->getInt("ingredient_id");
+				const int ingredient_id = res->getInt("ingredient_id");
 
 				query << "SELECT * FROM ingredients WHERE ingredient_id = " << ingredient_id;
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -2508,7 +2534,7 @@ std::vector<Allergen> Database::getAllergens()
 
 		while (res->next())
 		{
-			std::string name = res->getString("name");
+			const std::string name = res->getString("name");
 			Allergen allergen = { name };
 			allergens.push_back(allergen);
 		}
@@ -2538,7 +2564,7 @@ Allergen Database::getAllergenByName(const std::string name)
 
 		if (res->next())
 		{
-			std::string name = res->getString("name");
+			const std::string name = res->getString("name");
 			allergen.name = name;
 		}
 
@@ -2568,7 +2594,7 @@ std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 
 		if (res->next())
 		{
-			int product_id = res->getInt("product_id");
+			const int product_id = res->getInt("product_id");
 
 			query << "SELECT allergen_id FROM productallergen WHERE product_id = " << product_id;
 			res = stmt->executeQuery(query.str());
@@ -2576,7 +2602,7 @@ std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 
 			while (res->next())
 			{
-				int allergen_id = res->getInt("allergen_id");
+				const int allergen_id = res->getInt("allergen_id");
 
 				query << "SELECT * FROM allergens WHERE allergen_id = " << allergen_id;
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -2618,20 +2644,20 @@ std::vector<page_t> Database::getDataFromPages()
 
 			while (res->next())
 			{
-				std::string name = res->getString("name");
-				double price = res->getDouble("price");
-				std::string color = res->getString("color");
-				int page = res->getInt("page");
-				bool deployable = res->getBoolean("deployable");
+				const std::string deployableName = res->getString("name");
+				const double deployablePrice = res->getDouble("price");
+				const std::string deployableColor = res->getString("color");
+				const int deployablePage = res->getInt("page");
+				const bool deployableDeployable = res->getBoolean("deployable");
 
-				Product p1(name, price, color, page, deployable);
+				Product p1(deployableName, deployablePrice, deployableColor, deployablePage, deployableDeployable);
 				std::vector<Product> deployable_vector;
 
-				if (deployable == 0)
+				if (deployableDeployable == 0)
 				{
-					if (price == 0)
+					if (deployablePrice == 0)
 					{
-						query << "SELECT product_id FROM products WHERE name = '" << name << "' AND price = 0 AND color = '" << color << "' AND page = '" << page << "' AND deployable = 0";
+						query << "SELECT product_id FROM products WHERE name = '" << deployableName << "' AND price = 0 AND color = '" << deployableColor << "' AND page = '" << deployablePage << "' AND deployable = 0";
 						sql::ResultSet* res2 = stmt->executeQuery(query.str());
 						query.str("");
 
@@ -2646,11 +2672,11 @@ std::vector<page_t> Database::getDataFromPages()
 							deployable_vector = { Product("", 0.0, "#FFFFFF", 0, 0) };
 							while (res2->next())
 							{
-								name = res2->getString("name");
-								price = res2->getDouble("price");
-								color = res2->getString("color");
-								page = res2->getInt("page");
-								deployable = res2->getBoolean("deployable");
+								const std::string name = res2->getString("name");
+								const double price = res2->getDouble("price");
+								const std::string color = res2->getString("color");
+								const int page = res2->getInt("page");
+								const bool deployable = res2->getBoolean("deployable");
 
 								Product p2(name, price, color, page, deployable);
 								deployable_vector.push_back(p2);
@@ -2700,7 +2726,7 @@ void Database::printTables()
 {
 	CROW_LOG_INFO << "[DB] printTables";
 
-	std::vector<Table> tables = getTables();
+	const std::vector<Table> tables = getTables();
 
 	CROW_LOG_INFO << "[LIST] Tables: ";
 	for (const auto table : tables)
@@ -2713,7 +2739,7 @@ void Database::printEmployees()
 {
 	CROW_LOG_INFO << "[DB] printEmployees";
 
-	std::vector<Employee> employees = getEmployees();
+	const std::vector<Employee> employees = getEmployees();
 
 	CROW_LOG_INFO << "[LIST] Employees: ";
 	for (const auto employee : employees)
@@ -2726,7 +2752,7 @@ void Database::printProducts()
 {
 	CROW_LOG_INFO << "[DB] printProducts";
 
-	std::vector<Product> products = getProducts();
+	const std::vector<Product> products = getProducts();
 
 	CROW_LOG_INFO << "[LIST] Products: ";
 	for (const auto product : products)
@@ -2740,7 +2766,7 @@ void Database::printOrders()
 	/*
 	CROW_LOG_INFO << "[DB] printOrders";
 
-	std::vector<Order> orders = getOrders();
+	const std::vector<Order> orders = getOrders();
 
 	CROW_LOG_INFO << "[LIST] Orders: ";
 	for (const auto order : orders) {
@@ -2752,7 +2778,7 @@ void Database::printIngredients()
 {
 	CROW_LOG_INFO << "[DB] printIngredients";
 
-	std::vector<Ingredient> ingredients = getIngredients();
+	const std::vector<Ingredient> ingredients = getIngredients();
 
 	CROW_LOG_INFO << "[LIST] Ingredients: ";
 	for (const auto ingredient : ingredients)
@@ -2765,7 +2791,7 @@ void Database::printAllergens()
 {
 	CROW_LOG_INFO << "[DB] printAllergens";
 
-	std::vector<Allergen> allergens = getAllergens();
+	const std::vector<Allergen> allergens = getAllergens();
 
 	CROW_LOG_INFO << "[LIST] Allergens: ";
 	for (const auto allergen : allergens)
@@ -2790,20 +2816,20 @@ void Database::moveTable(const int& current_n_table,
 		query.str("");
 
 		res->next();
-		int current_table_id = res->getInt("table_id");
+		const int current_table_id = res->getInt("table_id");
 
 		query << "SELECT table_id, bill FROM tables WHERE n_table = " << new_n_table;
 		res = stmt->executeQuery(query.str());
 		query.str("");
 
-		Table curr_table = getTableByNumber(current_n_table);
-		Table new_table = getTableByNumber(new_n_table);
+		const Table curr_table = getTableByNumber(current_n_table);
+		const Table new_table = getTableByNumber(new_n_table);
 
 		// If theres an existing table
 		if (res->next())
 		{
-			int new_table_id = res->getInt("table_id");
-			int new_table_bill = res->getInt("bill");
+			 const int new_table_id = res->getInt("table_id");
+			 int new_table_bill = res->getInt("bill");
 
 			query << "SELECT product_id, amount FROM tableproduct WHERE table_id =" << current_table_id;
 			res = stmt->executeQuery(query.str());
@@ -2812,8 +2838,8 @@ void Database::moveTable(const int& current_n_table,
 			// For each product of current table
 			while (res->next())
 			{
-				int current_table_product_id = res->getInt("product_id");
-				int current_table_product_amount = res->getInt("amount");
+				const int current_table_product_amount = res->getInt("amount");
+				const int current_table_product_id = res->getInt("product_id");
 
 				query << "SELECT * FROM tableproduct WHERE table_id =" << new_table_id << " AND product_id = " << current_table_product_id;
 				sql::ResultSet* res2 = stmt->executeQuery(query.str());
@@ -2921,9 +2947,9 @@ void Database::changeTableProductAmount(const Table& table,
 
 		if (res->next())
 		{
-			int table_id = res->getInt("table_id");
-			double bill = res->getDouble("bill");
-			double discount = res->getDouble("discount");
+			const int table_id = res->getInt("table_id");
+			const double bill = res->getDouble("bill");
+			const double discount = res->getDouble("discount");
 
 			query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
 			res = stmt->executeQuery(query.str());
@@ -2931,7 +2957,7 @@ void Database::changeTableProductAmount(const Table& table,
 
 			if (res->next())
 			{
-				int product_id = res->getInt("product_id");
+				const int product_id = res->getInt("product_id");
 
 				query << "SELECT amount FROM tableproduct WHERE table_id = '" << table_id << "' AND product_id = '" << product_id << "'";
 				res = stmt->executeQuery(query.str());
@@ -2939,11 +2965,11 @@ void Database::changeTableProductAmount(const Table& table,
 
 				if (res->next())
 				{
-					int amount = res->getInt("amount");
+					const int amount = res->getInt("amount");
 
 					if (new_amount > 0)
 					{
-						double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
+						const double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
 
 						pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE n_table = ?");
 						pstmt->setDouble(1, new_bill);
@@ -2980,9 +3006,9 @@ void Database::removeTable(const Table& table)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		int n_table = table.n_table;
-		double bill = table.bill;
-		double discount = table.discount;
+		const double bill = table.bill;
+		const double discount = table.discount;
+		const int n_table = table.n_table;
 
 		std::stringstream query;
 		query << "SELECT * FROM tables WHERE n_table = " << table.n_table;
@@ -2991,7 +3017,7 @@ void Database::removeTable(const Table& table)
 
 		if (res->next())
 		{
-			int table_id = res->getInt("table_id");
+			const int table_id = res->getInt("table_id");
 
 			pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ?");
 			pstmt->setInt(1, table_id);
@@ -3046,8 +3072,8 @@ void Database::removeProduct(const Product& product)
 		std::unique_lock<std::mutex> lock(mutex);
 
 		std::string name = product.name;
-		double price = product.price;
-		int page = product.page;
+		const double price = product.price;
+		const int page = product.page;
 
 		pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ? AND page = ?");
 		pstmt->setString(1, name);
@@ -3081,9 +3107,9 @@ void Database::removeTableProduct(const int& n_table,
 
 		if (res->next())
 		{
-			int table_id = res->getInt("table_id");
-			double bill = res->getDouble("bill");
-			double discount = res->getDouble("discount");
+			const int table_id = res->getInt("table_id");
+			const double bill = res->getDouble("bill");
+			const double discount = res->getDouble("discount");
 
 			query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = " << product.price;
 			res = stmt->executeQuery(query.str());
@@ -3091,7 +3117,7 @@ void Database::removeTableProduct(const int& n_table,
 
 			if (res->next())
 			{
-				int product_id = res->getInt("product_id");
+				const int product_id = res->getInt("product_id");
 
 				pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ? AND details = ?");
 				pstmt->setInt(1, table_id);
@@ -3134,7 +3160,7 @@ void Database::removeProductIngredient(const Product& product,
 
 		if (res->next())
 		{
-			int product_id = res->getInt("product_id");
+			const int product_id = res->getInt("product_id");
 
 			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
 			res = stmt->executeQuery(query.str());
@@ -3142,7 +3168,7 @@ void Database::removeProductIngredient(const Product& product,
 
 			if (res->next())
 			{
-				int ingredient_id = res->getInt("ingredient_id");
+				const int ingredient_id = res->getInt("ingredient_id");
 
 				pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ? AND ingredient_id = ?");
 				pstmt->setInt(1, product_id);
@@ -3174,7 +3200,7 @@ void Database::removeProductIngredients(const Product& product)
 
 	if (res->next())
 	{
-		int product_id = res->getInt("product_id");
+		const int product_id = res->getInt("product_id");
 
 		pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ?");
 		pstmt->setInt(1, product_id);
@@ -3196,7 +3222,7 @@ void Database::removeProductAllergens(const Product& product)
 
 	if (res->next())
 	{
-		int product_id = res->getInt("product_id");
+		const int product_id = res->getInt("product_id");
 
 		pstmt = con->prepareStatement("DELETE FROM productallergen WHERE product_id = ?");
 		pstmt->setInt(1, product_id);
@@ -3282,15 +3308,15 @@ void Database::modifyProduct(const Product& oldProduct,
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
-		std::string selectedElementName = oldProduct.name;
-		double selectedElementPrice = oldProduct.price;
-		std::string selectedElementColor = oldProduct.color;
-		int selectedElementPage = oldProduct.page;
-		bool selectedElementDeployable = oldProduct.deployable;
+		const std::string selectedElementName = oldProduct.name;
+		const double selectedElementPrice = oldProduct.price;
+		const std::string selectedElementColor = oldProduct.color;
+		const int selectedElementPage = oldProduct.page;
+		const bool selectedElementDeployable = oldProduct.deployable;
 
-		std::string newName = newProduct.name;
-		double newPrice = newProduct.price;
-		std::string newColor = newProduct.color;
+		const std::string newName = newProduct.name;
+		const double newPrice = newProduct.price;
+		const std::string newColor = newProduct.color;
 
 		std::stringstream query;
 		query << "UPDATE products SET name = ?, price = ?, color = ? WHERE name = '" << selectedElementName << "' AND price = '" << selectedElementPrice << "' AND page = '" << selectedElementPage << "'";

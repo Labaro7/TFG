@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <tuple>
 
-
 /* ------------------------------------------- EMPLOYEE ------------------------------------------- */
 struct Employee
 {
@@ -59,8 +58,10 @@ struct ProductHashFunction
 };
 
 // {Product, int} (int represents the number of products)
-using product_unordered_map = std::unordered_map<Product, int, ProductHashFunction>;
-
+namespace domain
+{
+	using product_unordered_map = std::unordered_map<Product, int, ProductHashFunction>;
+}
 
 struct OrderedProduct
 {
@@ -99,15 +100,16 @@ struct Table
 {
 	int n_table;
 	int n_clients;
-	product_unordered_map products;
+	domain::product_unordered_map products;
 	double bill;
 	double discount;
 	double bill_with_discount;
 	std::string last_modified;
 
 	Table();
-	Table(int n_table);
-	Table(int n_table, int n_clients, product_unordered_map products, double discount);
+	Table(const int& n_table);
+	Table(const int& n_table, const int& n_clients, const domain::product_unordered_map& products, const double& discount);
+	Table(const int& n_table, const int& n_clients, domain::product_unordered_map& products, const double& bill, const double& discount);
 
 	bool isEmpty();
 
