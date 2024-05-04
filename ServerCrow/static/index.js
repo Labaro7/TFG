@@ -15,7 +15,7 @@ function changeToSelectTableTab() {
     let selectTableIcon = document.getElementsByClassName("selectTableIcon2");
     let currentTablesIcon = document.getElementById("currentTablesIcon2");
 
-    selectTableTab.style.backgroundColor = '#aaccff';
+    selectTableTab.style.backgroundColor = '#bdd7fc';
     selectTableTab.style.color = "black";
     selectTableTab.style.borderTop = "5px solid rgb(28, 89, 176)";
     for (let square of selectTableIcon) square.style.fill = "black";
@@ -37,7 +37,7 @@ function changeToCurrentTablesTab() {
     selectTableTab.style.borderTop = "5px solid rgb(9, 43, 92)";
     for (let square of selectTableIcon) square.style.fill = "white";
 
-    currentTablesTab.style.backgroundColor = '#aaccff';
+    currentTablesTab.style.backgroundColor = '#bdd7fc';
     currentTablesTab.style.color = "black";
     currentTablesTab.style.borderTop = "5px solid rgb(28, 89, 176)";
     currentTablesIcon.style.fill = "black";

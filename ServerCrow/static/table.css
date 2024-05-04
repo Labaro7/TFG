@@ -45,7 +45,7 @@ body {
 }
 
 #productsTab {
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     border-top: 5px solid rgb(28, 89, 176);
 }
 
@@ -100,7 +100,7 @@ body {
 #productsMenu {
     height: calc(100% - 79px);
     padding: 10px;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
 }
 
 .firstRow, .secondRow, .thirdRow, #fourthRow, .fifthRow, .sixthRow {
@@ -425,7 +425,7 @@ body {
     max-height: calc(100% - 60px);
     height: calc(100% - 60px);
     padding: 0px 10px;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
 }
 
 #ticketList {
@@ -454,7 +454,7 @@ body {
     display: none;
     margin: 5px 0px;
     color: black;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     font-weight: bold;
 }
 
@@ -572,7 +572,7 @@ body {
 
 #numClientsMenu {
     position: absolute;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -580,7 +580,7 @@ body {
     top: 7%;
     left: 5%;
     width: 90%;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     border: 1px solid black;
 }
 
@@ -662,7 +662,7 @@ body {
     top: 10%;
     left: 10%;
     z-index: 6;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     flex-wrap: wrap;
     border: 1px solid black;
 }
@@ -757,7 +757,7 @@ body {
     left: 5%;
     width: 90%;
     z-index: 1;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     flex-wrap: wrap;
     border: 1px solid black;
 }
@@ -1036,7 +1036,7 @@ body {
     flex-direction: column;
     position: absolute;
     width: 90%;
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     border: 1px solid black;
     justify-content: center;
     left: 5%;

@@ -11,7 +11,7 @@ body {
 }
 
 #pages{
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     flex: 1;
 }
 
@@ -42,7 +42,7 @@ body {
 }
 
 .tab-button:first-child {
-    background-color: #aaccff;
+    background-color: #bdd7fc;
     color: black;
     border-bottom: 0px;
     border-top: 5px solid rgb(28, 89, 176);

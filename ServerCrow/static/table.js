@@ -163,7 +163,7 @@ function goBackToTable() {
     productsMenu.style.filter = "";
     tab[0].style.pointerEvents = "auto";
     tab[0].style.filter = "blur(0px) grayscale(0%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
     ticketMenu.style.pointerEvents = "auto";
     ticketMenu.style.filter = "blur(0px) grayscale(0%)";
 }
@@ -350,7 +350,7 @@ function changeToProductsTab() {
     const ticketIcon = document.getElementById("ticketIconPath");
     const modifyDeleteMenu = document.getElementById("modifyDeleteMenu");
 
-    productsTab.style.backgroundColor = "#aaccff";
+    productsTab.style.backgroundColor = "#bdd7fc";
     productsTab.style.borderTop = "5px solid rgb(28, 89, 176)";
 
     products.style.color = "black";
@@ -391,7 +391,7 @@ function changeToTicketTab() {
 
     productsIcon.style.fill = "white";
 
-    ticketTab.style.backgroundColor = "#aaccff";
+    ticketTab.style.backgroundColor = "#bdd7fc";
     ticketTab.style.borderTop = "5px solid rgb(28, 89, 176)";
 
     ticket.style.color = "black";
@@ -430,7 +430,7 @@ function cancelNumClientsMenu() {
     tab[0].style.filter = "blur(0px) grayscale(0%)";
     productsMenu.style.pointerEvents = "auto";
     productsMenu.style.filter = "blur(0px) grayscale(0%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 }
 
 function setNumClients() {
@@ -449,7 +449,7 @@ function setNumClients() {
     tab[0].style.filter = "blur(0px) grayscale(0%)";
     productsMenu.style.pointerEvents = "auto";
     productsMenu.style.filter = "blur(0px) grayscale(0%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 }
 
 function showPage(pageId) {
@@ -636,7 +636,7 @@ function cancelMoveTableMenu() {
     productsMenu.style.filter = "blur(0px) grayscale(0%)";
     moveTableMenu.style.display = "none";
     moveTableWarningMenu.style.display = "none";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 }
 
 function moveTable() {
@@ -765,7 +765,7 @@ function openDeleteTableWarningMenu() {
     ticketMenu.style.filter = "blur(5px) grayscale(100%)";
     productsMenu.style.pointerEvents = "none";
     productsMenu.style.filter = "blur(5px) grayscale(100%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 }
 
 function cancelDeleteTableWarningMenu() {
@@ -832,7 +832,7 @@ function cancelPayTableMenu() {
     tab[0].style.filter = "blur(0px) grayscale(0%)";
     ticketMenu.style.pointerEvents = "auto";
     ticketMenu.style.filter = "blur(0px) grayscale(0%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 }
 
 function openModifyDeleteMenu(clickedProduct) {
@@ -1038,7 +1038,7 @@ function cancelModifyDeleteMenu() {
     tab[0].style.filter = "blur(0px) grayscale(0%)";
     ticketMenu.style.pointerEvents = "auto";
     ticketMenu.style.filter = "blur(0px) grayscale(0%)";
-    document.body.style.backgroundColor = "#aaccff";
+    document.body.style.backgroundColor = "#bdd7fc";
 
     amountInput.value = "";
 }

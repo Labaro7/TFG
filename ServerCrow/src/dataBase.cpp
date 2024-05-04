@@ -829,14 +829,14 @@ std::vector<Table> Database::getTables()
 		
 		while (res->next())
 		{
-			const int id = res->getInt("table_id");
+			const int table_id = res->getInt("table_id");
 			const int n_table = res->getInt("n_table");
 			const int n_clients = res->getInt("n_clients");
 			const double bill = res->getDouble("bill");
 			const double discount = res->getDouble("discount");
 
 			domain::product_unordered_map products;
-			query << "SELECT * FROM orderproduct WHERE table_id = ";
+			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
 			sql::ResultSet* res2 = stmt->executeQuery(query.str());
 			query.str("");
 

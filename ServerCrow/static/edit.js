@@ -71,7 +71,7 @@ function changeTab(clickedTab) {
     const newSelectedTabIcon = newTab.querySelector(".selectedTabIcon");
     const newUnselectedTabIcon = newTab.querySelector(".unselectedTabIcon");
     const newPage = document.querySelector('div[data-page="' + tabNumber + '"]');
-    newTab.style.backgroundColor = "#aaccff";
+    newTab.style.backgroundColor = "#bdd7fc";
     newTab.style.color = "black";
     newTab.style.borderTop = "5px solid rgb(28, 89, 176)";  
     newTab.style.borderBottom = "0px";
