@@ -1159,7 +1159,7 @@ function populateOrdersGraph(selectedFilter) {
 
     let datasets = [billsDataset, paidsDataset, diffsDataset];
     let graphDatasets = [];
-    const colors = ['red', '#15bf9f', 'blue'];
+    const colors = ['red', '#18b53a', 'blue'];
     let datasetsLabels = ["Bill", "Paid", "Diff"];
     let i = 0;
     for (let dtst in datasets) {

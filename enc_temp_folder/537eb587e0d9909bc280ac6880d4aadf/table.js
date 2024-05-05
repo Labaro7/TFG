@@ -82,9 +82,6 @@ function showIngredientsAndAllergens(clickedElement) {
     const productsMenu = document.getElementById("productsMenu");
     const tab = document.getElementsByClassName("tab");
     const productName = document.getElementById("productName");
-    const ingredientsAndAllergens = document.getElementById("ingredientsAndAllergens");
-    const ingredients = ingredientsAndAllergens.querySelector(".ingredients");
-    const allergens = ingredientsAndAllergens.querySelector(".allergens");
     const ingredientsList = document.getElementById("ingredientsList");
     const allergensList = document.getElementById("allergensList");
 
@@ -121,37 +118,17 @@ function showIngredientsAndAllergens(clickedElement) {
                 const productAllergens = product.parentElement.children[3].children;
 
                 if (productIngredients.length) {
-                    ingredients.style.display = "flex";
-
-                    let i = 0;
-
                     for (let productIngredient of productIngredients) {
-                        let isEven = i % 2 === 0 ? true : false;
                         const productIngredientName = productIngredient.textContent;
-                        addListElement(ingredientsList, "ingredient", productIngredientName, isEven);
-
-                        i++;
+                        addListElement(ingredientsList, "ingredient", productIngredientName);
                     }
-                }
-                else {
-                    ingredients.style.display = "none";
                 }
 
                 if (productAllergens.length) {
-                    allergens.style.display = "flex";
-
-                    let i = 0;
                     for (let productAllergen of productAllergens) {
-                        let isEven = i % 2 === 0 ? true : false;
-
                         const productAllergenName = productAllergen.textContent;
-                        addListElement(allergensList, "allergen", productAllergenName, isEven);
-
-                        i++;
+                        addListElement(allergensList, "allergen", productAllergenName);
                     }
-                }
-                else {
-                    allergens.style.display = "none";
                 }
             }
         });
@@ -166,12 +143,11 @@ function showIngredientsAndAllergens(clickedElement) {
     }
 }
 
-function addListElement(list, className, textContent, isEven) {
+function addListElement(list, className, textContent) {
+    console.log(textContent);
     const newElement = document.createElement("li");
     newElement.className = className;
     newElement.textContent = textContent;
-
-    if (isEven) newElement.style.backgroundColor = "rgb(237, 237, 237)";
     list.appendChild(newElement);
 }
 
@@ -1157,45 +1133,29 @@ function getCookie(cookieName) {
 
 
 function selectIngredientsTab() {
-    const ingredientsAndAllergens = document.getElementById("ingredientsAndAllergens");
-
     const ingredientsTab = document.getElementById("ingredientsTab");
-    const ingredients = ingredientsAndAllergens.querySelector(".ingredients");
-    const ingredientsList = ingredients.querySelector(".ingredients");
-    
+    const ingredients = document.getElementById("ingredientsList");
+
     ingredientsTab.style.backgroundColor = "rgb(28, 89, 176)";
-    ingredientsTab.style.borderBottom = "0px";
-    if (ingredients.children.length > 0 && ingredientsList.children.length > 0) ingredients.style.display = "flex";
-    if (ingredients.children.length > 0 && ingredientsList.children.length > 0) ingredientsList.style.display = "flex";
+    ingredients.style.display = "flex";
 
     const allergensTab = document.getElementById("allergensTab");
-    const allergens = ingredientsAndAllergens.querySelector(".allergens");
-    const allergensList = allergens.querySelector(".allergens");
+    const allergens = document.getElementById("allergensList");
 
     allergensTab.style.backgroundColor = "rgb(9, 43, 92)";
-    allergensTab.style.borderBottom = "2px solid white";
-    if (allergens.children.length > 0 && allergensList.children.length > 0) allergens.style.display = "none";
-    if (allergens.children.length > 0 && allergensList.children.length > 0) allergensList.style.display = "none";
+    allergens.style.display = "none";
 }
 
 function selectAllergensTab() {
-    const ingredientsAndAllergens = document.getElementById("ingredientsAndAllergens");
-
     const ingredientsTab = document.getElementById("ingredientsTab");
-    const ingredients = ingredientsAndAllergens.querySelector(".ingredients");
-    const ingredientsList = ingredients.querySelector(".ingredients");
+    const ingredients = document.getElementById("ingredientsList");
 
     ingredientsTab.style.backgroundColor = "rgb(9, 43, 92)";
-    ingredientsTab.style.borderBottom = "2px solid white";
-    if (ingredients.children.length > 0 && ingredientsList.children.length > 0) ingredients.style.display = "none";
-    if (ingredients.children.length > 0 && ingredientsList.children.length > 0) ingredientsList.style.display = "none";
+    ingredients.style.display = "none";
 
     const allergensTab = document.getElementById("allergensTab");
-    const allergens = ingredientsAndAllergens.querySelector(".allergens");
-    const allergensList = allergens.querySelector(".allergens");
+    const allergens = document.getElementById("allergensList");
 
     allergensTab.style.backgroundColor = "rgb(28, 89, 176)";
-    allergensTab.style.borderBottom = "0px";
-    if (allergens.children.length > 0 && allergensList.children.length > 0) allergens.style.display = "flex";
-    if (allergens.children.length > 0 && allergensList.children.length > 0) allergensList.style.display = "flex";
+    allergens.style.display = "flex";
 }
