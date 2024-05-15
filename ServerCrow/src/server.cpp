@@ -5,14 +5,27 @@
 
 Server::Server()
 {
-	database = std::make_shared<Database>();
-	api = std::make_shared<API>(database);
+	dbManager = DatabaseManager::getInstance();
+
+	//database = std::make_shared<Database>();
+	api = std::make_shared<API>(dbManager->getCurrentDatabase());
 	restaurant = std::make_shared<Restaurant>();
+
+	if (dbManager)
+	{
+		std::cout << "asd " << dbManager->getDatabases() << std::endl;
+	}
+	else
+	{
+		std::cout << "NO" << std::endl;
+	}
+
 }
 
 Server::Server(Server& server)
 {
-	database = server.database;
+	dbManager = server.dbManager;
+	//database = server.database;
 	api = server.api;
 	restaurant = server.restaurant;
 }
@@ -22,14 +35,21 @@ Server::~Server()
 }
 
 
-Database& Server::db()
+std::shared_ptr<Database> Server::db()
 {
-	return *database;
+	std::shared_ptr<Database> res = nullptr;
+
+	if (dbManager && dbManager->getCurrentDatabase())
+	{
+		res = dbManager->getCurrentDatabase();
+	}
+
+	return res;
 }
 
 void Server::initialize()
 {
-	database->initialize();
+	dbManager->getCurrentDatabase()->initialize();
 
 	// Make the restaurant instances that store different cfigs of products
 	using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
@@ -182,12 +202,12 @@ void Server::initialize()
 
 std::vector<Product> Server::getProductsByDeployableId(const int& deployable_id)
 {
-	return database->getProductsByDeployableId(deployable_id);
+	return db()->getProductsByDeployableId(deployable_id);
 }
 
 void Server::getDataFromDatabase()
 {
-	auto ps = database->getProducts();
+	auto ps = db()->getProducts();
 	int id = 1;
 
 	for (auto& p : ps)
@@ -210,7 +230,7 @@ void Server::getDataFromDatabase()
 
 void Server::dropAllTables()
 {
-	database->dropAllTables();
+	db()->dropAllTables();
 }
 
 std::string Server::prepareOrdersJSON(const std::vector<Order>& orders)
@@ -270,7 +290,7 @@ std::string Server::hash(const std::string& s)
 
 std::string Server::generateSessionToken()
 {
-	return database->generateSessionToken();
+	return db()->generateSessionToken();
 }
 
 crow::json::wvalue Server::retrieveRequest(std::string& uri)
@@ -282,12 +302,12 @@ crow::json::wvalue Server::retrieveRequest(std::string& uri)
 void Server::modifyProduct(const Product& oldProduct,
 						   const Product& newProduct)
 {
-	database->modifyProduct(oldProduct, newProduct);
+	db()->modifyProduct(oldProduct, newProduct);
 }
 
 void Server::changeNumClients(const Table& table, const int& n_clients)
 {
-	database->changeNumClients(table, n_clients);
+	db()->changeNumClients(table, n_clients);
 }
 
 // Save
@@ -298,7 +318,7 @@ void Server::saveTable(const Table& table)
 	if (t.isEmpty())
 	{ // If this table is not saved
 		restaurant->current_tables[table.n_table] = table; // We first store it in server instance
-		database->saveTable(table); // And the in the database
+		db()->saveTable(table); // And the in the database
 	}
 	else
 	{
@@ -309,40 +329,40 @@ void Server::saveTable(const Table& table)
 // TODO: The same as in saveTable but for the rest
 void Server::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
 {
-	database->saveEmployee(oldEmployee, newEmployee);
+	db()->saveEmployee(oldEmployee, newEmployee);
 }
 
 void Server::saveProduct(const Product& product)
 {
-	database->saveProduct(product);
+	db()->saveProduct(product);
 }
 
 void Server::saveOrder(const Order& order)
 {
-	database->saveOrder(order);
+	db()->saveOrder(order);
 }
 
 void Server::saveOrderProduct(const Order& order,
 							  const int& product_id,
 							  const int& amount)
 {
-	database->saveOrderProduct(order, product_id, amount);
+	db()->saveOrderProduct(order, product_id, amount);
 }
 
 void Server::saveProductIngredient(const Product& product,
 								   const Ingredient& ingredient)
 {
-	database->saveProductIngredient(product, ingredient);
+	db()->saveProductIngredient(product, ingredient);
 }
 
 void Server::saveIngredient(const Ingredient& ingredient)
 {
-	database->saveIngredient(ingredient);
+	db()->saveIngredient(ingredient);
 }
 
 void Server::saveAllergen(const Allergen& allergen)
 {
-	database->saveAllergen(allergen);
+	db()->saveAllergen(allergen);
 }
 
 void Server::saveTableProduct(Table& table,
@@ -355,29 +375,29 @@ void Server::saveTableProduct(Table& table,
 	aux.bill += product.price;
 	//restaurant->current_tables[table.n_table] = table;
 
-	database->saveTableProduct(aux, product, times, details, employee);
+	db()->saveTableProduct(aux, product, times, details, employee);
 }
 
 void Server::saveProductAllergen(const Product& product, const Allergen& allergen)
 {
-	database->saveProductAllergen(product, allergen);
+	db()->saveProductAllergen(product, allergen);
 }
 
 void Server::saveOrderedProduct(const OrderedProduct& orderedProduct)
 {
-	database->saveOrderedProduct(orderedProduct);
+	db()->saveOrderedProduct(orderedProduct);
 }
 
 
 // Get
 std::vector<page_t> Server::getDataFromPages()
 {
-	return database->getDataFromPages();
+	return db()->getDataFromPages();
 }
 
 std::pair<int, std::vector<Product>> Server::getProductsAndIds()
 {
-	return database->getProductsAndIds();
+	return db()->getProductsAndIds();
 }
 
 int Server::getRestaurantPagesSize()
@@ -387,58 +407,58 @@ int Server::getRestaurantPagesSize()
 
 std::vector<Table> Server::getTables()
 {
-	return database->getTables();
+	return db()->getTables();
 }
 
 Table Server::getTableByNumber(int n_table)
 {
-	return database->getTableByNumber(n_table);
+	return db()->getTableByNumber(n_table);
 }
 
 std::string Server::getLastModifiedFromTable(const Table& table)
 {
-	return database->getLastModifiedFromTable(table);
+	return db()->getLastModifiedFromTable(table);
 }
 
 std::vector<Employee> Server::getEmployees()
 {
-	return database->getEmployees();
+	return db()->getEmployees();
 }
 
 Employee Server::getEmployeeByName(const std::string& fullName)
 {
-	return database->getEmployeeByName(fullName);
+	return db()->getEmployeeByName(fullName);
 }
 
 Employee Server::getEmployeeByAccount(const std::string& username,
 									  const std::string& password_hash)
 {
-	return database->getEmployeeByAccount(username, password_hash);
+	return db()->getEmployeeByAccount(username, password_hash);
 }
 
 Employee Server::getEmployeeBySessionToken(const std::string& session_token)
 {
-	return database->getEmployeeBySessionToken(session_token);
+	return db()->getEmployeeBySessionToken(session_token);
 }
 
 std::vector<Product> Server::getProducts()
 {
-	return database->getProducts();
+	return db()->getProducts();
 }
 
 Product Server::getProductByName(std::string name)
 {
-	return database->getProductByName(name);
+	return db()->getProductByName(name);
 }
 
 int Server::getProductIdByName(const std::string name)
 {
-	return database->getProductIdByName(name);
+	return db()->getProductIdByName(name);
 }
 
 std::vector<Order> Server::getOrders()
 {
-	return database->getOrders();
+	return db()->getOrders();
 }
 
 /*Order Server::getOrderByTime(const std::string time)
@@ -448,32 +468,32 @@ std::vector<Order> Server::getOrders()
 
 std::vector<Ingredient> Server::getIngredients()
 {
-	return database->getIngredients();
+	return db()->getIngredients();
 }
 
 Ingredient Server::getIngredientByName(const std::string& name)
 {
-	return database->getIngredientByName(name);
+	return db()->getIngredientByName(name);
 }
 
 std::vector<Ingredient> Server::getIngredientsFromProduct(const Product& product)
 {
-	return database->getIngredientsFromProduct(product);
+	return db()->getIngredientsFromProduct(product);
 }
 
 std::vector<Allergen> Server::getAllergens()
 {
-	return database->getAllergens();
+	return db()->getAllergens();
 }
 
 Allergen Server::getAllergenByName(std::string name)
 {
-	return database->getAllergenByName(name);
+	return db()->getAllergenByName(name);
 }
 
 std::vector<Allergen> Server::getAllergensFromProduct(const Product& product)
 {
-	return database->getAllergensFromProduct(product);
+	return db()->getAllergensFromProduct(product);
 }
 
 
@@ -509,69 +529,69 @@ void Server::moveTable(const int& current_n_table,
 		}
 	}
 
-	database->moveTable(current_n_table, new_n_table);
+	db()->moveTable(current_n_table, new_n_table);
 }
 
 void Server::changeTableProductAmount(const Table& table,
 									  const Product& product,
 									  const int& new_amount)
 {
-	database->changeTableProductAmount(table, product, new_amount);
+	db()->changeTableProductAmount(table, product, new_amount);
 }
 
 
 // Remove
 void Server::removeTable(const Table& table)
 {
-	database->removeTable(table);
+	db()->removeTable(table);
 }
 
 void Server::removeEmployee(const Employee& employee)
 {
-	database->removeEmployee(employee);
+	db()->removeEmployee(employee);
 }
 
 void Server::removeProduct(const Product& product)
 {
-	database->removeProduct(product);
+	db()->removeProduct(product);
 }
 
 void Server::removeTableProduct(const int& n_table,
 								const Product& product,
 								const int& times)
 {
-	database->removeTableProduct(n_table, product, times);
+	db()->removeTableProduct(n_table, product, times);
 }
 
 void Server::removeProductIngredient(const Product& product,
 									 const Ingredient& ingredient)
 {
-	database->removeProductIngredient(product, ingredient);
+	db()->removeProductIngredient(product, ingredient);
 }
 
 void Server::removeProductIngredients(const Product& product)
 {
-	database->removeProductIngredients(product);
+	db()->removeProductIngredients(product);
 }
 
 void Server::removeProductAllergens(const Product& product)
 {
-	database->removeProductAllergens(product);
+	db()->removeProductAllergens(product);
 }
 
 void Server::removeOrder(const Order& order)
 {
-	database->removeOrder(order);
+	db()->removeOrder(order);
 }
 
 void Server::removeIngredient(const Ingredient& ingredient)
 {
-	database->removeIngredient(ingredient);
+	db()->removeIngredient(ingredient);
 }
 
 void Server::removeAllergen(const Allergen& allergen)
 {
-	database->removeAllergen(allergen);
+	db()->removeAllergen(allergen);
 }
 
 
@@ -588,30 +608,30 @@ void Server::payTable(const Order& order)
 // Print
 void Server::printTables()
 {
-	database->printTables();
+	db()->printTables();
 }
 
 void Server::printEmployees()
 {
-	database->printEmployees();
+	db()->printEmployees();
 }
 
 void Server::printProducts()
 {
-	database->printProducts();
+	db()->printProducts();
 }
 
 void Server::printOrders()
 {
-	database->printOrders();
+	db()->printOrders();
 }
 
 void Server::printIngredients()
 {
-	database->printIngredients();
+	db()->printIngredients();
 }
 
 void Server::printAllergens()
 {
-	database->printAllergens();
+	db()->printAllergens();
 }

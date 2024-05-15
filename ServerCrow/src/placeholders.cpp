@@ -9,7 +9,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	file->close();
 	std::string contentHTML = ssHTML.str();
 
-	std::vector<Table> tables = server.db().getTables();
+	std::vector<Table> tables = server.db()->getTables();
 
 	// Make a HTML with the tables prices
 	std::ostringstream ss;

@@ -3,7 +3,7 @@
 #include "..\headers\domain.hpp"
 #include <unordered_map>
 
-Database::Database() : pstmt()
+Database::Database() : pstmt(), name()
 {
 	try
 	{
@@ -29,6 +29,8 @@ Database::Database() : pstmt()
 
 Database::Database(const Database& database)
 {
+	name = database.name;
+
 	connection_properties = database.connection_properties;
 
 	driver = database.driver;
@@ -38,7 +40,34 @@ Database::Database(const Database& database)
 	stmt = database.stmt;
 
 	pstmt = database.pstmt;
+}
 
+Database::Database(const std::string& hostName,
+				   const int& port,
+				   const std::string& username,
+				   const std::string& password,
+				   const std::string& databaseName) : name(databaseName)
+{
+	try
+	{
+		connection_properties = {
+			{"hostName", hostName},
+			{"port", port},
+			{"userName", username},
+			{"password", password},
+			{"schema", databaseName},
+			{"OPT_RECONNECT", true}
+		};
+
+		driver = get_driver_instance();
+		con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
+		stmt = con->createStatement();
+	}
+	catch (const sql::SQLException e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not construct custom database." << e.what();
+		exit(1);
+	}
 }
 
 Database::Database(const std::shared_ptr<Database> database)
@@ -175,6 +204,11 @@ void Database::MySqlEmptyTable(std::string name)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not empty table. Error message: " << e.what();
 	}
+}
+
+std::string Database::getName()
+{
+	return this->name;
 }
 
 

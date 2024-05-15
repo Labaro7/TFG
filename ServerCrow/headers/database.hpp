@@ -24,6 +24,11 @@ class Database : public Interface
 public:
 	Database();
 	Database(const Database& database);
+	Database(const std::string& hostName,
+			 const int& port,
+			 const std::string& username,
+			 const std::string& password,
+			 const std::string& databaseName);
 	Database(const std::shared_ptr<Database> database);
 	~Database();
 
@@ -33,6 +38,7 @@ public:
 	void MySqlDropDatabase(const std::string name);
 	void MySqlUseDatabase(const std::string name);
 	void MySqlSaveChangesToDataBase();
+	std::string getName();
 
 
 	// Tables
@@ -154,6 +160,7 @@ public:
 private:
 	sql::ConnectOptionsMap connection_properties;
 	sql::Driver* driver;
+	std::string name;
 
 	std::shared_ptr<sql::Connection> con;
 	sql::Statement* stmt;

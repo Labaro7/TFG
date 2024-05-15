@@ -155,6 +155,9 @@
     <ClInclude Include="headers\productApi.hpp">
       <Filter>Archivos de encabezado\api</Filter>
     </ClInclude>
+    <ClInclude Include="headers\databaseManager.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\database.cpp">
@@ -192,6 +195,9 @@
     </ClCompile>
     <ClCompile Include="src\productApi.cpp">
       <Filter>Archivos de origen\api</Filter>
+    </ClCompile>
+    <ClCompile Include="src\databaseManager.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

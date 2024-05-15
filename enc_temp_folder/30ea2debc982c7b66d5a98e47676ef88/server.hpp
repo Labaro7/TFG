@@ -124,6 +124,7 @@ public:
 
 private:
 	std::shared_ptr<DatabaseManager> dbManager;
+	//std::shared_ptr<Database> database;
 	std::shared_ptr<API> api;
 public:
 	std::shared_ptr<Restaurant> restaurant;
