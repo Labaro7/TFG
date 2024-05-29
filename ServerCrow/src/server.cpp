@@ -262,12 +262,12 @@ std::string Server::hash(const std::string& s)
 
 	std::mt19937 generator(hashValue);
 
-	std::uniform_int_distribution<int> distribution(0, ASCII_CHARACTERS.size() - 1);
+	std::uniform_int_distribution<int> distribution(0, cts::ASCII_CHARACTERS.size() - 1);
 
 	std::stringstream ss;
-	for (int i = 0; i < HASH_LENGTH; ++i)
+	for (int i = 0; i < cts::HASH_LENGTH; ++i)
 	{
-		ss << ASCII_CHARACTERS[distribution(generator)];
+		ss << cts::ASCII_CHARACTERS[distribution(generator)];
 	}
 
 	return ss.str();

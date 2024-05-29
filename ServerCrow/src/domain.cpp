@@ -261,7 +261,7 @@ bool Allergen::isEmpty()
 
 /* ------------------------------------------- RESTAURANT ------------------------------------------- */
 Restaurant::Restaurant() :
-	pages(N_FOURTH_ROW_BUTTONS),
+	pages(cts::N_FOURTH_ROW_BUTTONS),
 	current_tables()
 {
 }

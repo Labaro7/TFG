@@ -55,7 +55,7 @@ int main()
 	// Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
 	crow::logger::setLogLevel(crow::LogLevel::Info);
 
-	CROW_LOG_INFO << "Server running on: " << SERVER_IP << ":" << SERVER_PORT;
+	CROW_LOG_INFO << "Server running on: " << cts::SERVER_IP << ":" << cts::SERVER_PORT;
 
 	//server.dropAllTables();
 	//server.initialize();
@@ -63,8 +63,8 @@ int main()
 	CROW_ROUTE(app, "/")
 		([&server](const crow::request& req, crow::response& res)
 		 {
-			 std::ifstream file(INDEX_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLES_PRICES_PLACEHOLDER, server);
+			 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
+			 std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLES_PRICES_PLACEHOLDER, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -80,7 +80,7 @@ int main()
 	CROW_ROUTE(app, "/login")
 		([&server](const crow::request& req, crow::response& res)
 		 {
-			 std::ifstream file(LOGIN_HTML_FILE_PATH);
+			 std::ifstream file(cts::LOGIN_HTML_FILE_PATH);
 			 std::stringstream ss;
 
 			 ss << file.rdbuf();
@@ -110,7 +110,7 @@ int main()
 				 CROW_LOG_INFO << "Found employee with session token: " << e.session_token;
 				 // TODO: Set starting_date of the employee
 
-				 std::ifstream file(INDEX_HTML_FILE_PATH);
+				 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
 				 std::stringstream ss;
 				 ss << file.rdbuf();
 				 const std::string indexPage = ss.str();
@@ -119,7 +119,7 @@ int main()
 
 				 res.set_header("Content-Type", "text/html");
 				 res.set_header("Access-Control-Allow-Origin", "*");
-				 res.add_header("Set-Cookie", SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
+				 res.add_header("Set-Cookie", cts::SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
 				 res.add_header("Set-Cookie", "employee_name=" + e.firstName + " " + e.lastName + "; Path=/");
 
 				 res.code = 200;
@@ -139,8 +139,8 @@ int main()
 
 			 const std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
 
-			 std::ifstream file(TABLE_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders(&file, TABLE_NUMBER_PLACEHOLDER, n_table, products, server);
+			 std::ifstream file(cts::TABLE_HTML_FILE_PATH);
+			 std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLE_NUMBER_PLACEHOLDER, n_table, products, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -157,7 +157,7 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
-			 std::ifstream file(INDEX_HTML_FILE_PATH);
+			 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
 			 std::stringstream ss;
 
 			 ss << file.rdbuf();
@@ -256,7 +256,7 @@ int main()
 			 const std::string date = validate(json_data["date"], std::string(""));
 
 			 std::string employee = "";
-			 if (MIDDLEWARE_ACTIVATED && AUTH_NEEDED)
+			 if (MIDDLEWARE_ACTIVATED && cts::AUTH_NEEDED)
 			 {
 				 employee = json_data["employee"].s();
 			 }
@@ -339,8 +339,8 @@ int main()
 	CROW_ROUTE(app, "/admin")
 		([&server](const crow::request& req, crow::response& res)
 		 {
-			 std::ifstream file(ADMIN_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders2(&file, PRODUCT_LIST_PLACEHOLDER, server);
+			 std::ifstream file(cts::ADMIN_HTML_FILE_PATH);
+			 std::string modifiedHTML = insertDataInPlaceHolders2(&file, cts::PRODUCT_LIST_PLACEHOLDER, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -587,10 +587,10 @@ int main()
 
 
 	// App methods chain
-	app.bindaddr(SERVER_IP)
-		.port(SERVER_PORT)
-		.server_name(SERVER_NAME)
+	app.bindaddr(cts::SERVER_IP)
+		.port(cts::SERVER_PORT)
+		.server_name(cts::SERVER_NAME)
 		.multithreaded()
-		.ssl_file(CRT_FILE_PATH, KEY_FILE_PATH)
+		.ssl_file(cts::CRT_FILE_PATH, cts::KEY_FILE_PATH)
 		.run();
 }

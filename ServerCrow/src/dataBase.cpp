@@ -8,11 +8,11 @@ Database::Database() : pstmt(), name()
 	try
 	{
 		connection_properties = {
-			{"hostName", HOST},
-			{"port", PORT},
-			{"userName", USERNAME},
-			{"password", PASSWORD},
-			{"schema", DATABASE_NAME},
+			{"hostName", cts::HOST},
+			{"port", cts::PORT},
+			{"userName", cts::USERNAME},
+			{"password", cts::PASSWORD},
+			{"schema", cts::DATABASE_NAME},
 			{"OPT_RECONNECT", true}
 		};
 
@@ -2662,7 +2662,7 @@ std::vector<page_t> Database::getDataFromPages()
 {
 	CROW_LOG_INFO << "[DB] getDataFromPages";
 
-	std::vector<page_t> pages(N_FOURTH_ROW_BUTTONS);
+	std::vector<page_t> pages(cts::N_FOURTH_ROW_BUTTONS);
 	int i = 0;
 
 	try
@@ -2741,12 +2741,12 @@ std::string Database::generateSessionToken()
 	std::random_device rd;
 	std::mt19937 generator(rd());
 
-	std::uniform_int_distribution<int> distribution(0, ASCII_CHARACTERS.size() - 1);
+	std::uniform_int_distribution<int> distribution(0, cts::ASCII_CHARACTERS.size() - 1);
 
 	std::stringstream ss;
-	for (int i = 0; i < SESSION_TOKEN_LENGTH; ++i)
+	for (int i = 0; i < cts::SESSION_TOKEN_LENGTH; ++i)
 	{
-		ss << ASCII_CHARACTERS[distribution(generator)];
+		ss << cts::ASCII_CHARACTERS[distribution(generator)];
 	}
 
 	std::string new_session_token = ss.str();

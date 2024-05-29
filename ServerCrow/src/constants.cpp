@@ -1,5 +1,7 @@
 #include "..\headers\constants.hpp"
 
+namespace cts
+{
 // Crow constants
 const std::string SERVER_IP = "192.168.1.66";
 constexpr int SERVER_PORT = 18080;
@@ -7,6 +9,7 @@ const std::string SERVER_NAME = "DINET";
 const std::string CRT_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt"; // TODO: Put relative path
 const std::string KEY_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key"; // TODO: Put relative path
 const bool AUTH_NEEDED = false;
+const bool FUNCTION_DEBUG = true;  // To print the function names when executed
 
 // Routes
 // TODO: Change to relative paths.
@@ -25,7 +28,7 @@ const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
 const char* PAGES_BUTTONS_PLACEHOLDER = "<!-- PLACEHOLDER: PRODUCTS PAGES BUTTONS -->";
 const char* BRAND_IMAGE_URL_PLACEHOLDER = "<!-- PLACEHOLDER: BRAND IMAGE URL -->";
 const char* BRAND_IMAGE_URL = "";
-const char* BRAND_IMAGE = ("https://" + SERVER_IP + ":" + std::to_string(SERVER_PORT) + BRAND_IMAGE_URL).c_str();
+const char* BRAND_IMAGE = ("https://" + cts::SERVER_IP + ":" + std::to_string(cts::SERVER_PORT) + cts::BRAND_IMAGE_URL).c_str();
 int N_FOURTH_ROW_BUTTONS = 6;
 
 const char* CURRENT_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT PRODUCTS -->";
@@ -62,3 +65,5 @@ const std::string ASCII_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
 const int HASH_LENGTH = 32;
 const std::string SESSION_TOKEN_NAME = "session_token";
 const int SESSION_TOKEN_LENGTH = 32;
+
+} // namespace cts

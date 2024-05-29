@@ -4,6 +4,8 @@
 
 #include <string>
 
+namespace cts
+{
 // Crow constants
 extern const std::string SERVER_IP;
 extern const int SERVER_PORT;
@@ -14,6 +16,7 @@ extern const std::string KEY_FILE_PATH;
 extern const bool AUTH_NEEDED;
 extern const std::string SESSION_TOKEN_NAME;
 const std::string SERVER_PORT_STRING = std::to_string(SERVER_PORT);
+extern const bool FUNCTION_DEBUG;  // To print the function names when executed
 
 // Routes
 const std::string SERVER_DOMAIN = "https://" + SERVER_IP + ":" + SERVER_PORT_STRING + "/";
@@ -70,5 +73,7 @@ extern const std::string ASCII_CHARACTERS;
 extern const int HASH_LENGTH;
 extern const std::string SESSION_TOKEN_NAME;
 extern const int SESSION_TOKEN_LENGTH;
+
+} // namespace cts
 
 #endif

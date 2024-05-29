@@ -93,10 +93,10 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 
 	CROW_LOG_INFO << "[OrderAPI] Get orders by " << mode << " with " << uri;
 
-	if (mode == MYSQL_DAY ||
-		mode == MYSQL_WEEK ||
-		mode == MYSQL_MONTH ||
-		mode == MYSQL_YEAR)
+	if (mode == cts::MYSQL_DAY ||
+		mode == cts::MYSQL_WEEK ||
+		mode == cts::MYSQL_MONTH ||
+		mode == cts::MYSQL_YEAR)
 	{
 		const std::string& date = extractURISegment(uri);
 		data = buildOrdersJSON(database->getOrdersByDate(date, mode));

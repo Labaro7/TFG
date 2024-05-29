@@ -19,17 +19,17 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	for (const auto& t : tables)
 	{
 		const std::string last_modified = server.getLastModifiedFromTable(t);
-		ss << "<li class='table'><a href='" << TABLE_NUMBER_HREF << t.n_table << "'><div class = 'tableNumber'>Table: " << t.n_table << "<div class = 'lastModified'>" << last_modified << "</div></div><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << CURRENCY_SYMBOL << "</div></a></li>";
+		ss << "<li class='table'><a href='" << cts::TABLE_NUMBER_HREF << t.n_table << "'><div class = 'tableNumber'>Table: " << t.n_table << "<div class = 'lastModified'>" << last_modified << "</div></div><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << cts::CURRENCY_SYMBOL << "</div></a></li>";
 	}
 
 	std::string tablesPricesHTML = ss.str();
 	ss.str(""); // Important to clear here
 
 	// Insert previous HTML piece with the table number into HTML
-	size_t tablesPricesPlaceholderPos = contentHTML.find(TABLES_PRICES_PLACEHOLDER);
+	size_t tablesPricesPlaceholderPos = contentHTML.find(cts::TABLES_PRICES_PLACEHOLDER);
 	if (tablesPricesPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(tablesPricesPlaceholderPos, strlen(TABLES_PRICES_PLACEHOLDER), tablesPricesHTML);
+		contentHTML.replace(tablesPricesPlaceholderPos, strlen(cts::TABLES_PRICES_PLACEHOLDER), tablesPricesHTML);
 	}
 
 	return contentHTML;
@@ -79,10 +79,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	ss.str(""); // Important to clear here
 
 	// 1. Insert previous HTML piece with the number of clients into HTML
-	size_t numClientsPlaceholderPos = contentHTML.find(NUMBER_OF_CLIENTS_PLACEHOLDER);
+	size_t numClientsPlaceholderPos = contentHTML.find(cts::NUMBER_OF_CLIENTS_PLACEHOLDER);
 	if (numClientsPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(numClientsPlaceholderPos, strlen(NUMBER_OF_CLIENTS_PLACEHOLDER), numClientsHTML);
+		contentHTML.replace(numClientsPlaceholderPos, strlen(cts::NUMBER_OF_CLIENTS_PLACEHOLDER), numClientsHTML);
 	}
 
 	// 1. HTML with the table number
@@ -91,14 +91,14 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	ss.str("");
 
 	// 1. Insert previous HTML piece with the table number into HTML
-	size_t tableNumberPlaceholderPos = contentHTML.find(TABLE_NUMBER_PLACEHOLDER);
+	size_t tableNumberPlaceholderPos = contentHTML.find(cts::TABLE_NUMBER_PLACEHOLDER);
 	if (tableNumberPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(tableNumberPlaceholderPos, strlen(TABLE_NUMBER_PLACEHOLDER), tableNumberHTML);
+		contentHTML.replace(tableNumberPlaceholderPos, strlen(cts::TABLE_NUMBER_PLACEHOLDER), tableNumberHTML);
 	}
 
 	// 2. HTML with fourth row buttons
-	for (int i = 1; i <= N_FOURTH_ROW_BUTTONS; i++)
+	for (int i = 1; i <= cts::N_FOURTH_ROW_BUTTONS; i++)
 	{
 		ss << "<div class='productsPagesButton' id='productsPagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
 	}
@@ -107,10 +107,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	ss.str(""); // Important to clear here
 
 	// 2. Insert previous HTML piece with the fourth row buttons into HTML
-	size_t pagesButtonsPlaceholderPos = contentHTML.find(PAGES_BUTTONS_PLACEHOLDER);
+	size_t pagesButtonsPlaceholderPos = contentHTML.find(cts::PAGES_BUTTONS_PLACEHOLDER);
 	if (pagesButtonsPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(pagesButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
+		contentHTML.replace(pagesButtonsPlaceholderPos, strlen(cts::PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
 	}
 
 	// 3. Get the data of products currently added to the database
@@ -258,7 +258,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	ss.str("");
 
 	// 3. Insert HTML piece with the products of the restaurant into HTML
-	std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
+	std::string changedPlaceholder = cts::PRODUCT_LIST_PLACEHOLDER;
 
 	size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
 	if (productListPlaceholderPos != std::string::npos)
@@ -282,33 +282,33 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	ss.str("");
 
 	// 4. Insert previous HTML piece with the ticket of the table into HTML
-	size_t ticketProductsPlaceholderPos = contentHTML.find(TICKET_PRODUCTS_PLACEHOLDER);
+	size_t ticketProductsPlaceholderPos = contentHTML.find(cts::TICKET_PRODUCTS_PLACEHOLDER);
 	if (ticketProductsPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(ticketProductsPlaceholderPos, strlen(TICKET_PRODUCTS_PLACEHOLDER), ticketProductsHTML);
+		contentHTML.replace(ticketProductsPlaceholderPos, strlen(cts::TICKET_PRODUCTS_PLACEHOLDER), ticketProductsHTML);
 	}
 
 	// 5. Generate HTML piece with the ticket bill
 	ss << "<div id='bill'>";
 	ss << "<div id='discount'><div id='minus'>-</div><div id='discountValue'>" << discount << "</div><div id='percentage'>%</div></div>";
-	ss << "<div id='currency'></div><div id='price'>" << bill * (1 - (discount / 100)) << CURRENCY_SYMBOL << "</div>";
+	ss << "<div id='currency'></div><div id='price'>" << bill * (1 - (discount / 100)) << cts::CURRENCY_SYMBOL << "</div>";
 	ss << "</div>";
 
 	std::string ticketBillHTML = ss.str();
 	ss.str("");
-	size_t ticketBillPlaceholderPos = contentHTML.find(TICKET_BILL_PLACEHOLDER);
-	contentHTML.replace(ticketBillPlaceholderPos, strlen(TICKET_BILL_PLACEHOLDER), ticketBillHTML);
+	size_t ticketBillPlaceholderPos = contentHTML.find(cts::TICKET_BILL_PLACEHOLDER);
+	contentHTML.replace(ticketBillPlaceholderPos, strlen(cts::TICKET_BILL_PLACEHOLDER), ticketBillHTML);
 
 	// 5. Insert HTML piece with the image of DINET
-	ss << "<img src='" << BRAND_IMAGE_URL << "'";
+	ss << "<img src='" << cts::BRAND_IMAGE_URL << "'";
 
 	std::string brandImageHTML = ss.str();
 	ss.str("");
 
-	size_t brandImagePlaceholderPos = contentHTML.find(BRAND_IMAGE_URL_PLACEHOLDER);
+	size_t brandImagePlaceholderPos = contentHTML.find(cts::BRAND_IMAGE_URL_PLACEHOLDER);
 	if (brandImagePlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(brandImagePlaceholderPos, strlen(BRAND_IMAGE_URL_PLACEHOLDER), ticketProductsHTML);
+		contentHTML.replace(brandImagePlaceholderPos, strlen(cts::BRAND_IMAGE_URL_PLACEHOLDER), ticketProductsHTML);
 	}
 
 	return contentHTML;
@@ -342,7 +342,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	std::stringstream ss;
 
 	// 1.1. HTML with fourth row buttons
-	for (int i = 1; i <= N_FOURTH_ROW_BUTTONS; i++)
+	for (int i = 1; i <= cts::N_FOURTH_ROW_BUTTONS; i++)
 	{
 		ss << "<div class='productsPagesButton' id='productsPagesButton" << i << "' data-number='" << i << "' onclick='displayMenu(this)'>" << i << "</div>" << std::endl;
 	}
@@ -351,10 +351,10 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	ss.str(""); // Important to clear here
 
 	// 1.1. Insert previous HTML piece with the fourth row buttons into HTML
-	size_t fourthRowButtonsPlaceholderPos = contentHTML.find(PAGES_BUTTONS_PLACEHOLDER);
+	size_t fourthRowButtonsPlaceholderPos = contentHTML.find(cts::PAGES_BUTTONS_PLACEHOLDER);
 	if (fourthRowButtonsPlaceholderPos != std::string::npos)
 	{
-		contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
+		contentHTML.replace(fourthRowButtonsPlaceholderPos, strlen(cts::PAGES_BUTTONS_PLACEHOLDER), pagesButtonsHTML);
 	}
 
 	// 1.2. Get the data of products currently added to the database
@@ -457,7 +457,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	ss.str("");
 
 	// 1.2. Insert HTML piece with the products of the restaurant into HTML
-	std::string changedPlaceholder = PRODUCT_LIST_PLACEHOLDER;
+	std::string changedPlaceholder = cts::PRODUCT_LIST_PLACEHOLDER;
 
 	size_t productListPlaceholderPos = contentHTML.find(changedPlaceholder);
 	if (productListPlaceholderPos != std::string::npos)
@@ -501,7 +501,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	ss.str("");
 
 	// 1.3. Insert HTML piece with the employees into HTML
-	std::string employeesPlaceholder = CURRENT_EMPLOYEES_PLACEHOLDER;
+	std::string employeesPlaceholder = cts::CURRENT_EMPLOYEES_PLACEHOLDER;
 
 	size_t employeesListPlaceholderPos = contentHTML.find(employeesPlaceholder);
 	if (employeesListPlaceholderPos != std::string::npos)
@@ -555,7 +555,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	currentProductsHTML = ss.str();
 	ss.str("");
 
-	std::string productsPlaceholder = CURRENT_PRODUCTS_PLACEHOLDER;
+	std::string productsPlaceholder = cts::CURRENT_PRODUCTS_PLACEHOLDER;
 
 	size_t productsListPlaceholderPos = contentHTML.find(productsPlaceholder);
 	if (productsListPlaceholderPos != std::string::npos)
@@ -581,7 +581,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	currentIngredientsHTML = ss.str();
 	ss.str("");
 
-	std::string ingredientsPlaceholder = CURRENT_INGREDIENTS_PLACEHOLDER;
+	std::string ingredientsPlaceholder = cts::CURRENT_INGREDIENTS_PLACEHOLDER;
 
 	size_t ingredientsListPlaceholderPos = contentHTML.find(ingredientsPlaceholder);
 	if (ingredientsListPlaceholderPos != std::string::npos)
@@ -607,7 +607,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	currentAllergensHTML = ss.str();
 	ss.str("");
 
-	std::string allergensPlaceholder = CURRENT_ALLERGENS_PLACEHOLDER;
+	std::string allergensPlaceholder = cts::CURRENT_ALLERGENS_PLACEHOLDER;
 
 	size_t allergensListPlaceholderPos = contentHTML.find(allergensPlaceholder);
 	if (allergensListPlaceholderPos != std::string::npos)

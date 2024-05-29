@@ -5,17 +5,17 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
 	#if MIDDLEWARE_ACTIVATED
 	bool authenticated = false;
 
-	if (AUTH_NEEDED)
+	if (cts::AUTH_NEEDED)
 	{
-		auto cookieHeader = req.get_header_value(SESSION_TOKEN_NAME);
+		auto cookieHeader = req.get_header_value(cts::SESSION_TOKEN_NAME);
 		if (!cookieHeader.empty())
 		{
 			CROW_LOG_INFO << "Cookie header: " << cookieHeader;
 
-			size_t pos = cookieHeader.find(SESSION_TOKEN_NAME) + SESSION_TOKEN_NAME.size() + 1;
+			size_t pos = cookieHeader.find(cts::SESSION_TOKEN_NAME) + cts::SESSION_TOKEN_NAME.size() + 1;
 			if (pos != std::string::npos)
 			{
-				std::string session_token = cookieHeader.substr(pos, SESSION_TOKEN_LENGTH);
+				std::string session_token = cookieHeader.substr(pos, cts::SESSION_TOKEN_LENGTH);
 				CROW_LOG_INFO << "Received session token: " << session_token;
 
 				if (!database.getEmployeeBySessionToken(session_token).isEmpty()) authenticated = true;
