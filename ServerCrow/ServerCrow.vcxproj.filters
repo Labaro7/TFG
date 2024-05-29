@@ -37,6 +37,9 @@
     <Filter Include="Archivos de recursos\js\editModules">
       <UniqueIdentifier>{6e065d4a-845c-4787-ad31-b37026d97deb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{a965e25a-1d6b-4bf8-bc01-350c0fd1c430}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -102,7 +105,12 @@
     <None Include="static\admin_stats.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="..\..\scripts\bot.py" />
+    <None Include="..\..\scripts\bot.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\scripts\LineCounterScript.bat">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.hpp">

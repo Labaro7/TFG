@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\scripts\bot.py" />
+    <None Include="..\scripts\LineCounterScript.bat" />
     <None Include="ssl\server.crt" />
     <None Include="ssl\server.csr" />
     <None Include="ssl\server.key" />
