@@ -105,10 +105,10 @@
     <None Include="static\admin_stats.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="..\..\scripts\bot.py">
+    <None Include="scripts\bot.py">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\scripts\LineCounterScript.bat">
+    <None Include="scripts\LineCounterScript.bat">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

@@ -1,6 +1,6 @@
 @echo off
-set "directory=../ServerCrow"  REM Specify your directory path here
-set "extensions=*.hpp *.cpp *.js *.css *.html"
+set "directory=../"  REM Specify your directory path here
+set "extensions=*.hpp *.cpp *.js *.css *.html *.py *.bat"
 set "excludedFile=crow_all.hpp"
 set /a "totalLines=0"
 
