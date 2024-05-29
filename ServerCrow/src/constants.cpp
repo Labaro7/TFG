@@ -28,7 +28,7 @@ const char* TICKET_BILL_PLACEHOLDER = "<!-- PLACEHOLDER: TABLE BILL -->";
 const char* PAGES_BUTTONS_PLACEHOLDER = "<!-- PLACEHOLDER: PRODUCTS PAGES BUTTONS -->";
 const char* BRAND_IMAGE_URL_PLACEHOLDER = "<!-- PLACEHOLDER: BRAND IMAGE URL -->";
 const char* BRAND_IMAGE_URL = "";
-const char* BRAND_IMAGE = ("https://" + cts::SERVER_IP + ":" + std::to_string(cts::SERVER_PORT) + cts::BRAND_IMAGE_URL).c_str();
+const char* BRAND_IMAGE = ("https://" + SERVER_IP + ":" + std::to_string(SERVER_PORT) + BRAND_IMAGE_URL).c_str();
 int N_FOURTH_ROW_BUTTONS = 6;
 
 const char* CURRENT_PRODUCTS_PLACEHOLDER = "<!-- PLACEHOLDER: CURRENT PRODUCTS -->";

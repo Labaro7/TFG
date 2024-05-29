@@ -6,6 +6,7 @@
 
 namespace cts
 {
+
 // Crow constants
 extern const std::string SERVER_IP;
 extern const int SERVER_PORT;
