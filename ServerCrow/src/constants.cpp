@@ -6,15 +6,14 @@ constexpr int SERVER_PORT = 18080;
 const std::string SERVER_NAME = "DINET";
 const std::string CRT_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt"; // TODO: Put relative path
 const std::string KEY_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key"; // TODO: Put relative path
-const bool AUTH_NEEDED = true;
+const bool AUTH_NEEDED = false;
 
 // Routes
 // TODO: Change to relative paths.
 extern const std::string LOGIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\login.html";
 extern const std::string INDEX_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\index.html";
 extern const std::string TABLE_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\table.html";
-extern const std::string EDIT_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\edit.html";
-extern const std::string STATS_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\stats.html";
+extern const std::string ADMIN_HTML_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\templates\\admin.html";
 
 // HTML constants
 const char* TABLES_PRICES_PLACEHOLDER = "<!-- PLACEHOLDER: TABLES PRICES -->";

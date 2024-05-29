@@ -9,7 +9,7 @@
 class BillAPI : public ApiRoute
 {
 public:
-	BillAPI(std::shared_ptr<Database> database);
+	BillAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr);
 
 	std::string extractURISegment(std::string& uri) override;
 

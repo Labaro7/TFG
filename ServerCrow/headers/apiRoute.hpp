@@ -15,6 +15,7 @@ public:
 
 protected:
 	std::shared_ptr<Database> database;
+	std::shared_ptr<std::shared_ptr<Database>> database_ptr;
 };
 
 #endif

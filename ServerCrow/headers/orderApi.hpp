@@ -9,7 +9,7 @@
 class OrderAPI : public ApiRoute
 {
 public:
-	OrderAPI(std::shared_ptr<Database> database);
+	OrderAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr);
 
 	std::string extractURISegment(std::string& uri) override;
 

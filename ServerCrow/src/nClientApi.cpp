@@ -1,9 +1,10 @@
 #include "..\headers\nClientApi.hpp"
 #include <regex>
 
-NClientAPI::NClientAPI(std::shared_ptr<Database> database)
+NClientAPI::NClientAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
 {
-	this->database = database;
+	this->database_ptr = database_ptr;
+	this->database = *database_ptr;
 }
 
 std::string NClientAPI::extractURISegment(std::string& uri)

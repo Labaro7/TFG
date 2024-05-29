@@ -22,12 +22,13 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
 			}
 		}
 
-		if (!authenticated && req.url != "/login")
+		if (!authenticated && req.url != "/login" && req.url != "/static/login.css" && req.url != "/static/login.js" && req.url != "/static/favicon.png")
 		{
-			res.redirect("/login");
+			req.url = "/login";
+
 			CROW_LOG_INFO << "Redirecting...";
 		}
-		else if (authenticated)
+		else
 		{
 			CROW_LOG_INFO << "Authenticated";
 		}

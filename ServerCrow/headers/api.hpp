@@ -34,10 +34,13 @@ public:
 
 	crow::json::wvalue retrieveRequest(std::string& uri);
 
+	void setDatabase(std::shared_ptr<std::shared_ptr<Database>> database_ptr);
+
 protected:
 	API() = delete;
 
 	std::shared_ptr<Database> database;
+	std::shared_ptr<std::shared_ptr<Database>> database_ptr;
 
 	std::shared_ptr<OrderAPI> orderAPI;		// /api/orders
 	std::shared_ptr<BillAPI> billAPI;		// /api/bills

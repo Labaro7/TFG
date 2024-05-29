@@ -1,9 +1,10 @@
 #include "..\headers\billApi.hpp"
 #include <regex>
 
-BillAPI::BillAPI(std::shared_ptr<Database> database)
+BillAPI::BillAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
 {
-	this->database = database;
+	this->database_ptr = database_ptr;
+	this->database = *database_ptr;
 }
 
 std::string BillAPI::extractURISegment(std::string& uri)

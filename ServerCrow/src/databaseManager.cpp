@@ -5,11 +5,11 @@ DatabaseManager::DatabaseManager()
     currentDatabase = std::make_shared<Database>();
 }
 
-std::shared_ptr<DatabaseManager> DatabaseManager::getInstance()
+DatabaseManager& DatabaseManager::getInstance()
 {
-    static std::shared_ptr<DatabaseManager> instance(new DatabaseManager());
+    static DatabaseManager dbManager;
 
-    return instance;
+    return dbManager;
 }
 
 std::string DatabaseManager::getDatabases()

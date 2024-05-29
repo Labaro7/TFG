@@ -69,13 +69,13 @@
     <None Include="ssl\server.key">
       <Filter>ssl</Filter>
     </None>
-    <None Include="templates\edit.html">
+    <None Include="templates\admin.html">
       <Filter>Archivos de recursos\html</Filter>
     </None>
-    <None Include="static\edit.css">
+    <None Include="static\admin.css">
       <Filter>Archivos de recursos\css</Filter>
     </None>
-    <None Include="static\edit.js">
+    <None Include="static\admin.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
     <None Include="templates\login.html">
@@ -87,30 +87,22 @@
     <None Include="static\login.js">
       <Filter>Archivos de recursos\js</Filter>
     </None>
-    <None Include="templates\stats.html">
-      <Filter>Archivos de recursos\html</Filter>
-    </None>
-    <None Include="static\stats.css">
-      <Filter>Archivos de recursos\css</Filter>
-    </None>
-    <None Include="static\stats.js">
-      <Filter>Archivos de recursos\js</Filter>
-    </None>
-    <None Include="static\edit_config.js">
+    <None Include="static\admin_config.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="static\edit_employees.js">
+    <None Include="static\admin_employees.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="static\edit_products.js">
+    <None Include="static\admin_products.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="static\edit_productsAndAllergens.js">
+    <None Include="static\admin_productsAndAllergens.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
-    <None Include="static\edit_stats.js">
+    <None Include="static\admin_stats.js">
       <Filter>Archivos de recursos\js\editModules</Filter>
     </None>
+    <None Include="..\..\scripts\bot.py" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\database.hpp">

@@ -2,7 +2,9 @@
 #include "..\headers\constants.hpp"
 
 // index.html
-std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tablesPricesPlaceholder, Server& server)
+std::string insertDataInPlaceHolders(std::ifstream* file, 
+									 const std::string& tablesPricesPlaceholder, 
+									 Server& server)
 {
 	std::stringstream ssHTML;
 	ssHTML << file->rdbuf();
@@ -34,7 +36,11 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 }
 
 // table.html
-std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tableNumberPlaceholder, const int& n_table, const std::vector<Product> products, Server& server)
+std::string insertDataInPlaceHolders(std::ifstream* file, 
+									 const std::string& tableNumberPlaceholder, 
+									 const int& n_table, 
+									 const std::vector<Product>& products, 
+									 Server& server)
 {
 	// Data to insert into HTML
 	// 1. Table number
@@ -308,8 +314,10 @@ std::string insertDataInPlaceHolders(std::ifstream* file, const std::string tabl
 	return contentHTML;
 }
 
-// edit.html
-std::string insertDataInPlaceHolders2(std::ifstream* file, const std::string& productListPlaceHolder, Server& server)
+// admin.html
+std::string insertDataInPlaceHolders2(std::ifstream* file, 
+									  const std::string& productListPlaceHolder, 
+									  Server& server)
 {
 	// Data to insert into HTML
 	// 1. Current products

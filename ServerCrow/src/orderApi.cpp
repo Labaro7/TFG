@@ -1,9 +1,10 @@
 #include "..\headers\orderApi.hpp"
 #include <regex>
 
-OrderAPI::OrderAPI(std::shared_ptr<Database> database)
+OrderAPI::OrderAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
 {
-	this->database = database;
+	this->database_ptr = database_ptr;
+	this->database = *database_ptr;
 }
 
 std::string OrderAPI::extractURISegment(std::string& uri)
@@ -49,8 +50,6 @@ crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 
 	if (orders.size() > 0)
 	{
-		std::cout << "build " << orders[0].id << std::endl;
-
 		std::reverse(orders.begin(), orders.end());
 
 		for (const auto& order : orders)
@@ -147,6 +146,6 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 		data = buildOrdersJSON(database->getOrders());
 	}
 
-	std::cout << data.dump() << std::endl;
+	//std::cout << data.dump() << std::endl;
 	return data;
 }

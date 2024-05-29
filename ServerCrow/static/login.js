@@ -18,7 +18,7 @@ function getCookie(cookieName) {
     return null;
 }
 
-function login() {
+async function login() {
     let data = {
         username: username.value,
         password: password.value,
@@ -26,29 +26,22 @@ function login() {
 
     const url = '/login';
     console.log("c");
-    fetch(url, {
+    let response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
     })
-        .then(response => {
-            const cookieHeader = response.headers.get('Set-Cookie');
-
-            if (cookieHeader) {
-                document.cookie = cookieHeader;
-
-                console.log("a1");
-                setTimeout(() => { window.location.href = "/"; }, 100);
-                console.log("a2");
-            } else {
-                console.log("No 'Set-Cookie' header in the response");
-            }
-
-
-        })
         .catch(error => {
             console.error('Error:', error);
         });
+
+    if (response.ok) {
+        window.location.replace('/');
+    }
+
+
+    //setTimeout(() => { window.location.replace("/"); }, 100);
+
 }

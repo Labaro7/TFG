@@ -3,10 +3,12 @@
 API::API(std::shared_ptr<Database> database)
 {
 	this->database = database;
-	orderAPI = std::make_shared<OrderAPI>(database);
-	billAPI = std::make_shared<BillAPI>(database);
-	nClientAPI = std::make_shared<NClientAPI>(database);
-	productAPI = std::make_shared<ProductAPI>(database);
+	this->database_ptr = std::make_shared<std::shared_ptr<Database>>(database);
+
+	orderAPI = std::make_shared<OrderAPI>(database_ptr);
+	billAPI = std::make_shared<BillAPI>(database_ptr);
+	nClientAPI = std::make_shared<NClientAPI>(database_ptr);
+	productAPI = std::make_shared<ProductAPI>(database_ptr);
 }
 
 std::string API::extractURISegment(std::string& uri)
@@ -153,4 +155,10 @@ crow::json::wvalue API::retrieveRequest(std::string& uri)
 	{
 		CROW_LOG_WARNING << "[EXCEPTION] Could not get retrieve request by API. Error message: " << e.what();
 	}
+}
+
+void API::setDatabase(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
+{
+	this->database_ptr = database_ptr;
+	this->database = *database_ptr;
 }

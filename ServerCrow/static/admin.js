@@ -1,8 +1,8 @@
-/*import * as Stats from "./edit_stats.js";
-import * as Products from "./edit_products.js";
-import * as Employees from "./edit_employees.js";
-import * as ProductsAndAllergens from "./edit_productsAndAllergens.js";
-import * as Config from "./edit_config.js";*/
+/*import * as Stats from "./admin_stats.js";
+import * as Products from "./admin_products.js";
+import * as Employees from "./admin_employees.js";
+import * as ProductsAndAllergens from "./admin_productsAndAllergens.js";
+import * as Config from "./admin_config.js";*/
 
 const SELECTED_BACKGROUND_COLOR = "rgb(28, 89, 176)";
 const SELECTED_TEXT_COLOR = "white";
@@ -160,7 +160,7 @@ function addProduct() {
             deployable: deployable,
         };
 
-        const url = "/edit/add/product";
+        const url = "/admin/add/product";
         fetch(url, {
             method: 'POST',
             headers: {
@@ -176,7 +176,7 @@ function addProduct() {
                 console.error('Error:', error);
             });
 
-        setTimeout(() => { window.location.href = "/edit"; }, 100);
+        setTimeout(() => { window.location.href = "/admin"; }, 100);
     }
     else {
         alert("Complete the necessary fields");
@@ -220,7 +220,7 @@ function modifyProduct() {
         };
 
         // TODO: Load page when response is received
-        const url = "/edit/modify/product";
+        const url = "/admin/modify/product";
         fetch(url, {
             method: 'POST',
             headers: {
@@ -229,7 +229,7 @@ function modifyProduct() {
             body: JSON.stringify(data),
         })
             .then(response => {
-                if (response.ok) setTimeout(() => { window.location.href = "/edit"; }, 100);
+                if (response.ok) setTimeout(() => { window.location.href = "/admin"; }, 100);
             })
             .then(data => {
                 console.log('Response:', data);
@@ -250,7 +250,7 @@ function deleteProduct() {
         selectedElementPage: selectedElementPage
     }
 
-    const url = "/edit/delete/product";
+    const url = "/admin/delete/product";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -259,7 +259,7 @@ function deleteProduct() {
         body: JSON.stringify(data),
     })
         .then(response => {
-            if (response.ok) setTimeout(() => { window.location.href = "/edit"; }, 100);
+            if (response.ok) setTimeout(() => { window.location.href = "/admin"; }, 100);
         })
         .then(data => {
             console.log('Response:', data);
@@ -377,7 +377,7 @@ function addEmployeeDetails() {
         newEmployee: newEmployee
     }
 
-    const url = "/edit/add/employee";
+    const url = "/admin/add/employee";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -386,7 +386,7 @@ function addEmployeeDetails() {
         body: JSON.stringify(data),
     })
         .then(response => {
-            setTimeout(() => { window.location.href = "/edit"; }, 100);
+            setTimeout(() => { window.location.href = "/admin"; }, 100);
         })
         .then(data => {
             console.log('Response:', data);
@@ -412,7 +412,7 @@ function deleteEmployeeDetails() {
         oldEmployee: oldEmployee
     }
 
-    const url = "/edit/delete/employee";
+    const url = "/admin/delete/employee";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -421,7 +421,7 @@ function deleteEmployeeDetails() {
         body: JSON.stringify(data),
     })
         .then(response => {
-            setTimeout(() => { window.location.href = "/edit"; }, 100);
+            setTimeout(() => { window.location.href = "/admin"; }, 100);
         })
         .then(data => {
             console.log('Response:', data);
@@ -725,7 +725,7 @@ function saveIngredients() {
         data.added_ingredients.push(ingredientElement.children[0].value);
     }
 
-    const url = "/edit/add/ingredient";
+    const url = "/admin/add/ingredient";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -741,7 +741,7 @@ function saveIngredients() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/edit"; }, 100);
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }
 
 function deleteIngredients() {
@@ -749,7 +749,7 @@ function deleteIngredients() {
         deleted_ingredients: selectedIngredients
     }
 
-    const url = "/edit/delete/ingredient";
+    const url = "/admin/delete/ingredient";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -765,7 +765,7 @@ function deleteIngredients() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/edit"; }, 100);
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }
 
 function displayAllergens(clickedProduct) {
@@ -961,7 +961,7 @@ function saveAllergens() {
         data.added_allergens.push(allergenElement.children[0].value);
     }
 
-    const url = "/edit/add/allergen";
+    const url = "/admin/add/allergen";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -977,7 +977,7 @@ function saveAllergens() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/edit"; }, 100);
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }
 
 function deleteAllergens() {
@@ -985,7 +985,7 @@ function deleteAllergens() {
         deleted_allergens: selectedAllergens
     }
 
-    const url = "/edit/delete/allergen";
+    const url = "/admin/delete/allergen";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -1001,7 +1001,7 @@ function deleteAllergens() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/edit"; }, 100);
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }
 
 
@@ -1014,7 +1014,7 @@ function saveRelationships() {
 
     console.log(data);
 
-    const url = "/edit/add/relationship";
+    const url = "/admin/add/relationship";
     fetch(url, {
         method: 'POST',
         headers: {
@@ -1030,5 +1030,5 @@ function saveRelationships() {
             console.error('Error:', error);
         });
 
-    setTimeout(() => { window.location.href = "/edit"; }, 100);
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }

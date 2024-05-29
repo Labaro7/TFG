@@ -35,6 +35,7 @@ public:
 	// Init
 	void initialize() override;
 	void dropAllTables() override;
+	void setCurrentDatabase(const std::string& databaseName);
 
 
 	// Save
@@ -121,10 +122,10 @@ public:
 	void printIngredients() override;
 	void printAllergens() override;
 
-
 private:
-	std::shared_ptr<DatabaseManager> dbManager;
+	DatabaseManager& dbManager;
 	std::shared_ptr<API> api;
+
 public:
 	std::shared_ptr<Restaurant> restaurant;
 };

@@ -10,7 +10,13 @@
 class DatabaseManager
 {
 public:
-    static std::shared_ptr<DatabaseManager> getInstance();
+    ~DatabaseManager();
+
+    DatabaseManager(const DatabaseManager&) = delete;
+
+    //DatabaseManager& operator=(const DatabaseManager&) = delete;
+
+    static DatabaseManager& getInstance();
 
     std::string getDatabases();
 
@@ -26,16 +32,11 @@ public:
                              const std::string& password,
                              const std::string& databaseName);
 
-    ~DatabaseManager();
-
-    DatabaseManager(const DatabaseManager&) = delete;
-
-    DatabaseManager& operator=(const DatabaseManager&) = delete;
 
 private:
     DatabaseManager(); 
 
-    static std::shared_ptr<DatabaseManager> instance;
+    static DatabaseManager dbManager;
     std::shared_ptr<Database> currentDatabase;
     std::map<std::string, std::shared_ptr<Database>> databases;
 };

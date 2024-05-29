@@ -1,8 +1,9 @@
 #include "..\headers\productApi.hpp"
 
-ProductAPI::ProductAPI(std::shared_ptr<Database> database)
+ProductAPI::ProductAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
 {
-	this->database = database;
+	this->database_ptr = database_ptr;
+	this->database = *database_ptr;
 }
 
 std::string ProductAPI::extractURISegment(std::string& uri)
@@ -63,6 +64,18 @@ crow::json::wvalue ProductAPI::buildOrderedProductsJSON(const std::unordered_map
 
 		data.push_back(products_json);
 	}
+
+	return data;
+}
+
+crow::json::wvalue ProductAPI::buildOrderedProductsJSON(const Table& table)
+{
+	crow::json::wvalue data;
+
+	data["n_table"] = table.n_table;
+	data["bill"] = table.bill;
+	data["n_clients"] = table.n_clients;
+	data["discount"] = table.discount;
 
 	return data;
 }
@@ -157,7 +170,6 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		try
 		{
 			const double price = std::stod(extractURISegment(uri));
-			std::cout << price << std::endl;
 			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPrice(price);
 
 			if (!products.empty())
@@ -170,12 +182,34 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 			CROW_LOG_WARNING << "Invalid argument in std::stoi";
 		}
 	}
-	else if (mode == "")
+	else if (mode == "ALL")
 	{
-		data = buildOrderedProductsJSON(database->getOrderedProducts());
+		std::unordered_map<int, OrderedProduct> products = database->getOrderedProducts();
+
+		if (!products.empty())
+		{
+			data = buildOrderedProductsJSON(products);
+		}
+	}
+	else if(mode == "TABLE")
+	{
+		if (isNumeric(uri))
+		{
+			const int n_table = std::stoi(uri);
+
+			data = buildOrderedProductsJSON(database->getTableByNumber(n_table));
+		}
+	}
+	else
+	{
+		std::unordered_map<int, OrderedProduct> products = database->getOrderedProducts();
+
+		if (!products.empty())
+		{
+			data = buildOrderedProductsJSON(products);
+		}
 	}
 
-
-	std::cout << data.dump() << std::endl;
+	//std::cout << data.dump() << std::endl;
 	return data;
 }

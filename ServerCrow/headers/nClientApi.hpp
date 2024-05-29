@@ -9,7 +9,7 @@
 class NClientAPI : public ApiRoute
 {
 public:
-	NClientAPI(std::shared_ptr<Database> database);
+	NClientAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr);
 
 	std::string extractURISegment(std::string& uri) override;
 

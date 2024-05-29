@@ -3,29 +3,14 @@
 #include "..\headers\domain.hpp"
 #include <sstream>
 
-Server::Server()
+Server::Server() : dbManager(DatabaseManager::getInstance())
 {
-	dbManager = DatabaseManager::getInstance();
-
-	//database = std::make_shared<Database>();
-	api = std::make_shared<API>(dbManager->getCurrentDatabase());
+	api = std::make_shared<API>(dbManager.getCurrentDatabase());
 	restaurant = std::make_shared<Restaurant>();
-
-	if (dbManager)
-	{
-		std::cout << "asd " << dbManager->getDatabases() << std::endl;
-	}
-	else
-	{
-		std::cout << "NO" << std::endl;
-	}
-
 }
 
-Server::Server(Server& server)
+Server::Server(Server& server) : dbManager(DatabaseManager::getInstance())
 {
-	dbManager = server.dbManager;
-	//database = server.database;
 	api = server.api;
 	restaurant = server.restaurant;
 }
@@ -37,19 +22,12 @@ Server::~Server()
 
 std::shared_ptr<Database> Server::db()
 {
-	std::shared_ptr<Database> res = nullptr;
-
-	if (dbManager && dbManager->getCurrentDatabase())
-	{
-		res = dbManager->getCurrentDatabase();
-	}
-
-	return res;
+	return dbManager.getCurrentDatabase();
 }
 
 void Server::initialize()
 {
-	dbManager->getCurrentDatabase()->initialize();
+	dbManager.getCurrentDatabase()->initialize();
 
 	// Make the restaurant instances that store different cfigs of products
 	using productsMenus_t = std::vector<std::tuple<Product, std::vector<Product>>>;
@@ -198,6 +176,13 @@ void Server::initialize()
 	pages[3] = { };
 	pages[4] = { };
 	//restaurant->pages = pages;
+}
+
+void Server::setCurrentDatabase(const std::string& databaseName)
+{
+	this->dbManager.setCurrentDatabase(databaseName);
+
+	this->api->setDatabase(std::make_shared<std::shared_ptr<Database>>(std::make_shared<Database>(db())));
 }
 
 std::vector<Product> Server::getProductsByDeployableId(const int& deployable_id)

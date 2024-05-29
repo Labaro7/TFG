@@ -105,10 +105,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\User\Desktop\TFG\ServerCrow\ServerCrow\headers\curl\include\curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\User\Desktop\TFG\ServerCrow\ServerCrow\headers\curl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Users\User\Desktop\TFG\ServerCrow\ServerCrow\headers\curl\lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CROW_ENABLE_SSL;STATIC_CONCPP;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\OpenSSL-Win64\include;C:\MySQL ConnectorCpp\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\User\Desktop\TFG\ServerCrow\curl-8.8.0\curl-8.8.0\x64_Release\include;C:\Program Files\OpenSSL-Win64\include;C:\MySQL ConnectorCpp\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -127,33 +130,35 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\MySQL ConnectorCpp\lib64\vs14;C:\Program Files\OpenSSL-Win64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mysqlcppconn-static.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\User\Desktop\TFG\ServerCrow\curl-8.8.0\curl-8.8.0\x64_Release\lib;C:\MySQL ConnectorCpp\lib64\vs14;C:\Program Files\OpenSSL-Win64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Normaliz.lib;ws2_32.lib;wldap32.lib;crypt32.lib;advapi32.lib;libssl.lib;libcrypto.lib;mysqlcppconn-static.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\scripts\bot.py" />
     <None Include="ssl\server.crt" />
     <None Include="ssl\server.csr" />
     <None Include="ssl\server.key" />
-    <None Include="static\edit.css" />
-    <None Include="static\edit.js" />
-    <None Include="static\edit_config.js" />
-    <None Include="static\edit_employees.js" />
-    <None Include="static\edit_products.js" />
-    <None Include="static\edit_productsAndAllergens.js" />
-    <None Include="static\edit_stats.js" />
+    <None Include="static\admin.css" />
+    <None Include="static\admin.js" />
+    <None Include="static\admin_config.js" />
+    <None Include="static\admin_employees.js" />
+    <None Include="static\admin_products.js" />
+    <None Include="static\admin_productsAndAllergens.js" />
+    <None Include="static\admin_stats.js" />
     <None Include="static\index.css" />
     <None Include="static\index.js" />
     <None Include="static\login.css" />
     <None Include="static\login.js" />
-    <None Include="static\stats.css" />
-    <None Include="static\stats.js" />
     <None Include="static\table.css" />
     <None Include="static\table.js" />
-    <None Include="templates\edit.html" />
+    <None Include="templates\admin.html" />
     <None Include="templates\index.html" />
     <None Include="templates\login.html" />
-    <None Include="templates\stats.html" />
     <None Include="templates\table.html" />
     <None Include="vcpkg.json" />
   </ItemGroup>
