@@ -1,6 +1,6 @@
-#include "..\headers\database.hpp"
-#include "..\headers\crow_all.hpp"
-#include "..\headers\domain.hpp"
+#include "..\include\database.hpp"
+#include "..\include\crow_all.hpp"
+#include "..\include\domain.hpp"
 #include <unordered_map>
 
 Database::Database() : pstmt(), name()

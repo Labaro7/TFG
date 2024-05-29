@@ -2,8 +2,8 @@
 #ifndef _PLACEHOLDERS_HPP_
 #define _PLACEHOLDERS_HPP_
 
-#include "..\headers\server.hpp"
-#include "..\headers\database.hpp"
+#include "..\include\server.hpp"
+#include "..\include\database.hpp"
 #include <string>
 
 // These functions insert data from the DB into the HTML placeholders.

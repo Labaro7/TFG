@@ -1,6 +1,6 @@
-#include "..\headers\domain.hpp"
+#include "..\include\domain.hpp"
 #include <iostream>
-#include "../headers/constants.hpp"
+#include "../include/constants.hpp"
 
 /* ------------------------------------------- TABLE ------------------------------------------- */
 Table::Table() :

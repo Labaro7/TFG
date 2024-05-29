@@ -1,4 +1,4 @@
-#include "../headers/databaseManager.hpp"
+#include "../include/databaseManager.hpp"
 
 DatabaseManager::DatabaseManager()
 {

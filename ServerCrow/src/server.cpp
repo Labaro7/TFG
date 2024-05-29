@@ -1,6 +1,6 @@
-#include "..\headers\server.hpp"
-#include "..\headers\crow_all.hpp"
-#include "..\headers\domain.hpp"
+#include "..\include\server.hpp"
+#include "..\include\crow_all.hpp"
+#include "..\include\domain.hpp"
 #include <sstream>
 
 Server::Server() : dbManager(DatabaseManager::getInstance())

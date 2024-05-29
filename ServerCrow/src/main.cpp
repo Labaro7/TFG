@@ -1,8 +1,8 @@
-#include "..\headers\server.hpp"
-#include "..\headers\domain.hpp"
-#include "..\headers\constants.hpp"
-#include "..\headers\placeholders.hpp"
-#include "..\headers\authMiddleware.hpp"
+#include "..\include\server.hpp"
+#include "..\include\domain.hpp"
+#include "..\include\constants.hpp"
+#include "..\include\placeholders.hpp"
+#include "..\include\authMiddleware.hpp"
 #include <tuple>
 #include <chrono>
 #include <iomanip>

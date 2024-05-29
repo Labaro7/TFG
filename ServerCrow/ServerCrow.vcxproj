@@ -164,23 +164,6 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\api.hpp" />
-    <ClInclude Include="headers\apiRoute.hpp" />
-    <ClInclude Include="headers\authMiddleware.hpp" />
-    <ClInclude Include="headers\billApi.hpp" />
-    <ClInclude Include="headers\constants.hpp" />
-    <ClInclude Include="headers\crow_all.hpp" />
-    <ClInclude Include="headers\database.hpp" />
-    <ClInclude Include="headers\databaseManager.hpp" />
-    <ClInclude Include="headers\domain.hpp" />
-    <ClInclude Include="headers\interface.hpp" />
-    <ClInclude Include="headers\nClientApi.hpp" />
-    <ClInclude Include="headers\orderApi.hpp" />
-    <ClInclude Include="headers\placeholders.hpp" />
-    <ClInclude Include="headers\productApi.hpp" />
-    <ClInclude Include="headers\server.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\api.cpp" />
     <ClCompile Include="src\authMiddleware.cpp" />
     <ClCompile Include="src\billApi.cpp" />
@@ -194,6 +177,23 @@
     <ClCompile Include="src\placeholders.cpp" />
     <ClCompile Include="src\productApi.cpp" />
     <ClCompile Include="src\server.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\api.hpp" />
+    <ClInclude Include="include\apiRoute.hpp" />
+    <ClInclude Include="include\authMiddleware.hpp" />
+    <ClInclude Include="include\billApi.hpp" />
+    <ClInclude Include="include\constants.hpp" />
+    <ClInclude Include="include\crow_all.hpp" />
+    <ClInclude Include="include\database.hpp" />
+    <ClInclude Include="include\databaseManager.hpp" />
+    <ClInclude Include="include\domain.hpp" />
+    <ClInclude Include="include\interface.hpp" />
+    <ClInclude Include="include\nClientApi.hpp" />
+    <ClInclude Include="include\orderApi.hpp" />
+    <ClInclude Include="include\placeholders.hpp" />
+    <ClInclude Include="include\productApi.hpp" />
+    <ClInclude Include="include\server.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

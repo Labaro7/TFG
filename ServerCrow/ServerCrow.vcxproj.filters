@@ -113,53 +113,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\database.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\server.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\crow_all.hpp">
-      <Filter>Archivos de encabezado\crow</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\constants.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\placeholders.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\domain.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\authMiddleware.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\interface.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\api.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\orderApi.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\billApi.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\nClientApi.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\apiRoute.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\productApi.hpp">
-      <Filter>Archivos de encabezado\api</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\databaseManager.hpp">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\database.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
@@ -199,5 +152,52 @@
     <ClCompile Include="src\databaseManager.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\authMiddleware.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\constants.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\database.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\databaseManager.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\domain.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\interface.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\placeholders.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\productApi.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\server.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\apiRoute.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\billApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nClientApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orderApi.hpp">
+      <Filter>Archivos de encabezado\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\crow_all.hpp">
+      <Filter>Archivos de encabezado\crow</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

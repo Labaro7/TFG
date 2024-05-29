@@ -1,4 +1,4 @@
-#include "..\headers\authMiddleware.hpp"
+#include "..\include\authMiddleware.hpp"
 
 void AuthMiddleware::before_handle(crow::request& req, crow::response& res, context& ctx)
 {

@@ -1,4 +1,4 @@
-#include "..\headers\productApi.hpp"
+#include "..\include\productApi.hpp"
 
 ProductAPI::ProductAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
 {

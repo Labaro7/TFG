@@ -1,4 +1,4 @@
-#include "..\headers\nClientApi.hpp"
+#include "..\include\nClientApi.hpp"
 #include <regex>
 
 NClientAPI::NClientAPI(std::shared_ptr<std::shared_ptr<Database>> database_ptr)
