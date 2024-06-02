@@ -22,6 +22,7 @@
 class Database : public Interface
 {
 public:
+
 	Database();
 	Database(const Database& database);
 	Database(const std::string& hostName,
@@ -31,7 +32,6 @@ public:
 			 const std::string& databaseName);
 	Database(const std::shared_ptr<Database> database);
 	~Database();
-
 
 	// Database
 	void MySqlCreateDatabase(const std::string name);

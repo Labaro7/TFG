@@ -1,5 +1,7 @@
 #include "..\include\authMiddleware.hpp"
 
+AuthMiddleware::AuthMiddleware() : server(Server::getInstance()) {}
+
 void AuthMiddleware::before_handle(crow::request& req, crow::response& res, context& ctx)
 {
 	#if MIDDLEWARE_ACTIVATED
@@ -7,18 +9,18 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
 
 	if (cts::AUTH_NEEDED)
 	{
-		auto cookieHeader = req.get_header_value(cts::SESSION_TOKEN_NAME);
+		const auto cookieHeader = req.get_header_value(cts::SESSION_TOKEN_NAME);
 		if (!cookieHeader.empty())
 		{
 			CROW_LOG_INFO << "Cookie header: " << cookieHeader;
 
-			size_t pos = cookieHeader.find(cts::SESSION_TOKEN_NAME) + cts::SESSION_TOKEN_NAME.size() + 1;
+			const size_t pos = cookieHeader.find(cts::SESSION_TOKEN_NAME) + cts::SESSION_TOKEN_NAME.size() + 1;
 			if (pos != std::string::npos)
 			{
-				std::string session_token = cookieHeader.substr(pos, cts::SESSION_TOKEN_LENGTH);
+				const std::string session_token = cookieHeader.substr(pos, cts::SESSION_TOKEN_LENGTH);
 				CROW_LOG_INFO << "Received session token: " << session_token;
 
-				if (!database.getEmployeeBySessionToken(session_token).isEmpty()) authenticated = true;
+				if (!server.db()->getEmployeeBySessionToken(session_token).isEmpty()) authenticated = true;
 			}
 		}
 

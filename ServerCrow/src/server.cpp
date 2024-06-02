@@ -3,22 +3,40 @@
 #include "..\include\domain.hpp"
 #include <sstream>
 
+Server& Server::getInstance()
+{
+	static Server server;
+
+	return server;
+}
+
 Server::Server() : dbManager(DatabaseManager::getInstance())
 {
 	api = std::make_shared<API>(dbManager.getCurrentDatabase());
 	restaurant = std::make_shared<Restaurant>();
 }
 
-Server::Server(Server& server) : dbManager(DatabaseManager::getInstance())
+Server::Server(const Server& server) : dbManager(DatabaseManager::getInstance())
 {
 	api = server.api;
 	restaurant = server.restaurant;
 }
 
-Server::~Server()
-{
-}
+Server::~Server(){}
 
+Server& Server::operator=(Server& server)
+{
+	if (this == &server)
+	{
+		return *this;
+	}
+
+	this->dbManager = server.dbManager;
+	this->api = server.api;
+	this->restaurant = server.restaurant;
+
+	return *this;
+}
 
 std::shared_ptr<Database> Server::db()
 {
@@ -183,6 +201,20 @@ void Server::setCurrentDatabase(const std::string& databaseName)
 	this->dbManager.setCurrentDatabase(databaseName);
 
 	this->api->setDatabase(std::make_shared<std::shared_ptr<Database>>(std::make_shared<Database>(db())));
+}
+
+void Server::updateHTML()
+{
+
+
+}
+
+void Server::updateTables(const int& table_id, const std::string& htmlContent)
+{
+	CROW_LOG_DEBUG << "[SV] updateTables";
+	std::unique_lock<std::mutex> lock(tablesMutex);
+
+	tables[table_id] = htmlContent;
 }
 
 std::vector<Product> Server::getProductsByDeployableId(const int& deployable_id)

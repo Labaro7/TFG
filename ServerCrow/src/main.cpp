@@ -10,9 +10,9 @@
 
 // Made with conditional macros to not restrict the scope of the app variable to the if scope.
 #if MIDDLEWARE_ACTIVATED 
-using App_T = crow::App<AuthMiddleware>;
+	using App_t = crow::App<AuthMiddleware>;
 #else 
-using App_T = crow::SimpleApp;
+	using App_t = crow::SimpleApp;
 #endif
 
 namespace
@@ -47,13 +47,14 @@ namespace
 	}
 }
 
+
 int main()
 {
-	App_T app;
-	Server server;
-
-	// Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL
-	crow::logger::setLogLevel(crow::LogLevel::Info);
+	Server server = Server::getInstance();
+	App_t app;
+	
+	// Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+	crow::logger::setLogLevel(crow::LogLevel::Debug);
 
 	CROW_LOG_INFO << "Server running on: " << cts::SERVER_IP << ":" << cts::SERVER_PORT;
 
@@ -64,15 +65,17 @@ int main()
 		([&server](const crow::request& req, crow::response& res)
 		 {
 			 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLES_PRICES_PLACEHOLDER, server);
+			 const std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLES_PRICES_PLACEHOLDER, server);
 
 			 if (modifiedHTML == "")
 			 {
-				 res.code = 500; // Internal Server Error
-				 res.body = "Error reading HTML template", "text/plain";
+				 res.set_header("Content-Type", "text/plain");
+				 res.code = 500;
+				 res.body = "Error reading HTML template";
 			 }
 
 			 res.set_header("Content-Type", "text/html");
+			 res.code = 200;
 			 res.write(modifiedHTML);
 			 res.end();
 		 });
@@ -90,6 +93,7 @@ int main()
 			 file.close();
 
 			 res.set_header("Content-Type", "text/html");
+			 res.code = 200;
 			 res.write(loginPage);
 			 res.end();
 		 });
@@ -185,51 +189,49 @@ int main()
 				 t = { n_table, n_clients, domain::product_unordered_map(), 0.0 };
 				 server.saveTable(t);
 			 }
-			 else
-			 {
-				 server.changeNumClients(t, n_clients);
 
-				 for (const auto& object : added)
-				 {
-					 const int times = object["times"].i();
-					 const std::string details = object["details"].s();
-					 const Product p(object["name"].s(),
-							   std::stod(object["price"].s()),
-							   "#FFFFFF",
-							   0,
-							   false,
-							   object["details"].s());
+				server.changeNumClients(t, n_clients);
 
-					 server.saveTableProduct(t, p, times, details, employee);
-				 }
+				for (const auto& object : added)
+				{
+					const int times = object["times"].i();
+					const std::string details = object["details"].s();
+					const Product p(object["name"].s(),
+							std::stod(object["price"].s()),
+							"#FFFFFF",
+							0,
+							false,
+							object["details"].s());
 
-				 for (const auto& object : modified)
-				 {
-					 const int new_times = object["new_amount"].i();
-					 const Product p(object["name"].s(),
-							   std::stod(object["price"].s()),
-							   "#FFFFFF",
-							   0,
-							   false,
-							   object["details"].s());
+					server.saveTableProduct(t, p, times, details, employee);
+				}
 
-					 server.changeTableProductAmount(t, p, new_times);
-				 }
+				for (const auto& object : modified)
+				{
+					const int new_times = object["new_amount"].i();
+					const Product p(object["name"].s(),
+							std::stod(object["price"].s()),
+							"#FFFFFF",
+							0,
+							false,
+							object["details"].s());
 
-				 for (const auto& object : deleted)
-				 {
-					 const int times = std::stoi(object["times"].s());
-					 const Product p(object["name"].s(),
-							   std::stod(object["price"].s()),
-							   "#FFFFFF",
-							   0,
-							   false,
-							   object["details"].s());
+					server.changeTableProductAmount(t, p, new_times);
+				}
 
-					 server.removeTableProduct(n_table, p, times);
-				 }
-			 }
+				for (const auto& object : deleted)
+				{
+					const int times = std::stoi(object["times"].s());
+					const Product p(object["name"].s(),
+							std::stod(object["price"].s()),
+							"#FFFFFF",
+							0,
+							false,
+							object["details"].s());
 
+					server.removeTableProduct(n_table, p, times);
+				}
+			
 			 res.code = 200;
 			 res.end();
 		 });
@@ -331,7 +333,7 @@ int main()
 		 });
 
 	CROW_CATCHALL_ROUTE(app)
-		([]()
+		([&server]()
 		 {
 			 return "Wrong Route";
 		 });

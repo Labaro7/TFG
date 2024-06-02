@@ -36,7 +36,6 @@ public:
 private:
     DatabaseManager(); 
 
-    static DatabaseManager dbManager;
     std::shared_ptr<Database> currentDatabase;
     std::map<std::string, std::shared_ptr<Database>> databases;
 };

@@ -23,10 +23,13 @@ class NClientAPI;
 class Server : public Interface
 {
 public:
+	static Server& getInstance();
+
 	Server();
-	Server(Server& server);
+	Server(const Server& server);
 	~Server();
 
+	Server& operator=(Server& server);
 
 	// Getter
 	std::shared_ptr<Database> db();
@@ -37,6 +40,10 @@ public:
 	void dropAllTables() override;
 	void setCurrentDatabase(const std::string& databaseName);
 
+
+	// Update HTML file
+	void updateTables(const int& table_id, const std::string& htmlContent);
+	void updateHTML();
 
 	// Save
 	void saveTable(const Table& table) override;
@@ -125,6 +132,9 @@ public:
 private:
 	DatabaseManager& dbManager;
 	std::shared_ptr<API> api;
+
+	std::mutex tablesMutex;
+	std::unordered_map<int, std::string> tables;
 
 public:
 	std::shared_ptr<Restaurant> restaurant;

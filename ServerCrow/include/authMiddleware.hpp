@@ -10,6 +10,8 @@
 class AuthMiddleware
 {
 public:
+	AuthMiddleware(); // Needed for the crow::App<AuthMiddleware> construction
+
 	struct context
 	{
 	};
@@ -23,7 +25,7 @@ public:
 					  context& ctx);
 
 private:
-	Database database;
+	Server& server;
 };
 
 #endif // !_AUTHMIDDLEWARE_HPP_

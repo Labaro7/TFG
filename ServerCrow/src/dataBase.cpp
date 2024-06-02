@@ -283,7 +283,7 @@ void Database::initializeAllergensTable()
 
 void Database::initialize()
 {
-	CROW_LOG_INFO << "[DB] initialize";
+	CROW_LOG_DEBUG << "[DB] initialize";
 
 	// Create the tables to define the domain
 	// TODO: Make n_table primary key so there are no duplicate tables
@@ -313,7 +313,7 @@ void Database::initialize()
 
 void Database::dropAllTables()
 {
-	CROW_LOG_INFO << "[DB] dropAllTables";
+	CROW_LOG_DEBUG << "[DB] dropAllTables";
 
 	try
 	{
@@ -346,7 +346,7 @@ void Database::dropAllTables()
 // Save
 void Database::saveTable(const Table& table)
 {
-	CROW_LOG_INFO << "[DB] saveTable";
+	CROW_LOG_DEBUG << "[DB] saveTable";
 
 	try
 	{
@@ -371,7 +371,7 @@ void Database::saveTable(const Table& table)
 
 void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
 {
-	CROW_LOG_INFO << "[DB] saveEmployee";
+	CROW_LOG_DEBUG << "[DB] saveEmployee";
 
 	try
 	{
@@ -432,7 +432,7 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 
 void Database::saveProduct(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] saveProduct";
+	CROW_LOG_DEBUG << "[DB] saveProduct";
 
 	try
 	{
@@ -471,7 +471,7 @@ void Database::saveProduct(const Product& product)
 
 void Database::saveOrder(const Order& order)
 {
-	CROW_LOG_INFO << "[DB] saveOrder";
+	CROW_LOG_DEBUG << "[DB] saveOrder";
 
 	try
 	{
@@ -527,7 +527,7 @@ void Database::saveOrder(const Order& order)
 // Do not use the mutex here!. This function is called from another one that uses it.
 void Database::saveOrderProduct(const Order& order, const int& product_id, const int& amount)
 {
-	CROW_LOG_INFO << "[DB] saveOrderProduct";
+	CROW_LOG_DEBUG << "[DB] saveOrderProduct";
 
 	try
 	{
@@ -557,7 +557,7 @@ void Database::saveOrderProduct(const Order& order, const int& product_id, const
 
 void Database::saveIngredient(const Ingredient& ingredient)
 {
-	CROW_LOG_INFO << "[DB] saveIngredient";
+	CROW_LOG_DEBUG << "[DB] saveIngredient";
 
 	try
 	{
@@ -585,7 +585,7 @@ void Database::saveIngredient(const Ingredient& ingredient)
 
 void Database::saveAllergen(const Allergen& allergen)
 {
-	CROW_LOG_INFO << "[DB] saveAllergen";
+	CROW_LOG_DEBUG << "[DB] saveAllergen";
 
 	try
 	{
@@ -642,7 +642,7 @@ void Database::saveTableProduct(Table& table,
 								const std::string& details,
 								const Employee& employee)
 {
-	CROW_LOG_INFO << "[DB] saveTableProduct";
+	CROW_LOG_DEBUG << "[DB] saveTableProduct";
 
 	try
 	{
@@ -730,7 +730,7 @@ void Database::saveTableProduct(Table& table,
 void Database::saveProductIngredient(const Product& product,
 									 const Ingredient& ingredient)
 {
-	CROW_LOG_INFO << "[DB] saveProductIngredient";
+	CROW_LOG_DEBUG << "[DB] saveProductIngredient";
 
 	try
 	{
@@ -772,7 +772,7 @@ void Database::saveProductIngredient(const Product& product,
 
 void Database::saveProductAllergen(const Product& product, const Allergen& allergen)
 {
-	CROW_LOG_INFO << "[DB] saveProductAllergen";
+	CROW_LOG_DEBUG << "[DB] saveProductAllergen";
 
 	try
 	{
@@ -814,7 +814,7 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 
 void Database::saveOrderedProduct(const OrderedProduct& orderedProduct)
 {
-	CROW_LOG_INFO << "[DB] saveOrderedProduct";
+	CROW_LOG_DEBUG << "[DB] saveOrderedProduct";
 
 	try
 	{
@@ -847,7 +847,7 @@ void Database::saveOrderedProduct(const OrderedProduct& orderedProduct)
 //Get
 std::vector<Table> Database::getTables()
 {
-	CROW_LOG_INFO << "[DB] getTables";
+	CROW_LOG_DEBUG << "[DB] getTables";
 
 	std::vector<Table> tables;
 
@@ -919,7 +919,7 @@ std::vector<Table> Database::getTables()
 
 Table Database::getTableByNumber(const int n_table)
 {
-	CROW_LOG_INFO << "[DB] getTableByNumber";
+	CROW_LOG_DEBUG << "[DB] getTableByNumber";
 
 	Table table;
 
@@ -982,7 +982,7 @@ Table Database::getTableByNumber(const int n_table)
 
 std::string Database::getLastModifiedFromTable(const Table& table)
 {
-	CROW_LOG_INFO << "[DB] getlastModifiedFromTable";
+	CROW_LOG_DEBUG << "[DB] getlastModifiedFromTable";
 
 	std::string last_modified;
 
@@ -1013,7 +1013,7 @@ std::string Database::getLastModifiedFromTable(const Table& table)
 
 std::vector<Employee> Database::getEmployees()
 {
-	CROW_LOG_INFO << "[DB] getEmployees";
+	CROW_LOG_DEBUG << "[DB] getEmployees";
 
 	std::vector<Employee> employees;
 
@@ -1052,7 +1052,7 @@ std::vector<Employee> Database::getEmployees()
 
 Employee Database::getEmployeeByName(const std::string& fullName)
 {
-	CROW_LOG_INFO << "[DB] getEmployeeByName";
+	CROW_LOG_DEBUG << "[DB] getEmployeeByName";
 
 	Employee employee;
 
@@ -1090,7 +1090,7 @@ Employee Database::getEmployeeByName(const std::string& fullName)
 Employee Database::getEmployeeByAccount(const std::string& username,
 										const std::string& password_hash)
 {
-	CROW_LOG_INFO << "[DB] getEmployeeByAccount";
+	CROW_LOG_DEBUG << "[DB] getEmployeeByAccount";
 
 	Employee employee;
 
@@ -1126,7 +1126,7 @@ Employee Database::getEmployeeByAccount(const std::string& username,
 
 Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 {
-	CROW_LOG_INFO << "[DB] getEmployeeBySessionToken";
+	CROW_LOG_DEBUG << "[DB] getEmployeeBySessionToken";
 
 	Employee employee;
 
@@ -1163,7 +1163,7 @@ Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 
 std::vector<Product> Database::getProducts()
 {
-	CROW_LOG_INFO << "[DB] getProducts";
+	CROW_LOG_DEBUG << "[DB] getProducts";
 
 	std::vector<Product> products;
 
@@ -1199,7 +1199,7 @@ std::vector<Product> Database::getProducts()
 
 Product Database::getProductByName(const std::string name)
 {
-	CROW_LOG_INFO << "[DB] getProductByName";
+	CROW_LOG_DEBUG << "[DB] getProductByName";
 
 	Product product;
 	try
@@ -1230,7 +1230,7 @@ Product Database::getProductByName(const std::string name)
 
 int Database::getProductIdByName(const std::string name)
 {
-	CROW_LOG_INFO << "[DB] getProductIdByName";
+	CROW_LOG_DEBUG << "[DB] getProductIdByName";
 
 	int id = 0;
 
@@ -1258,7 +1258,7 @@ int Database::getProductIdByName(const std::string name)
 
 std::vector<Product> Database::getProductsByDeployableId(const int& deployable_id)
 {
-	CROW_LOG_INFO << "[DB] getProductsByDeployableId";
+	CROW_LOG_DEBUG << "[DB] getProductsByDeployableId";
 
 	std::vector<Product> products;
 
@@ -1294,7 +1294,7 @@ std::vector<Product> Database::getProductsByDeployableId(const int& deployable_i
 
 std::pair<int, std::vector<Product>> Database::getProductsAndIds()
 {
-	CROW_LOG_INFO << "[DB] getProductsAndIds";
+	CROW_LOG_DEBUG << "[DB] getProductsAndIds";
 
 	std::unique_lock<std::mutex> lock(mutex);
 
@@ -1305,7 +1305,7 @@ std::pair<int, std::vector<Product>> Database::getProductsAndIds()
 
 std::vector<Order> Database::getOrders()
 {
-	CROW_LOG_INFO << "[DB] getOrders";
+	CROW_LOG_DEBUG << "[DB] getOrders";
 
 	std::vector<Order> orders;
 
@@ -1399,7 +1399,7 @@ std::vector<Order> Database::getOrders()
 
 Order Database::getOrderById(const int& id)
 {
-	CROW_LOG_INFO << "[DB] getOrderById";
+	CROW_LOG_DEBUG << "[DB] getOrderById";
 
 	Order order;
 
@@ -1467,13 +1467,13 @@ Order Database::getOrderById(const int& id)
 
 std::vector<Order> Database::getOrdersByDate(const std::string& date, const std::string& mode)
 {
-	CROW_LOG_INFO << "[DB] getOrdersByDate";
+	CROW_LOG_DEBUG << "[DB] getOrdersByDate";
 
 	std::vector<Order> orders;
 
 	try
 	{
-		CROW_LOG_INFO << "[DB] getOrdersByDate " << date << ".";
+		CROW_LOG_DEBUG << "[DB] getOrdersByDate " << date << ".";
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
@@ -1536,7 +1536,7 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 
 std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName)
 {
-	CROW_LOG_INFO << "[DB] getOrdersByEmployee";
+	CROW_LOG_DEBUG << "[DB] getOrdersByEmployee";
 
 	std::vector<Order> orders;
 
@@ -1604,7 +1604,7 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 
 std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 {
-	CROW_LOG_INFO << "[DB] getOrdersByMethod";
+	CROW_LOG_DEBUG << "[DB] getOrdersByMethod";
 
 	std::vector<Order> orders;
 
@@ -1672,7 +1672,7 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 
 std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 {
-	CROW_LOG_INFO << "[DB] getOrdersByNTable";
+	CROW_LOG_DEBUG << "[DB] getOrdersByNTable";
 
 	int nTable = 0;
 	try
@@ -1747,7 +1747,7 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 
 std::vector<BillAndPaid> Database::getBillsAndPaids()
 {
-	CROW_LOG_INFO << "[DB] getBillsAndPaids";
+	CROW_LOG_DEBUG << "[DB] getBillsAndPaids";
 
 	std::vector<BillAndPaid> billsAndPaids;
 
@@ -1781,7 +1781,7 @@ std::vector<BillAndPaid> Database::getBillsAndPaids()
 
 std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& date, const std::string& mode)
 {
-	CROW_LOG_INFO << "[DB] getBillsAndPaidsByDate";
+	CROW_LOG_DEBUG << "[DB] getBillsAndPaidsByDate";
 
 	std::vector<BillAndPaid> billsAndPaids;
 
@@ -1815,7 +1815,7 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& dat
 
 std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string& employeeName)
 {
-	CROW_LOG_INFO << "[DB] getBillsAndPaidsByEmployee";
+	CROW_LOG_DEBUG << "[DB] getBillsAndPaidsByEmployee";
 
 	std::vector<BillAndPaid> billsAndPaids;
 
@@ -1849,7 +1849,7 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string&
 
 int Database::getNClients()
 {
-	CROW_LOG_INFO << "[DB] getNClients";
+	CROW_LOG_DEBUG << "[DB] getNClients";
 
 	int totalNClients = 0;
 
@@ -1879,7 +1879,7 @@ int Database::getNClients()
 
 int Database::getNClientsByDate(const std::string& date, const std::string& mode)
 {
-	CROW_LOG_INFO << "[DB] getNClientsByDate";
+	CROW_LOG_DEBUG << "[DB] getNClientsByDate";
 
 	int totalNClients = 0;
 
@@ -1909,7 +1909,7 @@ int Database::getNClientsByDate(const std::string& date, const std::string& mode
 
 int Database::getNClientsByEmployee(const std::string& employeeName)
 {
-	CROW_LOG_INFO << "[DB] getNClientsByEmployee";
+	CROW_LOG_DEBUG << "[DB] getNClientsByEmployee";
 
 	int totalNClients = 0;
 
@@ -1939,7 +1939,7 @@ int Database::getNClientsByEmployee(const std::string& employeeName)
 
 std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 {
-	CROW_LOG_INFO << "[DB] getOrderedProducts";
+	CROW_LOG_DEBUG << "[DB] getOrderedProducts";
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
@@ -2019,7 +2019,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 
 OrderedProduct Database::getOrderedProductById(const int& product_id)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductById";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductById";
 
 	OrderedProduct product;
 
@@ -2078,7 +2078,7 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 
 OrderedProduct Database::getOrderedProductByName(const std::string& name)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductByName";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductByName";
 
 	OrderedProduct product;
 
@@ -2149,7 +2149,7 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 
 std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const int& page)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductByPage";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductByPage";
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
@@ -2224,7 +2224,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 
 std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const std::string& menu)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductByMenu";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductByMenu";
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
@@ -2292,7 +2292,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 
 std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const double& price)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductByPrice";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductByPrice";
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
@@ -2363,13 +2363,13 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 
 std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const std::string& date, const std::string& mode)
 {
-	CROW_LOG_INFO << "[DB] getOrderedProductsByDate";
+	CROW_LOG_DEBUG << "[DB] getOrderedProductsByDate";
 
 	std::unordered_map<int, OrderedProduct> products;
 
 	try
 	{
-		CROW_LOG_INFO << "[DB] getOrdersByDate " << date << ".";
+		CROW_LOG_DEBUG << "[DB] getOrdersByDate " << date << ".";
 		//std::unique_lock<std::mutex> lock(mutex);
 
 		std::stringstream query;
@@ -2452,7 +2452,7 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 
 std::vector<Ingredient> Database::getIngredients()
 {
-	CROW_LOG_INFO << "[DB] getIngredients";
+	CROW_LOG_DEBUG << "[DB] getIngredients";
 
 	std::vector<Ingredient> ingredients;
 
@@ -2480,7 +2480,7 @@ std::vector<Ingredient> Database::getIngredients()
 
 Ingredient Database::getIngredientByName(const std::string& name)
 {
-	CROW_LOG_INFO << "[DB] getIngredientsByName";
+	CROW_LOG_DEBUG << "[DB] getIngredientsByName";
 
 	Ingredient ingredient;
 
@@ -2509,7 +2509,7 @@ Ingredient Database::getIngredientByName(const std::string& name)
 
 std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] getIngredientsFromProduct";
+	CROW_LOG_DEBUG << "[DB] getIngredientsFromProduct";
 
 	std::vector<Ingredient> ingredients;
 
@@ -2556,7 +2556,7 @@ std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& produ
 
 std::vector<Allergen> Database::getAllergens()
 {
-	CROW_LOG_INFO << "[DB] getAllergens";
+	CROW_LOG_DEBUG << "[DB] getAllergens";
 
 	std::vector<Allergen> allergens;
 
@@ -2584,7 +2584,7 @@ std::vector<Allergen> Database::getAllergens()
 
 Allergen Database::getAllergenByName(const std::string name)
 {
-	CROW_LOG_INFO << "[DB] getAllergensByName";
+	CROW_LOG_DEBUG << "[DB] getAllergensByName";
 
 	Allergen allergen;
 
@@ -2613,7 +2613,7 @@ Allergen Database::getAllergenByName(const std::string name)
 
 std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] getAllergensFromProduct";
+	CROW_LOG_DEBUG << "[DB] getAllergensFromProduct";
 
 	std::vector<Allergen> allergens;
 
@@ -2660,7 +2660,7 @@ std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 
 std::vector<page_t> Database::getDataFromPages()
 {
-	CROW_LOG_INFO << "[DB] getDataFromPages";
+	CROW_LOG_DEBUG << "[DB] getDataFromPages";
 
 	std::vector<page_t> pages(cts::N_FOURTH_ROW_BUTTONS);
 	int i = 0;
@@ -2736,7 +2736,7 @@ std::vector<page_t> Database::getDataFromPages()
 
 std::string Database::generateSessionToken()
 {
-	CROW_LOG_INFO << "[DB] generateSessionToken";
+	CROW_LOG_DEBUG << "[DB] generateSessionToken";
 
 	std::random_device rd;
 	std::mt19937 generator(rd());
@@ -2758,7 +2758,7 @@ std::string Database::generateSessionToken()
 // Print
 void Database::printTables()
 {
-	CROW_LOG_INFO << "[DB] printTables";
+	CROW_LOG_DEBUG << "[DB] printTables";
 
 	const std::vector<Table> tables = getTables();
 
@@ -2771,7 +2771,7 @@ void Database::printTables()
 
 void Database::printEmployees()
 {
-	CROW_LOG_INFO << "[DB] printEmployees";
+	CROW_LOG_DEBUG << "[DB] printEmployees";
 
 	const std::vector<Employee> employees = getEmployees();
 
@@ -2784,7 +2784,7 @@ void Database::printEmployees()
 
 void Database::printProducts()
 {
-	CROW_LOG_INFO << "[DB] printProducts";
+	CROW_LOG_DEBUG << "[DB] printProducts";
 
 	const std::vector<Product> products = getProducts();
 
@@ -2798,7 +2798,7 @@ void Database::printProducts()
 void Database::printOrders()
 {
 	/*
-	CROW_LOG_INFO << "[DB] printOrders";
+	CROW_LOG_DEBUG << "[DB] printOrders";
 
 	const std::vector<Order> orders = getOrders();
 
@@ -2810,7 +2810,7 @@ void Database::printOrders()
 
 void Database::printIngredients()
 {
-	CROW_LOG_INFO << "[DB] printIngredients";
+	CROW_LOG_DEBUG << "[DB] printIngredients";
 
 	const std::vector<Ingredient> ingredients = getIngredients();
 
@@ -2823,7 +2823,7 @@ void Database::printIngredients()
 
 void Database::printAllergens()
 {
-	CROW_LOG_INFO << "[DB] printAllergens";
+	CROW_LOG_DEBUG << "[DB] printAllergens";
 
 	const std::vector<Allergen> allergens = getAllergens();
 
@@ -2839,7 +2839,7 @@ void Database::printAllergens()
 void Database::moveTable(const int& current_n_table,
 						 const int& new_n_table)
 {
-	CROW_LOG_INFO << "[DB] moveTable";
+	CROW_LOG_DEBUG << "[DB] moveTable";
 
 	try
 	{
@@ -2967,7 +2967,7 @@ void Database::changeTableProductAmount(const Table& table,
 										const Product& product,
 										const int& new_amount)
 {
-	CROW_LOG_INFO << "[DB] changeTableProductAmount";
+	CROW_LOG_DEBUG << "[DB] changeTableProductAmount";
 
 	try
 	{
@@ -3034,7 +3034,7 @@ void Database::changeTableProductAmount(const Table& table,
 // Remove
 void Database::removeTable(const Table& table)
 {
-	CROW_LOG_INFO << "[DB] removeTable";
+	CROW_LOG_DEBUG << "[DB] removeTable";
 
 	try
 	{
@@ -3076,7 +3076,7 @@ void Database::removeTable(const Table& table)
 
 void Database::removeEmployee(const Employee& employee)
 {
-	CROW_LOG_INFO << "[DB] removeEmployee";
+	CROW_LOG_DEBUG << "[DB] removeEmployee";
 
 	try
 	{
@@ -3099,7 +3099,7 @@ void Database::removeEmployee(const Employee& employee)
 
 void Database::removeProduct(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] removeProduct";
+	CROW_LOG_DEBUG << "[DB] removeProduct";
 
 	try
 	{
@@ -3129,7 +3129,7 @@ void Database::removeTableProduct(const int& n_table,
 								  const Product& product,
 								  const int& times)
 {
-	CROW_LOG_INFO << "[DB] remoTableProduct";
+	CROW_LOG_DEBUG << "[DB] remoTableProduct";
 
 	try
 	{
@@ -3182,7 +3182,7 @@ void Database::removeTableProduct(const int& n_table,
 void Database::removeProductIngredient(const Product& product,
 									   const Ingredient& ingredient)
 {
-	CROW_LOG_INFO << "[DB] removeProductIngredient";
+	CROW_LOG_DEBUG << "[DB] removeProductIngredient";
 
 	try
 	{
@@ -3222,7 +3222,7 @@ void Database::removeProductIngredient(const Product& product,
 
 void Database::removeProductIngredients(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] remoProductIngredients";
+	CROW_LOG_DEBUG << "[DB] remoProductIngredients";
 
 	std::unique_lock<std::mutex> lock(mutex);
 
@@ -3244,7 +3244,7 @@ void Database::removeProductIngredients(const Product& product)
 
 void Database::removeProductAllergens(const Product& product)
 {
-	CROW_LOG_INFO << "[DB] removeProductAllergens";
+	CROW_LOG_DEBUG << "[DB] removeProductAllergens";
 
 	std::unique_lock<std::mutex> lock(mutex);
 
@@ -3267,7 +3267,7 @@ void Database::removeProductAllergens(const Product& product)
 void Database::removeOrder(const Order& order)
 {
 	/*
-	CROW_LOG_INFO << "[DB] removeOrder";
+	CROW_LOG_DEBUG << "[DB] removeOrder";
 
 	try {
 		std::string time = order.time;
@@ -3289,7 +3289,7 @@ void Database::removeOrder(const Order& order)
 
 void Database::removeIngredient(const Ingredient& ingredient)
 {
-	CROW_LOG_INFO << "[DB] removeIngredient";
+	CROW_LOG_DEBUG << "[DB] removeIngredient";
 
 	try
 	{
@@ -3311,7 +3311,7 @@ void Database::removeIngredient(const Ingredient& ingredient)
 
 void Database::removeAllergen(const Allergen& allergen)
 {
-	CROW_LOG_INFO << "[DB] removeAllergen";
+	CROW_LOG_DEBUG << "[DB] removeAllergen";
 
 	try
 	{
@@ -3336,7 +3336,7 @@ void Database::removeAllergen(const Allergen& allergen)
 void Database::modifyProduct(const Product& oldProduct,
 							 const Product& newProduct)
 {
-	CROW_LOG_INFO << "[DB] modifyProduct";
+	CROW_LOG_DEBUG << "[DB] modifyProduct";
 
 	try
 	{
@@ -3369,7 +3369,7 @@ void Database::modifyProduct(const Product& oldProduct,
 
 void Database::changeNumClients(const Table& table, const int& n_clients)
 {
-	CROW_LOG_INFO << "[DB] changeNumClients";
+	CROW_LOG_DEBUG << "[DB] changeNumClients";
 
 	try
 	{

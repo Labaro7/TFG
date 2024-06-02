@@ -8,7 +8,7 @@ constexpr int SERVER_PORT = 18080;
 const std::string SERVER_NAME = "DINET";
 const std::string CRT_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.crt"; // TODO: Put relative path
 const std::string KEY_FILE_PATH = "C:\\Users\\User\\Desktop\\TFG\\ServerCrow\\ServerCrow\\ssl\\server.key"; // TODO: Put relative path
-const bool AUTH_NEEDED = false;
+const bool AUTH_NEEDED = true;
 const bool FUNCTION_DEBUG = true;  // To print the function names when executed
 
 // Routes
