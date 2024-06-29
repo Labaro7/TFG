@@ -28,16 +28,12 @@ The project manages the following aspects:
   <img src="https://github.com/Labaro7/TFG/assets/59017230/1bc51d4e-25e8-402d-81f2-203d93fb107b" width="120">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/e8b65f3e-d09d-4aef-b2f8-2ea337e13035" width="120">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/d3ba4b43-b205-4036-a781-bd5d8e3e3952" width="240">
-  <img src="https://github.com/Labaro7/TFG/assets/59017230/c250b14a-27d9-4df1-9731-ef919a64a9c5" width="480">
+  <img src="https://github.com/Labaro7/TFG/assets/59017230/fe62d85f-bd1f-4d80-9ec7-00495dbeaa46" width="480">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/8e965e4e-aa2d-48d4-8e92-325ce2f9b844" width="480">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/4383f6e4-efd8-42f8-81d7-826dc242576f" width="480">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/019833fd-eb6f-4a70-afc0-b3c4048ec6f2" width="480">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/7109d114-381e-417f-9c64-0a697ac48a69" width="480">
 </div>
-
-
-
-
 
 ## ✏️ Author
 A. Lábaro H. T.
