@@ -16,6 +16,13 @@ The project manages the following aspects:
   - Employees' data.
   - Visualization of statistics: number of orders, popularity of products, etc.
 
+## 🖥️ Technologies Used
+  - Crow C++ Framework
+  - MySQl and MySQL Workbench
+  - MySQL Connector/C++
+  - HTML, CSS and JavaScript
+  - Python
+
 ## 📷 Screenshots
 <div align="center">
   <img src="https://github.com/Labaro7/TFG/assets/59017230/6b17b18e-b06f-47de-b38f-567eb2815383" width="120">
