@@ -229,7 +229,6 @@ function modifyProduct() {
             body: JSON.stringify(data),
         })
             .then(response => {
-                if (response.ok) setTimeout(() => { window.location.href = "/admin"; }, 100);
             })
             .then(data => {
                 console.log('Response:', data);
@@ -237,6 +236,9 @@ function modifyProduct() {
             .catch(error => {
                 console.error('Error:', error);
             });
+
+        setTimeout(() => { window.location.href = "/admin"; }, 100);
+
     }
     else {
         alert("Complete the necessary fields");
@@ -267,6 +269,8 @@ function deleteProduct() {
         .catch(error => {
             console.error('Error:', error);
         });
+
+    setTimeout(() => { window.location.href = "/admin"; }, 100);
 }
 
 

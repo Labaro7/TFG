@@ -11,9 +11,11 @@ class ApiRoute
 public:
 	virtual std::string extractURISegment(std::string& uri) = 0;
 
-	virtual crow::json::wvalue processRequest(std::string& uri) = 0;
+	using Conn = std::unique_ptr<sql::Connection>;
+	virtual crow::json::wvalue processRequest(Conn& conn, std::string& uri) = 0;
 
 protected:
+	std::unique_ptr<sql::Connection> conn;
 	std::shared_ptr<Database> database;
 	std::shared_ptr<std::shared_ptr<Database>> database_ptr;
 };

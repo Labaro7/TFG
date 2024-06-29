@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iomanip>
 #include <type_traits>
+#include <typeinfo>
 
 // Made with conditional macros to not restrict the scope of the app variable to the if scope.
 #if MIDDLEWARE_ACTIVATED 
@@ -18,54 +19,43 @@
 namespace
 {
 	template<typename T>
-	T validate(const crow::json::rvalue& json_field, const T default_value)
+	T& validate(const T& json_field, const T& default_value)
 	{
-		if constexpr (std::is_same_v<T, int>)
-		{
-			return json_field.t() == crow::json::type::Number ? json_field.i() : default_value;
-		}
-		else if constexpr (std::is_same_v<T, std::string>)
-		{
-			return json_field.t() == crow::json::type::String ? json_field.s() : default_value;
-		}
-		else if constexpr (std::is_same_v<T, crow::json::rvalue>)
-		{
-			return json_field.t() == crow::json::type::List ? json_field : default_value;
-		}
-		else if constexpr (std::is_same_v<T, bool>)
-		{
-			return json_field.t() == crow::json::type::True || json_field.t() == crow::json::type::False ? json_field.b() : default_value;
-		}
-		else if constexpr (std::is_same_v<T, double>)
-		{
-			return json_field.t() == crow::json::type::Number ? json_field.d() : default_value;
-		}
-		else
-		{
-			static_assert("Unsupported type");
-		}
+		return json_field;
 	}
 }
 
-
 int main()
 {
-	Server server = Server::getInstance();
+	Server& server = Server::getInstance();
 	App_t app;
 	
 	// Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-	crow::logger::setLogLevel(crow::LogLevel::Debug);
+	crow::logger::setLogLevel(crow::LogLevel::Info);
 
 	CROW_LOG_INFO << "Server running on: " << cts::SERVER_IP << ":" << cts::SERVER_PORT;
 
 	//server.dropAllTables();
 	//server.initialize();
 
+	CROW_ROUTE(app, "/switchAuth")
+		([&server](const crow::request& req, crow::response& res)
+		 {
+			 auto conn = server.db()->getConnection();
+
+			 cts::AUTH_NEEDED = !cts::AUTH_NEEDED;
+
+			 res.code = 200;
+			 res.end();
+		 });
+
 	CROW_ROUTE(app, "/")
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
-			 const std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLES_PRICES_PLACEHOLDER, server);
+			 const std::string modifiedHTML = insertDataInPlaceHolders(conn, &file, cts::TABLES_PRICES_PLACEHOLDER, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -73,6 +63,8 @@ int main()
 				 res.code = 500;
 				 res.body = "Error reading HTML template";
 			 }
+
+			 server.broadcastMessage("This is a broadcast message");
 
 			 res.set_header("Content-Type", "text/html");
 			 res.code = 200;
@@ -83,6 +75,8 @@ int main()
 	CROW_ROUTE(app, "/login")
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 std::ifstream file(cts::LOGIN_HTML_FILE_PATH);
 			 std::stringstream ss;
 
@@ -102,13 +96,15 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+			 
 			 const auto& jsonData = crow::json::load(req.body);
 			 const std::string username = jsonData["username"].s();
 			 const std::string password = server.hash(jsonData["password"].s());
 
 			 CROW_LOG_INFO << "Employee logged in with username: " << username << " and password hash:" << password;
 
-			 Employee e = server.getEmployeeByAccount(username, password);
+			 Employee e = server.getEmployeeByAccount(conn, username, password);
 			 if (!e.isEmpty())
 			 {
 				 CROW_LOG_INFO << "Found employee with session token: " << e.session_token;
@@ -122,11 +118,20 @@ int main()
 				 file.close();
 
 				 res.set_header("Content-Type", "text/html");
+				 res.set_header("Access-Control-Allow-Credentials", "true");
 				 res.set_header("Access-Control-Allow-Origin", "*");
+				 res.set_header("Access-Control-Allow-Headers", "Content-Type");
 				 res.add_header("Set-Cookie", cts::SESSION_TOKEN_NAME + "=" + e.session_token + "; Path=/");
 				 res.add_header("Set-Cookie", "employee_name=" + e.firstName + " " + e.lastName + "; Path=/");
 
 				 res.code = 200;
+				 res.write("");
+				 res.end();
+			 }
+			 else
+			 {
+				 res.code = 401;
+				 res.write("");
 				 res.end();
 			 }
 		 });
@@ -134,6 +139,8 @@ int main()
 	CROW_ROUTE(app, "/table")
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 int n_table = 0; 
 			 try
 			 {
@@ -141,10 +148,10 @@ int main()
 			 }
 			 catch (const std::invalid_argument& e){}
 
-			 const std::vector<Product> products = server.getProducts(); // TODO: Move inside placeHolder function
+			 const std::vector<Product> products = server.getProducts(conn); // TODO: Move inside placeHolder function
 
 			 std::ifstream file(cts::TABLE_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders(&file, cts::TABLE_NUMBER_PLACEHOLDER, n_table, products, server);
+			 std::string modifiedHTML = insertDataInPlaceHolders(conn, &file, cts::TABLE_NUMBER_PLACEHOLDER, n_table, products, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -161,6 +168,10 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
+			 server.broadcastMessage(req.body);
+
 			 std::ifstream file(cts::INDEX_HTML_FILE_PATH);
 			 std::stringstream ss;
 
@@ -172,65 +183,65 @@ int main()
 			 // TODO: Get the date from the JSON
 			 const auto &json_data = crow::json::load(req.body);
 
-			 const int n_table = validate(json_data["n_table"], 0);
-			 const int n_clients = validate(json_data["n_clients"], 0);
-			 const auto order = validate(json_data["order"], crow::json::rvalue());
-			 const auto added = validate(json_data["added"], crow::json::rvalue());
-			 const auto modified = validate(json_data["modified"], crow::json::rvalue());
-			 const auto deleted = validate(json_data["deleted"], crow::json::rvalue());
-			 const std::string employeeName = validate(json_data["employee"], std::string(""));
+			 const int n_table = json_data["n_table"].i();
+			 const int n_clients = json_data["n_clients"].i();
+			 const auto order = json_data["order"];
+			 const auto added = json_data["added"];
+			 const auto modified = json_data["modified"];
+			 const auto deleted = json_data["deleted"];
+			 const std::string employeeName = json_data["employee"].s();
 
-			 Table t = server.getTableByNumber(n_table);
+			 Table t = server.getTableByNumber(conn, n_table);
 
-			 const Employee employee = server.getEmployeeByName(employeeName);
+			 const Employee employee = server.getEmployeeByName(conn, employeeName);
 
 			 if (t.isEmpty())
 			 {
 				 t = { n_table, n_clients, domain::product_unordered_map(), 0.0 };
-				 server.saveTable(t);
+				 server.saveTable(conn, t);
 			 }
 
-				server.changeNumClients(t, n_clients);
+			server.changeNumClients(conn, t, n_clients);
 
-				for (const auto& object : added)
-				{
-					const int times = object["times"].i();
-					const std::string details = object["details"].s();
-					const Product p(object["name"].s(),
-							std::stod(object["price"].s()),
-							"#FFFFFF",
-							0,
-							false,
-							object["details"].s());
+			for (const auto& object : added)
+			{
+				const int times = object["times"].i();
+				const std::string details = object["details"].s();
+				const Product p(object["name"].s(),
+						std::stod(object["price"].s()),
+						"#FFFFFF",
+						0,
+						false,
+						object["details"].s());
 
-					server.saveTableProduct(t, p, times, details, employee);
-				}
+				server.saveTableProduct(conn, t, p, times, details, employee);
+			}
 
-				for (const auto& object : modified)
-				{
-					const int new_times = object["new_amount"].i();
-					const Product p(object["name"].s(),
-							std::stod(object["price"].s()),
-							"#FFFFFF",
-							0,
-							false,
-							object["details"].s());
+			for (const auto& object : modified)
+			{
+				const int new_times = object["new_amount"].i();
+				const Product p(object["name"].s(),
+						std::stod(object["price"].s()),
+						"#FFFFFF",
+						0,
+						false,
+						object["details"].s());
 
-					server.changeTableProductAmount(t, p, new_times);
-				}
+				server.changeTableProductAmount(conn, t, p, new_times);
+			}
 
-				for (const auto& object : deleted)
-				{
-					const int times = std::stoi(object["times"].s());
-					const Product p(object["name"].s(),
-							std::stod(object["price"].s()),
-							"#FFFFFF",
-							0,
-							false,
-							object["details"].s());
+			for (const auto& object : deleted)
+			{
+				const int times = std::stoi(object["times"].s());
+				const Product p(object["name"].s(),
+						std::stod(object["price"].s()),
+						"#FFFFFF",
+						0,
+						false,
+						object["details"].s());
 
-					server.removeTableProduct(n_table, p, times);
-				}
+				server.removeTableProduct(conn, n_table, p, times);
+			}
 			
 			 res.code = 200;
 			 res.end();
@@ -240,6 +251,7 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
 
 		 });
 
@@ -247,15 +259,19 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
+			 server.broadcastMessage(req.body);
+
 			 const auto& json_data = crow::json::load(req.body);
 
-			 const int n_table = validate(json_data["n_table"], 0);
-			 const int n_clients = validate(json_data["n_clients"], 0);
-			 const double bill = validate(json_data["bill"], 0.0);
-			 const double paid = validate(json_data["paid"], 0.0);
-			 const double discount = validate(json_data["discount"], 0.0);
-			 const std::string method = validate(json_data["method"], std::string(""));
-			 const std::string date = validate(json_data["date"], std::string(""));
+			 const int n_table = json_data["n_table"].i();
+			 const int n_clients = json_data["n_clients"].i();
+			 const double bill = json_data["bill"].d();
+			 const double paid = json_data["paid"].d();
+			 const double discount = json_data["discount"].d();
+			 const std::string method = json_data["method"].s();
+			 const std::string date = json_data["date"].s();
 
 			 std::string employee = "";
 			 if (MIDDLEWARE_ACTIVATED && cts::AUTH_NEEDED)
@@ -276,7 +292,7 @@ int main()
 				 date
 			 };
 
-			 server.payTable(order);
+			 server.payTable(conn, order);
 
 			 res.code = 200;
 			 res.end();
@@ -286,17 +302,23 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
+			 server.broadcastMessage(req.body);
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const int n_table = json_data["n_table"].i();
 
-			 const Table t = server.getTableByNumber(n_table);
-			 server.removeTable(t);
+			 const Table t = server.getTableByNumber(conn, n_table);
+			 server.removeTable(conn, t);
 		 });
 
 	CROW_ROUTE(app, "/currentTables")
 		([&server]()
 		 {
-			 const std::vector<Table> tables = server.getTables();
+			 auto conn = server.db()->getConnection();
+
+			 const std::vector<Table> tables = server.getTables(conn);
 			 std::vector<int> n_tables;
 			 crow::json::wvalue response;
 
@@ -314,18 +336,24 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
+			 server.broadcastMessage(req.body);
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const int current_n_table = json_data["current_n_table"].i();
 			 const int new_n_table = json_data["new_n_table"].i();
 
-			 server.moveTable(current_n_table, new_n_table);
+			 server.moveTable(conn, current_n_table, new_n_table);
 		 });
 
 	CROW_ROUTE(app, "/api/<path>")
 		([&server](const crow::request& req, std::string path)
 		 {
-			 const crow::json::wvalue& data = server.retrieveRequest(path);
+			 auto conn = server.db()->getConnection();
+
+			 const crow::json::wvalue& data = server.retrieveRequest(conn, path);
 
 			 crow::response res(data.dump());
 			 res.set_header("Content-Type", "application/json");
@@ -333,16 +361,30 @@ int main()
 		 });
 
 	CROW_CATCHALL_ROUTE(app)
-		([&server]()
+		([&server](const crow::request& req, crow::response& res)
 		 {
-			 return "Wrong Route";
+			 std::ifstream file(cts::WRONG_ROUTE_HTML_FILE_PATH);
+			 std::stringstream ss;
+
+			 ss << file.rdbuf();
+			 const std::string wrongRoutePage = ss.str();
+			 ss.str("");
+
+			 file.close();
+
+			 res.set_header("Content-Type", "text/html");
+			 res.code = 200;
+			 res.write(wrongRoutePage);
+			 res.end();
 		 });
 
 	CROW_ROUTE(app, "/admin")
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 std::ifstream file(cts::ADMIN_HTML_FILE_PATH);
-			 std::string modifiedHTML = insertDataInPlaceHolders2(&file, cts::PRODUCT_LIST_PLACEHOLDER, server);
+			 std::string modifiedHTML = insertDataInPlaceHolders2(conn, &file, cts::PRODUCT_LIST_PLACEHOLDER, server);
 
 			 if (modifiedHTML == "")
 			 {
@@ -359,6 +401,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const std::string name = json_data["name"].s();
@@ -374,27 +418,27 @@ int main()
 				 Product p(name, price, color, page, deployable);
 				 server.restaurant->pages[page - 1].push_back({ p, empty_vector });
 
-				 server.saveProduct(p);
+				 server.saveProduct(conn, p);
 			 }
 			 else if (deployable == 0 && price != 0)
 			 {
 				 const Product p(name, price, color, page, deployable);
 				 server.restaurant->pages[page - 1].push_back({ p, empty_vector });
 
-				 server.saveProduct(p);
+				 server.saveProduct(conn, p);
 			 }
 			 else
 			 {
 				 const Product p(name, price, color, page, deployable);
 				 for (auto& q : server.restaurant->pages[page - 1])
 				 {
-					 if (server.getProductIdByName(q.first.name) == deployable)
+					 if (server.getProductIdByName(conn, q.first.name) == deployable)
 					 {
 						 q.second.push_back(p);
 					 }
 				 }
 
-				 server.saveProduct(p);
+				 server.saveProduct(conn, p);
 			 }
 		 });
 
@@ -402,6 +446,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const std::string selectedElementName = json_data["selectedElementName"].s();
@@ -415,7 +461,7 @@ int main()
 			 const Product oldProduct(selectedElementName, selectedElementPrice, "#FFFFFF", selectedElementPage, 0);
 			 const Product newProduct(newName, newPrice, newColor, selectedElementPage, 0);
 
-			 server.modifyProduct(oldProduct, newProduct);
+			 server.modifyProduct(conn, oldProduct, newProduct);
 		 });
 
 
@@ -423,6 +469,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const std::string selectedElementName = json_data["selectedElementName"].s();
@@ -431,13 +479,15 @@ int main()
 
 			 const Product p(selectedElementName, selectedElementPrice, "#FFFFFF", selectedElementPage, 0);
 
-			 server.removeProduct(p);
+			 server.removeProduct(conn, p);
 		 });
 
 	CROW_ROUTE(app, "/admin/add/employee")
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const Employee oldEmployee =
@@ -466,7 +516,7 @@ int main()
 				 server.generateSessionToken()
 			 };
 
-			 server.saveEmployee(oldEmployee, newEmployee);
+			 server.saveEmployee(conn, oldEmployee, newEmployee);
 
 			 res.code = 200;
 			 res.end();
@@ -476,6 +526,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 
 			 const Employee employee =
@@ -491,7 +543,7 @@ int main()
 				 server.generateSessionToken()
 			 };
 
-			 server.removeEmployee(employee);
+			 server.removeEmployee(conn, employee);
 
 			 res.code = 200;
 			 res.end();
@@ -501,6 +553,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const auto& addedIngredients = json_data["added_ingredients"];
 
@@ -508,7 +562,7 @@ int main()
 			 {
 				 const Ingredient addedIngredient(addedIngredientName.s());
 
-				 server.saveIngredient(addedIngredient);
+				 server.saveIngredient(conn, addedIngredient);
 			 }
 		 });
 
@@ -516,6 +570,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const auto& deletedIngredients = json_data["deleted_ingredients"];
 
@@ -523,7 +579,7 @@ int main()
 			 {
 				 const Ingredient deletedIngredient(deletedIngredientName.s());
 
-				 server.removeIngredient(deletedIngredient);
+				 server.removeIngredient(conn, deletedIngredient);
 			 }
 		 });
 
@@ -531,6 +587,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const auto& addedAllergens = json_data["added_allergens"];
 
@@ -538,7 +596,7 @@ int main()
 			 {
 				 const Allergen addedAllergen(addedAllergenName.s());
 
-				 server.saveAllergen(addedAllergen);
+				 server.saveAllergen(conn, addedAllergen);
 			 }
 		 });
 
@@ -546,6 +604,8 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const auto& deletedAllergens = json_data["deleted_allergens"];
 
@@ -553,7 +613,7 @@ int main()
 			 {
 				 const Allergen deletedAllergen(deletedAllergenName.s());
 
-				 server.removeAllergen(deletedAllergen);
+				 server.removeAllergen(conn, deletedAllergen);
 			 }
 		 });
 
@@ -561,32 +621,78 @@ int main()
 		.methods("POST"_method)
 		([&server](const crow::request& req, crow::response& res)
 		 {
+			 auto conn = server.db()->getConnection();
+
 			 const auto& json_data = crow::json::load(req.body);
 			 const auto& selectedProduct = json_data["selected_product"];
 			 const auto& selectedIngredients = json_data["selected_ingredients"];
 			 const auto& selectedAllergens = json_data["selected_allergens"];
 
-			 const Product product = server.getProductByName(selectedProduct.s());
+			 const Product product = server.getProductByName(conn, selectedProduct.s());
 
-			 server.removeProductIngredients(product);
+			 server.removeProductIngredients(conn, product);
 
 			 for (const auto& selectedIngredient : selectedIngredients)
 			 {
 				 const Ingredient ingredient(selectedIngredient.s());
 
-				 server.saveProductIngredient(product, ingredient);
+				 server.saveProductIngredient(conn, product, ingredient);
 			 }
 
-			 server.removeProductAllergens(product);
+			 server.removeProductAllergens(conn, product);
 
 			 for (const auto& selectedAllergen : selectedAllergens)
 			 {
 				 const Allergen allergen(selectedAllergen.s());
 
-				 server.saveProductAllergen(product, allergen);
+				 server.saveProductAllergen(conn, product, allergen);
 			 }
 		 });
 
+		app.route_dynamic("/static/<string>")
+		([](const crow::request& req, crow::response& res, std::string filename)
+		 {
+			 std::ifstream file("static/" + filename, std::ios::binary);
+			 if (file)
+			 {
+				 file.seekg(0, std::ios::end);
+				 size_t length = file.tellg();
+				 file.seekg(0, std::ios::beg);
+				 res.body.resize(length);
+				 file.read(&res.body[0], length);
+				 res.end();
+			 }
+			 else
+			 {
+				 res.code = 404;
+				 res.end("File not found");
+			 }
+		 });
+
+		CROW_ROUTE(app, "/websocket")
+			([&server](const crow::request& req, crow::response& res){
+				std::ifstream file(cts::WEBSOCKET_HTML_FILE_PATH);
+
+				std::stringstream ssHTML;
+				ssHTML << file.rdbuf();
+				file.close();
+				std::string contentHTML = ssHTML.str();
+
+				res.write(contentHTML);
+				res.code = 200;
+				res.end();
+			 });
+
+		CROW_ROUTE(app, "/subscribe")
+			.websocket()
+			.onopen([&server](crow::websocket::connection& conn)
+				{
+					server.handleSubscription(&conn);
+				})
+			.onclose([&server](crow::websocket::connection& conn, const std::string& reason)
+				{
+					server.handleUnsubscription(&conn);
+				});
 
 	// App methods chain
 	app.bindaddr(cts::SERVER_IP)

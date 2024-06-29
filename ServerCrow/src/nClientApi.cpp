@@ -52,7 +52,7 @@ crow::json::wvalue NClientAPI::buildNClientsJSON(const int& n_clients)
 	return data;
 }
 
-crow::json::wvalue NClientAPI::processRequest(std::string& uri)
+crow::json::wvalue NClientAPI::processRequest(Conn& conn, std::string& uri)
 {
 	crow::json::wvalue data;
 	std::string mode = extractURISegment(uri);
@@ -67,17 +67,17 @@ crow::json::wvalue NClientAPI::processRequest(std::string& uri)
 		mode == cts::MYSQL_YEAR)
 	{
 		const std::string& date = extractURISegment(uri);
-		data = buildNClientsJSON(database->getNClientsByDate(date, mode));
+		data = buildNClientsJSON(database->getNClientsByDate(conn, date, mode));
 	}
 	else if (mode == "EMPLOYEE")
 	{
 		const std::string employeeName = extractURISegment(uri);
-		data = buildNClientsJSON(database->getNClientsByEmployee(employeeName));
+		data = buildNClientsJSON(database->getNClientsByEmployee(conn, employeeName));
 
 	}
 	else if(mode == "")
 	{
-		data = buildNClientsJSON(database->getNClients());
+		data = buildNClientsJSON(database->getNClients(conn));
 	}
 
 	return data;

@@ -125,6 +125,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\OpenSSL-Win64\include;C:\MySQL ConnectorCpp\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpp14</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,10 +159,14 @@
     <None Include="static\login.js" />
     <None Include="static\table.css" />
     <None Include="static\table.js" />
+    <None Include="static\websocket.js" />
+    <None Include="static\wrongRoute.css" />
     <None Include="templates\admin.html" />
     <None Include="templates\index.html" />
     <None Include="templates\login.html" />
     <None Include="templates\table.html" />
+    <None Include="templates\websocket.html" />
+    <None Include="templates\wrongRoute.html" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +200,7 @@
     <ClInclude Include="include\placeholders.hpp" />
     <ClInclude Include="include\productApi.hpp" />
     <ClInclude Include="include\server.hpp" />
+    <ClInclude Include="include\singletonTemplate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

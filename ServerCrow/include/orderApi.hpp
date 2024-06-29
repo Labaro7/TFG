@@ -15,7 +15,7 @@ public:
 
 	crow::json::wvalue buildOrdersJSON(std::vector<Order> orders);
 
-	crow::json::wvalue processRequest(std::string& uri) override;
+	crow::json::wvalue processRequest(Conn& conn, std::string& uri) override;
 };
 
 #endif

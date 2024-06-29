@@ -14,7 +14,7 @@ extern const std::string SERVER_NAME;
 extern const std::string CRT_FILE_PATH;
 extern const std::string KEY_FILE_PATH;
 #define MIDDLEWARE_ACTIVATED true  // It needs to be a macro
-extern const bool AUTH_NEEDED;
+extern bool AUTH_NEEDED;
 extern const std::string SESSION_TOKEN_NAME;
 const std::string SERVER_PORT_STRING = std::to_string(SERVER_PORT);
 extern const bool FUNCTION_DEBUG;  // To print the function names when executed
@@ -26,6 +26,8 @@ extern const std::string LOGIN_HTML_FILE_PATH;
 extern const std::string INDEX_HTML_FILE_PATH;
 extern const std::string TABLE_HTML_FILE_PATH;
 extern const std::string ADMIN_HTML_FILE_PATH;
+extern const std::string WRONG_ROUTE_HTML_FILE_PATH;
+extern const std::string WEBSOCKET_HTML_FILE_PATH;
 
 // HTML constants
 extern const char* TABLES_PRICES_PLACEHOLDER;

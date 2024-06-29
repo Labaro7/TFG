@@ -13,11 +13,13 @@ public:
 
 	std::string extractURISegment(std::string& uri) override;
 
+	crow::json::wvalue buildProductsJSON(const std::unordered_map<int, Product>& products);
+
 	crow::json::wvalue buildOrderedProductsJSON(const std::unordered_map<int, OrderedProduct>& products);
 
 	crow::json::wvalue buildOrderedProductsJSON(const Table& table);
 
-	crow::json::wvalue processRequest(std::string& uri) override;
+	crow::json::wvalue processRequest(Conn& conn, std::string& uri) override;
 };
 
 #endif

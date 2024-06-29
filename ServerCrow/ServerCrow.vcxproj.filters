@@ -111,6 +111,18 @@
     <None Include="scripts\LineCounterScript.bat">
       <Filter>scripts</Filter>
     </None>
+    <None Include="templates\wrongRoute.html">
+      <Filter>Archivos de recursos\html</Filter>
+    </None>
+    <None Include="static\wrongRoute.css">
+      <Filter>Archivos de recursos\css</Filter>
+    </None>
+    <None Include="templates\websocket.html">
+      <Filter>Archivos de recursos\html</Filter>
+    </None>
+    <None Include="static\websocket.js">
+      <Filter>Archivos de recursos\js</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\database.cpp">
@@ -198,6 +210,9 @@
     </ClInclude>
     <ClInclude Include="include\crow_all.hpp">
       <Filter>Archivos de encabezado\crow</Filter>
+    </ClInclude>
+    <ClInclude Include="include\singletonTemplate.hpp">
+      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

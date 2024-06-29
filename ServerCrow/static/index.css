@@ -193,7 +193,7 @@ body {
 #current-tables-page {
     position: relative;
     background-color: #bdd7fc;
-    height: calc(100% - 32px);
+    height: calc(100% - 60px);
     width: 100%;
     left: 10px;
     display: none;

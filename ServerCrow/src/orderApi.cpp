@@ -84,7 +84,7 @@ crow::json::wvalue OrderAPI::buildOrdersJSON(std::vector<Order> orders)
 	return data;
 }
 
-crow::json::wvalue OrderAPI::processRequest(std::string& uri)
+crow::json::wvalue OrderAPI::processRequest(Conn& conn, std::string& uri)
 {
 	crow::json::wvalue data;
 
@@ -99,7 +99,7 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 		mode == cts::MYSQL_YEAR)
 	{
 		const std::string& date = extractURISegment(uri);
-		data = buildOrdersJSON(database->getOrdersByDate(date, mode));
+		data = buildOrdersJSON(database->getOrdersByDate(conn, date, mode));
 	}
 	else if (mode == "ID")
 	{
@@ -113,7 +113,7 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 			CROW_LOG_WARNING << "Invalid argument in std::stoi";
 		}
 
-		const Order& order = database->getOrderById(id);
+		const Order& order = database->getOrderById(conn, id);
 
 		if (!order.isEmpty())
 		{
@@ -128,22 +128,22 @@ crow::json::wvalue OrderAPI::processRequest(std::string& uri)
 	else if (mode == "EMPLOYEE")
 	{
 		const std::string employeeName = extractURISegment(uri);
-		data = buildOrdersJSON(database->getOrdersByEmployee(employeeName));
+		data = buildOrdersJSON(database->getOrdersByEmployee(conn, employeeName));
 	}
 	else if (mode == "N_TABLE")
 	{
 		std::string n_table = extractURISegment(uri);
 
-		data = buildOrdersJSON(database->getOrdersByNTable(n_table));
+		data = buildOrdersJSON(database->getOrdersByNTable(conn, n_table));
 	}
 	else if (mode == "METHOD")
 	{
 		const std::string method = extractURISegment(uri);
-		data = buildOrdersJSON(database->getOrdersByMethod(method));
+		data = buildOrdersJSON(database->getOrdersByMethod(conn, method));
 	}
 	else if (mode == "")
 	{
-		data = buildOrdersJSON(database->getOrders());
+		data = buildOrdersJSON(database->getOrders(conn));
 	}
 
 	//std::cout << data.dump() << std::endl;

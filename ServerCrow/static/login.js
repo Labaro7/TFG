@@ -19,29 +19,36 @@ function getCookie(cookieName) {
 }
 
 async function login() {
-    let data = {
-        username: username.value,
-        password: password.value,
+    try {
+        let data = {
+            username: username.value,
+            password: password.value,
+        }
+
+        const url = '/login';
+        console.log("c");
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/html',
+            },
+            body: JSON.stringify(data),
+        })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        console.log("m");
+        let result = await response.text();
+        console.log(result);    
+        if (response.ok) {
+            window.location.replace('/');
+        }
+
+
+        //setTimeout(() => { window.location.replace("/"); }, 100);
+    } catch (error) {
+        console.error('Error:', error);
     }
-
-    const url = '/login';
-    console.log("c");
-    let response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-    if (response.ok) {
-        window.location.replace('/');
-    }
-
-
-    //setTimeout(() => { window.location.replace("/"); }, 100);
 
 }

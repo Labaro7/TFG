@@ -1027,7 +1027,7 @@ ul {
 }
 
 #currentProductsList:nth-child(2n+1) {
-    background-color: orange;
+
 }
 
 .currProductName, .currentIngredient, .currentAllergen {

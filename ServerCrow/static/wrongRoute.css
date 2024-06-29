@@ -1,0 +1,34 @@
+html{
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(9, 43, 92);
+}
+
+#info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position:relative;
+    bottom: 10%; 
+    gap: 30px;
+}
+
+#brandImage {
+    width: 300px;
+    display: flex;
+}
+
+#text, #goBack {
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 1.05em;
+    color: #00E0B6;
+}

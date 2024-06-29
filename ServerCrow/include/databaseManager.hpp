@@ -6,17 +6,15 @@
 #include <string>
 #include <memory>
 #include "database.hpp"
+#include "singletonTemplate.hpp"
 
-class DatabaseManager
+class DatabaseManager : public SingletonTemplate<DatabaseManager>
 {
 public:
+    // Allow Singleton<MyClass> to access the private constructor
+    friend class SingletonTemplate<DatabaseManager>;
+
     ~DatabaseManager();
-
-    DatabaseManager(const DatabaseManager&) = delete;
-
-    //DatabaseManager& operator=(const DatabaseManager&) = delete;
-
-    static DatabaseManager& getInstance();
 
     std::string getDatabases();
 
@@ -37,7 +35,7 @@ private:
     DatabaseManager(); 
 
     std::shared_ptr<Database> currentDatabase;
-    std::map<std::string, std::shared_ptr<Database>> databases;
+    std::unordered_map<std::string, std::shared_ptr<Database>> databases;
 };
 
 #endif

@@ -105,7 +105,7 @@ API::DirectionCode API::getDirectionCode(std::string& uri)
 	return res;
 }
 
-crow::json::wvalue API::retrieveRequest(std::string& uri)
+crow::json::wvalue API::retrieveRequest(Conn& conn, std::string& uri)
 {
 	try
 	{
@@ -118,25 +118,25 @@ crow::json::wvalue API::retrieveRequest(std::string& uri)
 		{
 			case DirectionCode::ORDER:
 				CROW_LOG_INFO << "[OrderAPI] Processing request with URI: " << uri;
-				res = orderAPI->processRequest(uri);
+				res = orderAPI->processRequest(conn, uri);
 
 				break;
 
 			case DirectionCode::BILL:
 				CROW_LOG_INFO << "[BillAPI] Processing request with URI: " << uri;
-				res = billAPI->processRequest(uri);
+				res = billAPI->processRequest(conn, uri);
 
 				break;
 
 			case DirectionCode::NCLIENT:
 				CROW_LOG_INFO << "[NClientAPI] Processing request with URI: " << uri;
-				res = nClientAPI->processRequest(uri);
+				res = nClientAPI->processRequest(conn, uri);
 
 				break;
 
 			case DirectionCode::PRODUCTS:
 				CROW_LOG_INFO << "[ProductAPI] Processing request with URI: " << uri;
-				res = productAPI->processRequest(uri);
+				res = productAPI->processRequest(conn, uri);
 
 				break;
 

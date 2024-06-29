@@ -2,8 +2,9 @@
 #include "..\include\constants.hpp"
 
 // index.html
-std::string insertDataInPlaceHolders(std::ifstream* file, 
-									 const std::string& tablesPricesPlaceholder, 
+std::string insertDataInPlaceHolders(std::unique_ptr<sql::Connection>& conn,
+									 std::ifstream* file,
+									 const std::string& tablesPricesPlaceholder,
 									 Server& server)
 {
 	std::stringstream ssHTML;
@@ -11,14 +12,14 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	file->close();
 	std::string contentHTML = ssHTML.str();
 
-	std::vector<Table> tables = server.db()->getTables();
+	std::vector<Table> tables = server.db()->getTables(conn);
 
 	// Make a HTML with the tables prices
 	std::ostringstream ss;
 
 	for (const auto& t : tables)
 	{
-		const std::string last_modified = server.getLastModifiedFromTable(t);
+		const std::string last_modified = server.getLastModifiedFromTable(conn, t);
 		ss << "<li class='table'><a href='" << cts::TABLE_NUMBER_HREF << t.n_table << "'><div class = 'tableNumber'>Table: " << t.n_table << "<div class = 'lastModified'>" << last_modified << "</div></div><div class='tablePrice'>" << t.bill * (1 - (t.discount / 100)) << cts::CURRENCY_SYMBOL << "</div></a></li>";
 	}
 
@@ -36,10 +37,11 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 }
 
 // table.html
-std::string insertDataInPlaceHolders(std::ifstream* file, 
-									 const std::string& tableNumberPlaceholder, 
-									 const int& n_table, 
-									 const std::vector<Product>& products, 
+std::string insertDataInPlaceHolders(std::unique_ptr<sql::Connection>& conn,
+									 std::ifstream* file,
+									 const std::string& tableNumberPlaceholder,
+									 const int& n_table,
+									 const std::vector<Product>& products,
 									 Server& server)
 {
 	// Data to insert into HTML
@@ -63,7 +65,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	std::ostringstream ss;
 
 	// 1. HTML with the number of clients
-	Table t = server.getTableByNumber(n_table);
+	Table t = server.getTableByNumber(conn, n_table);
 	int n_clients;
 	if (t.isEmpty())
 	{
@@ -124,7 +126,7 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 	// 3. Generate HTML piece with the products of the restaurant
 	std::string productListHTML;
 
-	std::vector<page_t> pages = server.getDataFromPages();
+	std::vector<page_t> pages = server.getDataFromPages(conn);
 	int i = 0;
 	for (const auto& page : pages)
 	{
@@ -136,14 +138,14 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 			double product_price = p.first.price;
 			std::string product_color = p.first.color;
 			int product_deployable = p.first.deployable;
-			int product_id = server.getProductIdByName(product_name);
+			int product_id = server.getProductIdByName(conn, product_name);
 			auto list = p.second;
 
 			// Is product
 			if (p.first.deployable == 0 && p.second.empty())
 			{
-				std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(server.getProductByName(product_name));
-				std::vector<Allergen> allergens = server.getAllergensFromProduct(server.getProductByName(product_name));
+				std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(conn, server.getProductByName(conn, product_name));
+				std::vector<Allergen> allergens = server.getAllergensFromProduct(conn, server.getProductByName(conn, product_name));
 
 				if (product_name.size() <= 15)
 				{
@@ -215,8 +217,8 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 					{
 						product_color = q.color;
 						product_deployable = q.deployable;
-						std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(server.getProductByName(q.name));
-						std::vector<Allergen> allergens = server.getAllergensFromProduct(server.getProductByName(q.name));
+						std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(conn, server.getProductByName(conn, q.name));
+						std::vector<Allergen> allergens = server.getAllergensFromProduct(conn, server.getProductByName(conn, q.name));
 
 						if (allergens.size() > 0)
 						{
@@ -268,9 +270,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 
 
 	// 4. Get ticket products and ticket bill
-	const domain::product_unordered_map ticketProducts = server.getTableByNumber(n_table).products;
-	double bill = server.getTableByNumber(n_table).bill;
-	double discount = server.getTableByNumber(n_table).discount;
+	const domain::product_unordered_map ticketProducts = server.getTableByNumber(conn, n_table).products;
+	double bill = server.getTableByNumber(conn, n_table).bill;
+	double discount = server.getTableByNumber(conn, n_table).discount;
 
 	for (const auto& p : ticketProducts)
 	{
@@ -315,8 +317,9 @@ std::string insertDataInPlaceHolders(std::ifstream* file,
 }
 
 // admin.html
-std::string insertDataInPlaceHolders2(std::ifstream* file, 
-									  const std::string& productListPlaceHolder, 
+std::string insertDataInPlaceHolders2(std::unique_ptr<sql::Connection>& conn,
+									  std::ifstream* file,
+									  const std::string& productListPlaceHolder,
 									  Server& server)
 {
 	// Data to insert into HTML
@@ -358,7 +361,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	}
 
 	// 1.2. Get the data of products currently added to the database
-	std::vector<Product> products = server.getProducts();
+	std::vector<Product> products = server.getProducts(conn);
 	std::vector<std::pair<std::string, float>> productsInfo;
 
 	for (const auto p : products)
@@ -369,7 +372,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	// 1.2. Generate HTML piece with the products of the restaurant
 	std::string productListHTML;
 
-	std::vector<page_t> pages = server.getDataFromPages();
+	std::vector<page_t> pages = server.getDataFromPages(conn);
 	int i = 0;
 	for (const auto& page : pages)
 	{
@@ -385,8 +388,8 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 			// Is product
 			if (p.first.deployable == 0 && p.second.empty())
 			{
-				std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(server.getProductByName(product_name));
-				std::vector<Allergen> allergens = server.getAllergensFromProduct(server.getProductByName(product_name));
+				std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(conn, server.getProductByName(conn, product_name));
+				std::vector<Allergen> allergens = server.getAllergensFromProduct(conn, server.getProductByName(conn, product_name));
 
 				if (product_name.size() <= 15)
 				{
@@ -415,7 +418,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 			{
 				if (p.first.deployable == 0 && p.first.price == 0)
 				{
-					int product_id = server.getProductIdByName(product_name);
+					int product_id = server.getProductIdByName(conn, product_name);
 
 					ss << "<li class='grid-deployable' data-id='" << product_id << "' onclick = 'openDeployable(this)' style='background-color: " << product_color << "'>" << product_name << "</li>";
 
@@ -423,8 +426,8 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 					{
 						if (q.price)
 						{
-							std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(server.getProductByName(q.name));
-							std::vector<Allergen> allergens = server.getAllergensFromProduct(server.getProductByName(q.name));
+							std::vector<Ingredient> ingredients = server.getIngredientsFromProduct(conn, server.getProductByName(conn, q.name));
+							std::vector<Allergen> allergens = server.getAllergensFromProduct(conn, server.getProductByName(conn, q.name));
 
 							ss << std::fixed << std::setprecision(2) << "<li class='deployable-product' data-name='" << product_name << "' style='background-color: " << q.color << "' onclick='selectElement(this)'><div class='products-names'>" << q.name << "</div><div class='products-prices'>" << q.price << "</div><ul class='ingredients'>";
 
@@ -469,7 +472,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 	// 1.3
 	std::string employeesListHTML;
 
-	std::vector<Employee> employees = server.getEmployees();
+	std::vector<Employee> employees = server.getEmployees(conn);
 	std::sort(employees.begin(), employees.end(), [](auto& a, auto& b)
 			  {
 				  if (a.firstName != b.firstName) return a.firstName < b.firstName;
@@ -527,7 +530,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 			ss << "<ul class='currentProduct' onclick='selectProduct(this)'><ul class='currentProductName'><li class='currProductName'>" << product.name << "</li></ul>";
 			ss << "<ul class='currentProductIngredients'>";
 
-			productIngredients = server.getIngredientsFromProduct(product);
+			productIngredients = server.getIngredientsFromProduct(conn, product);
 			if (!productIngredients.empty())
 			{
 				for (const auto& ingredient : productIngredients)
@@ -539,7 +542,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 			ss << "</ul>";
 			ss << "<ul class='currentProductAllergens'>";
 
-			productAllergens = server.getAllergensFromProduct(product);
+			productAllergens = server.getAllergensFromProduct(conn, product);
 			if (!productAllergens.empty())
 			{
 				for (const auto& allergen : productAllergens)
@@ -566,7 +569,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 
 	// 1.5
 	std::string currentIngredientsHTML;
-	std::vector<Ingredient> ingredients = server.getIngredients();
+	std::vector<Ingredient> ingredients = server.getIngredients(conn);
 
 	std::sort(ingredients.begin(), ingredients.end(), [](auto& a, auto& b)
 			  {
@@ -592,7 +595,7 @@ std::string insertDataInPlaceHolders2(std::ifstream* file,
 
 	// 1.6
 	std::string currentAllergensHTML;
-	std::vector<Allergen> allergens = server.getAllergens();
+	std::vector<Allergen> allergens = server.getAllergens(conn);
 
 	std::sort(allergens.begin(), allergens.end(), [](auto& a, auto& b)
 			  {

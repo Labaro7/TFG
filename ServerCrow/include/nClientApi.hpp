@@ -15,7 +15,7 @@ public:
 
 	crow::json::wvalue buildNClientsJSON(const int& n_clients);
 
-	crow::json::wvalue processRequest(std::string& uri) override;
+	crow::json::wvalue processRequest(Conn& conn, std::string& uri) override;
 };
 
 #endif

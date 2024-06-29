@@ -75,7 +75,7 @@ crow::json::wvalue BillAPI::buildBillsJSON(std::vector<BillAndPaid> billsAndPaid
 	return data;
 }
 
-crow::json::wvalue BillAPI::processRequest(std::string& uri)
+crow::json::wvalue BillAPI::processRequest(Conn& conn, std::string& uri)
 {
 	crow::json::wvalue data;
 
@@ -90,16 +90,16 @@ crow::json::wvalue BillAPI::processRequest(std::string& uri)
 		mode == cts::MYSQL_YEAR)
 	{
 		const std::string& date = extractURISegment(uri);
-		data = buildBillsJSON(database->getBillsAndPaidsByDate(date, mode));
+		data = buildBillsJSON(database->getBillsAndPaidsByDate(conn, date, mode));
 	}
 	else if (mode == "EMPLOYEE")
 	{
 		const std::string employeeName = extractURISegment(uri);
-		data = buildBillsJSON(database->getBillsAndPaidsByEmployee(employeeName));
+		data = buildBillsJSON(database->getBillsAndPaidsByEmployee(conn, employeeName));
 	}
 	else if (mode == "")
 	{
-		data = buildBillsJSON(database->getBillsAndPaids());
+		data = buildBillsJSON(database->getBillsAndPaids(conn));
 	}
 
 	return data;

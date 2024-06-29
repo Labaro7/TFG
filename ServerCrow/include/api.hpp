@@ -32,11 +32,12 @@ public:
 
 	void decodeURI(std::string& uri);
 
-	crow::json::wvalue retrieveRequest(std::string& uri);
+	using Conn = std::unique_ptr<sql::Connection>;
+	crow::json::wvalue retrieveRequest(Conn& conn, std::string& uri);
 
 	void setDatabase(std::shared_ptr<std::shared_ptr<Database>> database_ptr);
 
-protected:
+private:
 	API() = delete;
 
 	std::shared_ptr<Database> database;

@@ -3,7 +3,7 @@
 #include "..\include\domain.hpp"
 #include <unordered_map>
 
-Database::Database() : pstmt(), name()
+Database::Database() : /*pstmt(),*/ name(cts::DATABASE_NAME)
 {
 	try
 	{
@@ -17,8 +17,8 @@ Database::Database() : pstmt(), name()
 		};
 
 		driver = get_driver_instance();
-		con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
-		stmt = con->createStatement();
+		con = static_cast<std::unique_ptr<sql::Connection>>(driver->connect(connection_properties));
+		//stmt = con->createStatement();
 	}
 	catch (const sql::SQLException e)
 	{
@@ -35,11 +35,11 @@ Database::Database(const Database& database)
 
 	driver = database.driver;
 
-	con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
+	con = static_cast<std::unique_ptr<sql::Connection>>(driver->connect(connection_properties));
 
-	stmt = database.stmt;
+	//stmt = database.stmt;
 
-	pstmt = database.pstmt;
+	//pstmt = database.pstmt;
 }
 
 Database::Database(const std::string& hostName,
@@ -60,8 +60,8 @@ Database::Database(const std::string& hostName,
 		};
 
 		driver = get_driver_instance();
-		con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
-		stmt = con->createStatement();
+		con = static_cast<std::unique_ptr<sql::Connection>>(driver->connect(connection_properties));
+		//stmt = con->createStatement();
 	}
 	catch (const sql::SQLException e)
 	{
@@ -76,21 +76,24 @@ Database::Database(const std::shared_ptr<Database> database)
 
 	driver = database->driver;
 
-	con = static_cast<std::shared_ptr<sql::Connection>>(driver->connect(connection_properties));
+	con = static_cast<std::unique_ptr<sql::Connection>>(driver->connect(connection_properties));
 
-	stmt = database->stmt;
+	//stmt = database->stmt;
 
-	pstmt = database->pstmt;
+	//pstmt = database->pstmt;
 
 }
 
 Database::~Database()
 {
-	con->close();
+	if (con)
+	{
+		con->close();
+	}
 
 	// These have to be explicitly deleted. con is shared_ptr so it doesnt need to
-	delete stmt;
-	delete pstmt;
+	//delete stmt;
+	//delete pstmt;
 }
 
 
@@ -211,6 +214,28 @@ std::string Database::getName()
 	return this->name;
 }
 
+std::unique_ptr<sql::Connection> Database::getConnection()
+{
+	return static_cast<std::unique_ptr<sql::Connection>>(driver->connect(connection_properties));;
+}
+
+std::shared_ptr<sql::ResultSet> Database::executeStmt(Conn& conn, const std::string& query)
+{
+	std::unique_ptr<sql::Statement> stmt(conn->createStatement());
+
+	return std::shared_ptr<sql::ResultSet>(stmt->executeQuery(query));
+}
+
+std::unique_ptr<sql::PreparedStatement> Database::prepareStatement(Conn& conn, const std::string& preparedStatement)
+{
+	return std::unique_ptr<sql::PreparedStatement>(conn->prepareStatement(preparedStatement));
+}
+
+std::shared_ptr<sql::ResultSet> Database::executePstmt(Conn& conn, const std::unique_ptr<sql::PreparedStatement>& pstmt)
+{
+	return std::shared_ptr<sql::ResultSet>(pstmt->executeQuery());
+}
+
 
 // ------------------------------- /MySQL queries ------------------------------- //
 
@@ -266,7 +291,7 @@ void Database::initializeIngredientsTable()
 	for (const auto& name : ingredientNames)
 	{
 		const Ingredient ingredient = { name };
-		saveIngredient(ingredient);
+		saveIngredient(con, ingredient);
 	}
 }
 
@@ -277,13 +302,13 @@ void Database::initializeAllergensTable()
 	for (const auto& name : allergenNames)
 	{
 		const Allergen allergen = { name };
-		saveAllergen(allergen);
+		saveAllergen(con, allergen);
 	}
 }
 
-void Database::initialize()
+void Database::initialize(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] initialize";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	// Create the tables to define the domain
 	// TODO: Make n_table primary key so there are no duplicate tables
@@ -313,26 +338,26 @@ void Database::initialize()
 
 void Database::dropAllTables()
 {
-	CROW_LOG_DEBUG << "[DB] dropAllTables";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex);
 
 		// We must drop first the tables that have a reference to another
-		stmt->execute("DROP TABLE IF EXISTS tableproduct;");
-		stmt->execute("DROP TABLE IF EXISTS orderproduct;");
-		stmt->execute("DROP TABLE IF EXISTS productingredient;");
-		stmt->execute("DROP TABLE IF EXISTS productorder;");
+		executeStmt(con, "DROP TABLE IF EXISTS tableproduct;");
+		executeStmt(con, "DROP TABLE IF EXISTS orderproduct;");
+		executeStmt(con, "DROP TABLE IF EXISTS productingredient;");
+		executeStmt(con, "DROP TABLE IF EXISTS productorder;");
 
-		stmt->execute("DROP TABLE IF EXISTS orders;");
-		stmt->execute("DROP TABLE IF EXISTS ingredients;");
-		stmt->execute("DROP TABLE IF EXISTS allergens;");
-		stmt->execute("DROP TABLE IF EXISTS employees;");
-		stmt->execute("DROP TABLE IF EXISTS products;");
-		stmt->execute("DROP TABLE IF EXISTS tables;");
-		stmt->execute("DROP TABLE IF EXISTS restaurants;");
-		stmt->execute("DROP TABLE IF EXISTS orderedproducts;");
+		executeStmt(con, "DROP TABLE IF EXISTS orders;");
+		executeStmt(con, "DROP TABLE IF EXISTS ingredients;");
+		executeStmt(con, "DROP TABLE IF EXISTS allergens;");
+		executeStmt(con, "DROP TABLE IF EXISTS employees;");
+		executeStmt(con, "DROP TABLE IF EXISTS products;");
+		executeStmt(con, "DROP TABLE IF EXISTS tables;");
+		executeStmt(con, "DROP TABLE IF EXISTS restaurants;");
+		executeStmt(con, "DROP TABLE IF EXISTS orderedproducts;");
 
 		CROW_LOG_INFO << "[REMOVED] All tables dropped.";
 	}
@@ -344,20 +369,21 @@ void Database::dropAllTables()
 
 
 // Save
-void Database::saveTable(const Table& table)
+void Database::saveTable(Conn& conn, const Table& table)
 {
-	CROW_LOG_DEBUG << "[DB] saveTable";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex, std::adopt_lock);
 
-		pstmt = con->prepareStatement("INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
+		auto pstmt = prepareStatement(conn, "INSERT INTO tables(n_table, n_clients, bill, discount) VALUES(?,?,?,?)");
 		pstmt->setInt(1, table.n_table);
 		pstmt->setInt(2, table.n_clients);
 		pstmt->setDouble(3, table.bill);
 		pstmt->setDouble(4, table.discount);
-		pstmt->execute();
+
+		executePstmt(conn, pstmt);
 
 		CROW_LOG_INFO << "[ADDED] Table " << table.n_table <<
 			" with " << table.n_clients <<
@@ -369,20 +395,20 @@ void Database::saveTable(const Table& table)
 	}
 }
 
-void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmployee)
+void Database::saveEmployee(Conn& conn, const Employee& oldEmployee, const Employee& newEmployee)
 {
-	CROW_LOG_DEBUG << "[DB] saveEmployee";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex);
 
 		const std::string oldEmployeeFullName = oldEmployee.firstName + " " + oldEmployee.lastName;
 		const std::string newEmployeeFullName = oldEmployee.firstName + " " + oldEmployee.lastName;
 
-		if (getEmployeeByName(oldEmployeeFullName).isEmpty() && getEmployeeByName(newEmployeeFullName).isEmpty())
+		if (getEmployeeByName(conn, oldEmployeeFullName).isEmpty() && getEmployeeByName(conn, newEmployeeFullName).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO employees(firstName, lastName, email, id, mobileNumber, level, username, password, session_token) VALUES(?,?,?,?,?,?,?,?,?)");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -392,14 +418,15 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setString(7, newEmployee.username);
 			pstmt->setString(8, newEmployee.password_hash);
 			pstmt->setString(9, generateSessionToken());
-			pstmt->execute();
+
+			executePstmt(conn, pstmt);
 
 			CROW_LOG_INFO << "[ADDED] Employee " << newEmployee.firstName << " " << newEmployee.lastName <<
 				" with level " << newEmployee.level;
 		}
-		else if (!getEmployeeByName(oldEmployeeFullName).isEmpty())
+		else if (!getEmployeeByName(conn, oldEmployeeFullName).isEmpty())
 		{
-			pstmt = con->prepareStatement("UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ?, session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
+			auto pstmt = prepareStatement(conn, "UPDATE employees SET firstName = ?, lastName = ?, email = ?, id = ?, mobileNumber = ?, level = ?, username = ?, password = ?, session_token = ? WHERE firstName = ? AND lastName = ? AND level = ?");
 			pstmt->setString(1, newEmployee.firstName);
 			pstmt->setString(2, newEmployee.lastName);
 			pstmt->setString(3, newEmployee.email);
@@ -412,7 +439,8 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 			pstmt->setString(10, oldEmployee.firstName);
 			pstmt->setString(11, oldEmployee.lastName);
 			pstmt->setInt(12, oldEmployee.level);
-			pstmt->execute();
+
+			executePstmt(conn, pstmt);
 
 			CROW_LOG_INFO << "[UPDDATED] Employee " << oldEmployee.firstName << " " << oldEmployee.lastName <<
 				" with level " << oldEmployee.level <<
@@ -430,13 +458,13 @@ void Database::saveEmployee(const Employee& oldEmployee, const Employee& newEmpl
 	}
 }
 
-void Database::saveProduct(const Product& product)
+void Database::saveProduct(Conn& conn, const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] saveProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex);
 
 		const std::string name = product.name;
 		const double price = product.price;
@@ -444,15 +472,16 @@ void Database::saveProduct(const Product& product)
 		const int page = product.page;
 		const int deployable = product.deployable;
 
-		if (getProductByName(name).isEmpty())
+		if (getProductByName(conn, name).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO products(name, price, color, page, deployable) VALUES(?,?,?,?,?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO products(name, price, color, page, deployable) VALUES(?,?,?,?,?)");
 			pstmt->setString(1, name);
 			pstmt->setDouble(2, price);
 			pstmt->setString(3, color);
 			pstmt->setInt(4, page);
 			pstmt->setInt(5, deployable);
-			pstmt->execute();
+
+			executePstmt(conn, pstmt);
 
 			CROW_LOG_INFO << "[ADDED] Product " << name <<
 				" with price " << price <<
@@ -469,15 +498,15 @@ void Database::saveProduct(const Product& product)
 	}
 }
 
-void Database::saveOrder(const Order& order)
+void Database::saveOrder(Conn& conn, const Order& order)
 {
-	CROW_LOG_DEBUG << "[DB] saveOrder";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex, std::adopt_lock);
 
-		pstmt = con->prepareStatement("INSERT INTO orders(n_table, n_clients, bill, paid, discount, method, employee, date) VALUES(?,?,?,?,?,?,?,?)");
+		auto pstmt = prepareStatement(conn, "INSERT INTO orders(n_table, n_clients, bill, paid, discount, method, employee, date) VALUES(?,?,?,?,?,?,?,?)");
 		pstmt->setInt(1, order.n_table);
 		pstmt->setInt(2, order.n_clients);
 		pstmt->setDouble(3, order.bill);
@@ -486,27 +515,28 @@ void Database::saveOrder(const Order& order)
 		pstmt->setString(6, order.method);
 		pstmt->setString(7, order.employee);
 		pstmt->setString(8, order.date);
-		pstmt->execute();
 
-		std::stringstream query;
-		query << "SELECT table_id FROM tables WHERE n_table = '" << order.n_table << "'";
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.str()));
-		query.str("");
+		executePstmt(conn, pstmt);
+
+		std::stringstream ss;
+		ss << "SELECT table_id FROM tables WHERE n_table = '" << order.n_table << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int table_id = res->getInt("table_id");
 
-			query << "SELECT * FROM tableproduct WHERE table_id = '" << table_id << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM tableproduct WHERE table_id = '" << table_id << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
 				int product_id = res->getInt("product_id");
 				int amount = res->getInt("amount");
 
-				saveOrderProduct(order, product_id, amount);
+				saveOrderProduct(conn, order, product_id, amount);
 			}
 
 			CROW_LOG_INFO << "[ADDED] Order with n_table " << order.n_table <<
@@ -525,24 +555,24 @@ void Database::saveOrder(const Order& order)
 }
 
 // Do not use the mutex here!. This function is called from another one that uses it.
-void Database::saveOrderProduct(const Order& order, const int& product_id, const int& amount)
+void Database::saveOrderProduct(Conn& conn, const Order& order, const int& product_id, const int& amount)
 {
-	CROW_LOG_DEBUG << "[DB] saveOrderProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex, std::adopt_lock);
 
-		std::stringstream query;
-		query << "SELECT order_id FROM orders WHERE n_table = '" << order.n_table << "' AND n_clients = '" << order.n_clients << "' AND bill = '" << order.bill << "' AND discount = '" << order.discount << "' AND employee = '" << order.employee << "' AND date = '" << order.date << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT order_id FROM orders WHERE n_table = '" << order.n_table << "' AND n_clients = '" << order.n_clients << "' AND bill = '" << order.bill << "' AND discount = '" << order.discount << "' AND employee = '" << order.employee << "' AND date = '" << order.date << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int order_id = res->getInt("order_id");
 
-			pstmt = con->prepareStatement("INSERT INTO orderproduct(order_id, product_id, amount) VALUES(?,?,?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO orderproduct(order_id, product_id, amount) VALUES(?,?,?)");
 			pstmt->setInt(1, order_id);
 			pstmt->setInt(2, product_id);
 			pstmt->setInt(3, amount);
@@ -555,17 +585,17 @@ void Database::saveOrderProduct(const Order& order, const int& product_id, const
 	}
 }
 
-void Database::saveIngredient(const Ingredient& ingredient)
+void Database::saveIngredient(Conn& conn, const Ingredient& ingredient)
 {
-	CROW_LOG_DEBUG << "[DB] saveIngredient";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex);
 
-		if (getIngredientByName(ingredient.name).isEmpty())
+		if (getIngredientByName(conn, ingredient.name).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO ingredients(name) VALUES(?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO ingredients(name) VALUES(?)");
 			pstmt->setString(1, ingredient.name);
 			pstmt->execute();
 
@@ -583,17 +613,17 @@ void Database::saveIngredient(const Ingredient& ingredient)
 	}
 }
 
-void Database::saveAllergen(const Allergen& allergen)
+void Database::saveAllergen(Conn& conn, const Allergen& allergen)
 {
-	CROW_LOG_DEBUG << "[DB] saveAllergen";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//std::unique_lock<std::shared_mutex> lock(mutex);
 
-		if (getAllergenByName(allergen.name).isEmpty())
+		if (getAllergenByName(conn, allergen.name).isEmpty())
 		{
-			pstmt = con->prepareStatement("INSERT INTO allergens(name) VALUES(?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO allergens(name) VALUES(?)");
 			pstmt->setString(1, allergen.name);
 			pstmt->execute();
 
@@ -636,30 +666,26 @@ std::string getLastNameInitials(const std::string lastName)
 }
 
 // Do not use the mutex here!. This function is called from another one that uses it.
-void Database::saveTableProduct(Table& table,
+void Database::saveTableProduct(Conn& conn, 
+								Table& table,
 								const Product& product,
 								const int& amount,
 								const std::string& details,
 								const Employee& employee)
 {
-	CROW_LOG_DEBUG << "[DB] saveTableProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		int table_id = 0;
-		const int n_table = table.n_table;
-		//double discount = table.discount;
-
 		int product_id = 0;
-		std::string name = product.name;
 
-		std::stringstream query;
+		auto pstmt1 = prepareStatement(conn, "SELECT * FROM tables WHERE n_table = ?");
+		pstmt1->setInt(1, table.n_table);
 
-		query << "SELECT * FROM tables WHERE n_table = " << n_table;
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		auto res = executePstmt(conn, pstmt1);
 
 		if (res->next())
 		{
@@ -667,38 +693,43 @@ void Database::saveTableProduct(Table& table,
 			const double new_bill = res->getDouble("bill") + (product.price * amount);
 			const std::string employeeName = employee.firstName + " " + getLastNameInitials(employee.lastName);
 
-			pstmt = con->prepareStatement("UPDATE tables SET bill = ?, last_modified = ? WHERE table_id = ?");
-			pstmt->setDouble(1, new_bill);
-			pstmt->setString(2, employeeName);
-			pstmt->setInt(3, table_id);
-			pstmt->execute();
+			auto pstmt2 = prepareStatement(conn, "UPDATE tables SET bill = ?, last_modified = ? WHERE table_id = ?");
+			pstmt2->setDouble(1, new_bill);
+			pstmt2->setString(2, employeeName);
+			pstmt2->setInt(3, table_id);
+
+			executePstmt(conn, pstmt2);
 
 			CROW_LOG_INFO << "[UPDATED] Table " << table.n_table <<
 				" updated bill is " << new_bill;
 
-			query << "SELECT product_id FROM products WHERE name = '" << name << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			auto pstmt3 = prepareStatement(conn, "SELECT product_id FROM products WHERE name = ? ");
+			pstmt3->setString(1, product.name);
+
+			res = executePstmt(conn, pstmt3);
 
 			if (res->next())
 			{
 				product_id = res->getInt("product_id");
 
-				query << "SELECT amount FROM tableproduct WHERE table_id = '" << table_id << "' AND product_id = '" << product_id << "' AND details = '" << details << "'";
-				res.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				auto pstmt4 = prepareStatement(conn, "SELECT amount FROM tableproduct WHERE table_id = ? AND product_id = ? AND details = ?");
+				pstmt4->setInt(1, table_id);
+				pstmt4->setInt(2, product_id);
+				pstmt4->setString(3, details);
+				
+				res = executePstmt(conn, pstmt4);
 
 				if (res->next())
 				{
 					const int new_amount = res->getInt("amount") + amount;
 
-					pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ? AND details = ?");
-					pstmt->setInt(1, new_amount);
-					pstmt->setInt(2, table_id);
-					pstmt->setInt(3, product_id);
-					pstmt->setString(4, details);
+					auto pstmt5 = prepareStatement(conn, "UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ? AND details = ?");
+					pstmt5->setInt(1, new_amount);
+					pstmt5->setInt(2, table_id);
+					pstmt5->setInt(3, product_id);
+					pstmt5->setString(4, details);
 
-					pstmt->execute();
+					executePstmt(conn, pstmt5);
 
 					CROW_LOG_INFO << "[UPDATED] Tableproduct with table_id " << table_id <<
 						" and product_id " << product_id <<
@@ -707,12 +738,13 @@ void Database::saveTableProduct(Table& table,
 				}
 				else
 				{
-					pstmt = con->prepareStatement("INSERT INTO tableproduct(table_id, product_id, amount, details) VALUES(?,?,?,?)");
-					pstmt->setInt(1, table_id);
-					pstmt->setInt(2, product_id);
-					pstmt->setInt(3, amount);
-					pstmt->setString(4, details);
-					pstmt->execute();
+					auto pstmt6 = prepareStatement(conn, "INSERT INTO tableproduct(table_id, product_id, amount, details) VALUES(?,?,?,?)");
+					pstmt6->setInt(1, table_id);
+					pstmt6->setInt(2, product_id);
+					pstmt6->setInt(3, amount);
+					pstmt6->setString(4, details);
+
+					executePstmt(conn, pstmt6);
 
 					CROW_LOG_INFO << "[ADDED] Tableproduct with table_id " << table_id <<
 						" and product_id " << product_id << " and amount " << amount << " and details " << details;
@@ -727,34 +759,35 @@ void Database::saveTableProduct(Table& table,
 }
 
 // It resets the productingredient table. This is more "set" than "save"
-void Database::saveProductIngredient(const Product& product,
+void Database::saveProductIngredient(Conn& conn, 
+									 const Product& product,
 									 const Ingredient& ingredient)
 {
-	CROW_LOG_DEBUG << "[DB] saveProductIngredient";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int product_id = res->getInt("product_id");
 
-			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int ingredient_id = res->getInt("ingredient_id");
 
-				pstmt = con->prepareStatement("INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
+				auto pstmt = prepareStatement(conn, "INSERT INTO productingredient(product_id, ingredient_id) VALUES(?,?)");
 				pstmt->setInt(1, product_id);
 				pstmt->setInt(2, ingredient_id);
 				pstmt->execute();
@@ -770,33 +803,35 @@ void Database::saveProductIngredient(const Product& product,
 	}
 }
 
-void Database::saveProductAllergen(const Product& product, const Allergen& allergen)
+void Database::saveProductAllergen(Conn& conn, 
+								   const Product& product,
+								   const Allergen& allergen)
 {
-	CROW_LOG_DEBUG << "[DB] saveProductAllergen";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int product_id = res->getInt("product_id");
 
-			query << "SELECT allergen_id FROM allergens WHERE name = '" << allergen.name << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT allergen_id FROM allergens WHERE name = '" << allergen.name << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int allergen_id = res->getInt("allergen_id");
 
-				pstmt = con->prepareStatement("INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
+				auto pstmt = prepareStatement(conn, "INSERT INTO productallergen(product_id, allergen_id) VALUES(?,?)");
 				pstmt->setInt(1, product_id);
 				pstmt->setInt(2, allergen_id);
 				pstmt->execute();
@@ -812,17 +847,18 @@ void Database::saveProductAllergen(const Product& product, const Allergen& aller
 	}
 }
 
-void Database::saveOrderedProduct(const OrderedProduct& orderedProduct)
+void Database::saveOrderedProduct(Conn& conn, 
+								  const OrderedProduct& orderedProduct)
 {
-	CROW_LOG_DEBUG << "[DB] saveOrderedProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		if (true/*getOrderedProductByName(orderedProduct.name).isEmpty()*/)
 		{
-			pstmt = con->prepareStatement("INSERT INTO orderedproducts(name, price, percent, revenue, totalRevenue) VALUES(?, ?, ?, ?, ?)");
+			auto pstmt = prepareStatement(conn, "INSERT INTO orderedproducts(name, price, percent, revenue, totalRevenue) VALUES(?, ?, ?, ?, ?)");
 			pstmt->setString(1, orderedProduct.name);
 			pstmt->setDouble(2, orderedProduct.price);
 			pstmt->setDouble(3, orderedProduct.percent);
@@ -845,21 +881,21 @@ void Database::saveOrderedProduct(const OrderedProduct& orderedProduct)
 
 
 //Get
-std::vector<Table> Database::getTables()
+std::vector<Table> Database::getTables(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getTables";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Table> tables;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT * FROM tables";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT * FROM tables";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 		
 		while (res->next())
 		{
@@ -870,18 +906,18 @@ std::vector<Table> Database::getTables()
 			const double discount = res->getDouble("discount");
 
 			domain::product_unordered_map products;
-			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res2->next())
 			{
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * FROM products WHERE product_id = " << product_id;
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM products WHERE product_id = " << product_id;
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res3->next())
 				{
@@ -917,21 +953,24 @@ std::vector<Table> Database::getTables()
 	}
 }
 
-Table Database::getTableByNumber(const int n_table)
+Table Database::getTableByNumber(Conn& conn, 
+								 const int n_table)
 {
-	CROW_LOG_DEBUG << "[DB] getTableByNumber";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Table table;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		std::cout << "tab1" << std::endl;
+		std::shared_lock<std::shared_mutex> lock(mutex);
+		std::cout << "tab2" << std::endl;
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT * FROM tables WHERE n_table = " << n_table; // TODO: change tables for a varible that corresponds to the table name
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -941,9 +980,9 @@ Table Database::getTableByNumber(const int n_table)
 			const double bill = res->getDouble("bill");
 			const double discount = res->getDouble("discount");
 
-			query << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM tableproduct WHERE table_id = " << table_id;
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			domain::product_unordered_map products;
 			while (res->next())
@@ -952,9 +991,9 @@ Table Database::getTableByNumber(const int n_table)
 				const int amount = res->getInt("amount");
 				std::string details = res->getString("details");
 
-				query << "SELECT * FROM products WHERE product_id = " << product_id;
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM products WHERE product_id = " << product_id;
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res2->next())
 				{
@@ -980,21 +1019,22 @@ Table Database::getTableByNumber(const int n_table)
 	}
 }
 
-std::string Database::getLastModifiedFromTable(const Table& table)
+std::string Database::getLastModifiedFromTable(Conn& conn, 
+											   const Table& table)
 {
-	CROW_LOG_DEBUG << "[DB] getlastModifiedFromTable";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::string last_modified;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT last_modified FROM tables WHERE n_table = " << table.n_table; // TODO: change tables for a varible that corresponds to the table name
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT last_modified FROM tables WHERE n_table = " << table.n_table; // TODO: change tables for a varible that corresponds to the table name
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -1011,17 +1051,17 @@ std::string Database::getLastModifiedFromTable(const Table& table)
 }
 
 
-std::vector<Employee> Database::getEmployees()
+std::vector<Employee> Database::getEmployees(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getEmployees";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Employee> employees;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM employees")); // TODO: change employees for a varible that corresponds to the table name
+		auto res = executeStmt(conn, "SELECT * FROM employees"); // TODO: change employees for a varible that corresponds to the table name
 
 		while (res->next())
 		{
@@ -1050,20 +1090,21 @@ std::vector<Employee> Database::getEmployees()
 	}
 }
 
-Employee Database::getEmployeeByName(const std::string& fullName)
+Employee Database::getEmployeeByName(Conn& conn, 
+									 const std::string& fullName)
 {
-	CROW_LOG_DEBUG << "[DB] getEmployeeByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Employee employee;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM employees WHERE CONCAT(firstName, ' ', lastName) = '" << fullName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM employees WHERE CONCAT(firstName, ' ', lastName) = '" << fullName << "'"; // String needs to be inside '' // TODO: change employees for a varible that corresponds to the table name
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -1087,20 +1128,21 @@ Employee Database::getEmployeeByName(const std::string& fullName)
 	}
 }
 
-Employee Database::getEmployeeByAccount(const std::string& username,
+Employee Database::getEmployeeByAccount(Conn& conn, 
+										const std::string& username,
 										const std::string& password_hash)
 {
-	CROW_LOG_DEBUG << "[DB] getEmployeeByAccount";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Employee employee;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM employees WHERE username = '" << username << "' AND password ='" << password_hash << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
+		std::stringstream ss;
+		ss << "SELECT * FROM employees WHERE username = '" << username << "' AND password ='" << password_hash << "'";
+		auto res = executeStmt(conn, ss.str());
 
 		if (res->next())
 		{
@@ -1124,20 +1166,21 @@ Employee Database::getEmployeeByAccount(const std::string& username,
 	}
 }
 
-Employee Database::getEmployeeBySessionToken(const std::string& session_token)
+Employee Database::getEmployeeBySessionToken(Conn& conn, 
+											 const std::string& session_token)
 {
-	CROW_LOG_DEBUG << "[DB] getEmployeeBySessionToken";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Employee employee;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM employees WHERE session_token = '" << session_token << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM employees WHERE session_token = '" << session_token << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -1161,17 +1204,17 @@ Employee Database::getEmployeeBySessionToken(const std::string& session_token)
 	}
 }
 
-std::vector<Product> Database::getProducts()
+std::vector<Product> Database::getProducts(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getProducts";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Product> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM products")); // TODO: change employees for a varible that corresponds to the table name
+		auto res = executeStmt(conn, "SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
 
 		while (res->next())
 		{
@@ -1180,7 +1223,7 @@ std::vector<Product> Database::getProducts()
 			const double price = res->getDouble("price");
 			const std::string color = res->getString("color");
 			const int page = res->getInt("page");
-			const bool deployable = res->getBoolean("deployable");
+			const int deployable = res->getInt("deployable");
 
 			const Product product = { name, price, color, page, deployable };
 
@@ -1197,18 +1240,55 @@ std::vector<Product> Database::getProducts()
 	}
 }
 
-Product Database::getProductByName(const std::string name)
+std::unordered_map<int, Product> Database::getProducts2(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getProductByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
+
+	std::unordered_map<int, Product> products;
+
+	try
+	{
+		////std::unique_lock<std::shared_mutex> lock(mutex);
+
+		auto res = executeStmt(conn, "SELECT * FROM products"); // TODO: change employees for a varible that corresponds to the table name
+
+		while (res->next())
+		{
+			int id = res->getInt("product_id");
+			const std::string name = res->getString("name");
+			const double price = res->getDouble("price");
+			const std::string color = res->getString("color");
+			const int page = res->getInt("page");
+			const int deployable = res->getInt("deployable");
+
+			const Product product = { name, price, color, page, deployable };
+
+			//std::cout << "Id: " << id << ". Employee name: " << name << " with level " << level << " and start time " << start << std::endl;
+			products[id] = product;
+		}
+
+		return products;
+	}
+	catch (const sql::SQLException& e)
+	{
+		CROW_LOG_WARNING << "[EXCEPTION] Could not get products2. Error message: " << e.what();
+		return products;
+	}
+}
+
+
+Product Database::getProductByName(Conn& conn, const std::string name)
+{
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Product product;
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM products WHERE name = '" << name << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
+		std::stringstream ss;
+		ss << "SELECT * FROM products WHERE name = '" << name << "'";
+		auto res = executeStmt(conn, ss.str());
 
 		if (res->next())
 		{
@@ -1228,19 +1308,19 @@ Product Database::getProductByName(const std::string name)
 	}
 }
 
-int Database::getProductIdByName(const std::string name)
+int Database::getProductIdByName(Conn& conn, const std::string name)
 {
-	CROW_LOG_DEBUG << "[DB] getProductIdByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	int id = 0;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT product_id FROM products WHERE name = '" << name << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
+		std::stringstream ss;
+		ss << "SELECT product_id FROM products WHERE name = '" << name << "'";
+		auto res = executeStmt(conn, ss.str());
 
 		if (res->next())
 		{
@@ -1256,20 +1336,20 @@ int Database::getProductIdByName(const std::string name)
 	}
 }
 
-std::vector<Product> Database::getProductsByDeployableId(const int& deployable_id)
+std::vector<Product> Database::getProductsByDeployableId(Conn& conn, const int& deployable_id)
 {
-	CROW_LOG_DEBUG << "[DB] getProductsByDeployableId";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Product> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1292,31 +1372,31 @@ std::vector<Product> Database::getProductsByDeployableId(const int& deployable_i
 	}
 }
 
-std::pair<int, std::vector<Product>> Database::getProductsAndIds()
+std::pair<int, std::vector<Product>> Database::getProductsAndIds(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getProductsAndIds";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	std::unique_lock<std::mutex> lock(mutex);
+	////std::unique_lock<std::shared_mutex> lock(mutex);
 
-	const std::vector<Product> products = getProducts();
+	const std::vector<Product> products = getProducts(conn);
 
 	return std::pair<int, std::vector<Product>>();
 }
 
-std::vector<Order> Database::getOrders()
+std::vector<Order> Database::getOrders(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getOrders";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Order> orders;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1330,9 +1410,9 @@ std::vector<Order> Database::getOrders()
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1340,9 +1420,9 @@ std::vector<Order> Database::getOrders()
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1376,11 +1456,11 @@ std::vector<Order> Database::getOrders()
 	/*Order order;
 
 	try {
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE time = '" << time << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE time = '" << time << "'";
+		auto res = executeStmt(conn, ss.str());
 
 		if (res->next()) {
 			std::string time = res->getString("time");
@@ -1397,20 +1477,20 @@ std::vector<Order> Database::getOrders()
 	return order;
 }*/
 
-Order Database::getOrderById(const int& id)
+Order Database::getOrderById(Conn& conn, const int& id)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderById";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Order order;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE order_id = '" << id << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE order_id = '" << id << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -1424,9 +1504,9 @@ Order Database::getOrderById(const int& id)
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1434,9 +1514,9 @@ Order Database::getOrderById(const int& id)
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1465,21 +1545,21 @@ Order Database::getOrderById(const int& id)
 }
 
 
-std::vector<Order> Database::getOrdersByDate(const std::string& date, const std::string& mode)
+std::vector<Order> Database::getOrdersByDate(Conn& conn, const std::string& date, const std::string& mode)
 {
-	CROW_LOG_DEBUG << "[DB] getOrdersByDate";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Order> orders;
 
 	try
 	{
-		CROW_LOG_DEBUG << "[DB] getOrdersByDate " << date << ".";
-		//std::unique_lock<std::mutex> lock(mutex);
+		CROW_LOG_DEBUG << "[DB] " << __func__ << date << ".";
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1493,9 +1573,9 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1503,9 +1583,9 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1534,20 +1614,20 @@ std::vector<Order> Database::getOrdersByDate(const std::string& date, const std:
 	}
 }
 
-std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName)
+std::vector<Order> Database::getOrdersByEmployee(Conn& conn, const std::string& employeeName)
 {
-	CROW_LOG_DEBUG << "[DB] getOrdersByEmployee";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Order> orders;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE employee = '" << employeeName << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE employee = '" << employeeName << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1561,9 +1641,9 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1571,9 +1651,9 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1602,20 +1682,20 @@ std::vector<Order> Database::getOrdersByEmployee(const std::string& employeeName
 	}
 }
 
-std::vector<Order> Database::getOrdersByMethod(const std::string& method)
+std::vector<Order> Database::getOrdersByMethod(Conn& conn, const std::string& method)
 {
-	CROW_LOG_DEBUG << "[DB] getOrdersByMethod";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Order> orders;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE method = '" << method << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE method = '" << method << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1629,9 +1709,9 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1639,9 +1719,9 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1670,9 +1750,9 @@ std::vector<Order> Database::getOrdersByMethod(const std::string& method)
 	}
 }
 
-std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
+std::vector<Order> Database::getOrdersByNTable(Conn& conn, const std::string& n_table)
 {
-	CROW_LOG_DEBUG << "[DB] getOrdersByNTable";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	int nTable = 0;
 	try
@@ -1684,12 +1764,12 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 	std::vector<Order> orders;
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE n_table = '" << nTable << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE n_table = '" << nTable << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1703,9 +1783,9 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 			const std::string employee = res->getString("employee");
 			const std::string date = res->getString("date");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			std::vector<std::pair<Product, int>> products;
 			while (res2->next())
@@ -1713,9 +1793,9 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 				const int product_id = res2->getInt("product_id");
 				const int amount = res2->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next())
 				{
@@ -1745,20 +1825,20 @@ std::vector<Order> Database::getOrdersByNTable(const std::string& n_table)
 }
 
 
-std::vector<BillAndPaid> Database::getBillsAndPaids()
+std::vector<BillAndPaid> Database::getBillsAndPaids(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getBillsAndPaids";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<BillAndPaid> billsAndPaids;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT bill, paid FROM orders";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT bill, paid FROM orders";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1779,20 +1859,20 @@ std::vector<BillAndPaid> Database::getBillsAndPaids()
 	}
 }
 
-std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& date, const std::string& mode)
+std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(Conn& conn, const std::string& date, const std::string& mode)
 {
-	CROW_LOG_DEBUG << "[DB] getBillsAndPaidsByDate";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<BillAndPaid> billsAndPaids;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT bill, paid, date FROM orders WHERE " << mode << "(date) = " << date;
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT bill, paid, date FROM orders WHERE " << mode << "(date) = " << date;
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1813,20 +1893,20 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByDate(const std::string& dat
 	}
 }
 
-std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string& employeeName)
+std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(Conn& conn, const std::string& employeeName)
 {
-	CROW_LOG_DEBUG << "[DB] getBillsAndPaidsByEmployee";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<BillAndPaid> billsAndPaids;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT bill, paid, date FROM orders WHERE employee = '" << employeeName << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT bill, paid, date FROM orders WHERE employee = '" << employeeName << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1847,20 +1927,20 @@ std::vector<BillAndPaid> Database::getBillsAndPaidsByEmployee(const std::string&
 	}
 }
 
-int Database::getNClients()
+int Database::getNClients(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getNClients";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	int totalNClients = 0;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT n_clients FROM orders";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT n_clients FROM orders";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1877,20 +1957,20 @@ int Database::getNClients()
 	}
 }
 
-int Database::getNClientsByDate(const std::string& date, const std::string& mode)
+int Database::getNClientsByDate(Conn& conn, const std::string& date, const std::string& mode)
 {
-	CROW_LOG_DEBUG << "[DB] getNClientsByDate";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	int totalNClients = 0;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT n_clients FROM orders WHERE " << mode << "(date) = '" << date << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT n_clients FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1907,20 +1987,20 @@ int Database::getNClientsByDate(const std::string& date, const std::string& mode
 	}
 }
 
-int Database::getNClientsByEmployee(const std::string& employeeName)
+int Database::getNClientsByEmployee(Conn& conn, const std::string& employeeName)
 {
-	CROW_LOG_DEBUG << "[DB] getNClientsByEmployee";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	int totalNClients = 0;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT n_clients FROM orders WHERE employee = '" << employeeName << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT n_clients FROM orders WHERE employee = '" << employeeName << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		while (res->next())
 		{
@@ -1937,47 +2017,47 @@ int Database::getNClientsByEmployee(const std::string& employeeName)
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
+std::unordered_map<int, OrderedProduct> Database::getOrderedProducts(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProducts";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT * FROM orders";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM orders";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
 				const int order_id = res->getInt("order_id");
 
-				query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res2->next())
 				{
 					const int product_id = res2->getInt("product_id");
 					const int amount = res2->getInt("amount");
 
-					query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-					std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+					auto res3 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					if (res3->next())
 					{
@@ -1991,9 +2071,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 						products[product_id].totalRevenue += (amount * products[product_id].revenue);
 
 						const int deployable = res3->getInt("deployable");
-						query << "SELECT name from products WHERE product_id = '" << deployable << "'";
-						res3.reset((stmt->executeQuery(query.str())));
-						query.str("");
+						ss << "SELECT name from products WHERE product_id = '" << deployable << "'";
+						res3 = executeStmt(conn, ss.str());
+						ss.str("");
 
 						std::string menu = "";
 						if (res3->next())
@@ -2017,29 +2097,29 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProducts()
 	}
 }
 
-OrderedProduct Database::getOrderedProductById(const int& product_id)
+OrderedProduct Database::getOrderedProductById(Conn& conn, const int& product_id)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductById";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	OrderedProduct product;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			product.id = product_id;
 
@@ -2048,9 +2128,9 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 				const int product_id = res->getInt("product_id");
 				const int amount = res->getInt("amount");
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res2->next() && res2->getInt("deployable") != 0)
 				{
@@ -2076,29 +2156,29 @@ OrderedProduct Database::getOrderedProductById(const int& product_id)
 	}
 }
 
-OrderedProduct Database::getOrderedProductByName(const std::string& name)
+OrderedProduct Database::getOrderedProductByName(Conn& conn, const std::string& name)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	OrderedProduct product;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT * FROM products WHERE name = '" << name << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM products WHERE name = '" << name << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next() && res->getInt("deployable") != 0)
 			{
@@ -2111,24 +2191,24 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 				product.price = res->getDouble("price");
 				product.revenue = 0;
 
-				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
-				res.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				ss << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+				res = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res->next())
 				{
-					query << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
-					std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT * from orderproduct WHERE product_id = '" << product_id << "'";
+					auto res2 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					product.sold += res->getInt("amount");
 					product.percent = (product.sold / (double)totalAmount) * 100.0;
 					product.totalRevenue = (product.sold * product.revenue);	
 				}
 
-				query << "SELECT name from products WHERE product_id = '" << deployable << "'";
-				res.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				ss << "SELECT name from products WHERE product_id = '" << deployable << "'";
+				res = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res->next())
 				{
@@ -2147,30 +2227,31 @@ OrderedProduct Database::getOrderedProductByName(const std::string& name)
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const int& page)
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(Conn& conn, 
+																		   const int& page)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductByPage";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT * FROM products WHERE page = '" << page << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM products WHERE page = '" << page << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
@@ -2186,9 +2267,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 					products[product_id].price = res->getDouble("price");
 					products[product_id].revenue = 0;
 
-					query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
-					std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+					auto res2 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					while (res2->next())
 					{
@@ -2197,9 +2278,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 						products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
 					}
 
-					query << "SELECT name from products WHERE product_id = '" << deployable << "'";
-					res2.reset((stmt->executeQuery(query.str())));
-					query.str("");
+					ss << "SELECT name from products WHERE product_id = '" << deployable << "'";
+					res2 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					std::string menu = "";
 					if (res2->next())
@@ -2222,38 +2303,39 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPage(const
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const std::string& menu)
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(Conn& conn, 
+																		   const std::string& menu)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductByMenu";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT product_id FROM products WHERE name = '" << menu << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT product_id FROM products WHERE name = '" << menu << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int menuId = res->getInt("product_id");
 
-				query << "SELECT * FROM products WHERE deployable = '" << menuId << "'";
-				res.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				ss << "SELECT * FROM products WHERE deployable = '" << menuId << "'";
+				res = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res->next())
 				{
@@ -2266,9 +2348,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 					products[product_id].price = res->getDouble("price");
 					products[product_id].revenue = 0;
 
-					query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
-					std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+					auto res2 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					while (res2->next())
 					{
@@ -2290,30 +2372,31 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByMenu(const
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(const double& price)
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(Conn& conn, 
+																			const double& price)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductByPrice";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	using ProductId = int;
 	std::unordered_map<ProductId, OrderedProduct> products;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT SUM(amount) AS totalAmount FROM orderproduct";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		if (res->next())
 		{
 			totalAmount = res->getInt("totalAmount");
 
-			query << "SELECT * FROM products WHERE price = '" << price << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * FROM products WHERE price = '" << price << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			const int deployable = res->getInt("deployable");
 			while (res->next() && deployable != 0)
@@ -2326,9 +2409,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 				products[product_id].price = price;
 				products[product_id].revenue = 0;
 
-				query << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM orderproduct WHERE product_id = " << product_id;
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res2->next())
 				{
@@ -2337,9 +2420,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 					products[product_id].totalRevenue = (products[product_id].sold * products[product_id].revenue);
 				}
 
-				query << "SELECT name from products WHERE product_id = '" << deployable << "'";
-				res2.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				ss << "SELECT name from products WHERE product_id = '" << deployable << "'";
+				res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				std::string menu = "";
 				if (res2->next())
@@ -2361,36 +2444,37 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByPrice(cons
 	}
 }
 
-std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const std::string& date, const std::string& mode)
+std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(Conn& conn, 
+																		   const std::string& date, const std::string& mode)
 {
-	CROW_LOG_DEBUG << "[DB] getOrderedProductsByDate";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::unordered_map<int, OrderedProduct> products;
 
 	try
 	{
-		CROW_LOG_DEBUG << "[DB] getOrdersByDate " << date << ".";
-		//std::unique_lock<std::mutex> lock(mutex);
+		CROW_LOG_DEBUG << "[DB] " << __func__ << date << ".";
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM orders WHERE " << mode << "(date) = '" << date << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		int totalAmount = 0;
 		while (res->next())
 		{
 			const int order_id = res->getInt("order_id");
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			auto res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res2->next())
 			{
-				query << "SELECT amount from orderproduct WHERE order_id = '" << order_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT amount from orderproduct WHERE order_id = '" << order_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				while (res3->next())
 				{
@@ -2398,9 +2482,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 				}
 			}
 
-			query << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
-			res2.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT * from orderproduct WHERE order_id = '" << order_id << "'";
+			res2 = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res2->next())
 			{
@@ -2411,9 +2495,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 				products[product_id].sold += amount;
 				products[product_id].percent = (products[product_id].sold / totalAmount) * 100.0;
 
-				query << "SELECT * from products WHERE product_id = '" << product_id << "'";
-				std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * from products WHERE product_id = '" << product_id << "'";
+				auto res3 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res3->next() && res3->getInt("deployable"))
 				{
@@ -2425,9 +2509,9 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 					products[product_id].revenue = 0;
 					products[product_id].totalRevenue = products[product_id].sold * products[product_id].revenue;
 
-					query << "SELECT name from products WHERE product_id = '" << deployable << "'";
-					res3.reset((stmt->executeQuery(query.str())));
-					query.str("");
+					ss << "SELECT name from products WHERE product_id = '" << deployable << "'";
+					res3 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					std::string menu = "";
 					if (res3->next())
@@ -2450,17 +2534,17 @@ std::unordered_map<int, OrderedProduct> Database::getOrderedProductsByDate(const
 	}
 }
 
-std::vector<Ingredient> Database::getIngredients()
+std::vector<Ingredient> Database::getIngredients(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getIngredients";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Ingredient> ingredients;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM ingredients"));
+		auto res = executeStmt(conn, "SELECT * FROM ingredients");
 
 		while (res->next())
 		{
@@ -2478,20 +2562,21 @@ std::vector<Ingredient> Database::getIngredients()
 	}
 }
 
-Ingredient Database::getIngredientByName(const std::string& name)
+Ingredient Database::getIngredientByName(Conn& conn, 
+										 const std::string& name)
 {
-	CROW_LOG_DEBUG << "[DB] getIngredientsByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Ingredient ingredient;
 
 	try
 	{
-		//std::unique_lock<std::mutex> lock(mutex);
+		//////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM ingredients WHERE name = '" << name << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM ingredients WHERE name = '" << name << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -2507,36 +2592,37 @@ Ingredient Database::getIngredientByName(const std::string& name)
 	}
 }
 
-std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& product)
+std::vector<Ingredient> Database::getIngredientsFromProduct(Conn& conn, 
+															const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] getIngredientsFromProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Ingredient> ingredients;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			int product_id = res->getInt("product_id");
 
-			query << "SELECT ingredient_id FROM productingredient WHERE product_id = " << product_id;
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT ingredient_id FROM productingredient WHERE product_id = " << product_id;
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
 				const int ingredient_id = res->getInt("ingredient_id");
 
-				query << "SELECT * FROM ingredients WHERE ingredient_id = " << ingredient_id;
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM ingredients WHERE ingredient_id = " << ingredient_id;
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res2->next())
 				{
@@ -2554,17 +2640,17 @@ std::vector<Ingredient> Database::getIngredientsFromProduct(const Product& produ
 	}
 }
 
-std::vector<Allergen> Database::getAllergens()
+std::vector<Allergen> Database::getAllergens(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getAllergens";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Allergen> allergens;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM allergens"));
+		auto res = executeStmt(conn, "SELECT * FROM allergens");
 
 		while (res->next())
 		{
@@ -2582,19 +2668,20 @@ std::vector<Allergen> Database::getAllergens()
 	}
 }
 
-Allergen Database::getAllergenByName(const std::string name)
+Allergen Database::getAllergenByName(Conn& conn, 
+									 const std::string name)
 {
-	CROW_LOG_DEBUG << "[DB] getAllergensByName";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	Allergen allergen;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT * FROM allergens WHERE name = '" << name << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
+		std::stringstream ss;
+		ss << "SELECT * FROM allergens WHERE name = '" << name << "'";
+		auto res = executeStmt(conn, ss.str());
 
 		if (res->next())
 		{
@@ -2611,36 +2698,37 @@ Allergen Database::getAllergenByName(const std::string name)
 	}
 }
 
-std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
+std::vector<Allergen> Database::getAllergensFromProduct(Conn& conn, 
+														const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] getAllergensFromProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<Allergen> allergens;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "' AND page = '" << product.page << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int product_id = res->getInt("product_id");
 
-			query << "SELECT allergen_id FROM productallergen WHERE product_id = " << product_id;
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT allergen_id FROM productallergen WHERE product_id = " << product_id;
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
 				const int allergen_id = res->getInt("allergen_id");
 
-				query << "SELECT * FROM allergens WHERE allergen_id = " << allergen_id;
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM allergens WHERE allergen_id = " << allergen_id;
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res2->next())
 				{
@@ -2658,23 +2746,23 @@ std::vector<Allergen> Database::getAllergensFromProduct(const Product& product)
 	}
 }
 
-std::vector<page_t> Database::getDataFromPages()
+std::vector<page_t> Database::getDataFromPages(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] getDataFromPages";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::vector<page_t> pages(cts::N_FOURTH_ROW_BUTTONS);
 	int i = 0;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		for (auto& p : pages)
 		{
-			std::stringstream query;
-			query << "SELECT * FROM products WHERE page = '" << i + 1 << "'";
-			std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-			query.str("");
+			std::stringstream ss;
+			ss << "SELECT * FROM products WHERE page = '" << i + 1 << "'";
+			auto res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			while (res->next())
 			{
@@ -2691,17 +2779,17 @@ std::vector<page_t> Database::getDataFromPages()
 				{
 					if (deployablePrice == 0)
 					{
-						query << "SELECT product_id FROM products WHERE name = '" << deployableName << "' AND price = 0 AND color = '" << deployableColor << "' AND page = '" << deployablePage << "' AND deployable = 0";
-						std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-						query.str("");
+						ss << "SELECT product_id FROM products WHERE name = '" << deployableName << "' AND price = 0 AND color = '" << deployableColor << "' AND page = '" << deployablePage << "' AND deployable = 0";
+						auto res2 = executeStmt(conn, ss.str());
+						ss.str("");
 
 						if (res2->next())
 						{
 							int deployable_id = res->getInt("product_id");
 
-							query << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
-							res2.reset((stmt->executeQuery(query.str())));
-							query.str("");
+							ss << "SELECT * FROM products WHERE deployable = '" << deployable_id << "'";
+							res2 = executeStmt(conn, ss.str());
+							ss.str("");
 
 							deployable_vector = { Product("", 0.0, "#FFFFFF", 0, 0) };
 							while (res2->next())
@@ -2736,7 +2824,7 @@ std::vector<page_t> Database::getDataFromPages()
 
 std::string Database::generateSessionToken()
 {
-	CROW_LOG_DEBUG << "[DB] generateSessionToken";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	std::random_device rd;
 	std::mt19937 generator(rd());
@@ -2754,13 +2842,31 @@ std::string Database::generateSessionToken()
 	return new_session_token;
 }
 
+void Database::payTable(Conn& conn, const Order& order)
+{
+	//std::unique_lock<std::shared_mutex> lock(mutex, std::adopt_lock);
+
+	Table t_aux;
+	{
+		Table t = getTableByNumber(conn, order.n_table);
+		t_aux = t;
+		std::cout << "B2" << std::endl;
+	}
+
+	saveOrder(conn, order);
+	std::cout << "B3" << std::endl;
+
+	removeTable(conn, t_aux);
+	std::cout << "B4" << std::endl;
+}
+
 
 // Print
-void Database::printTables()
+void Database::printTables(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] printTables";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	const std::vector<Table> tables = getTables();
+	const std::vector<Table> tables = getTables(conn);
 
 	CROW_LOG_INFO << "[LIST] Tables: ";
 	for (const auto table : tables)
@@ -2769,11 +2875,11 @@ void Database::printTables()
 	}
 }
 
-void Database::printEmployees()
+void Database::printEmployees(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] printEmployees";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	const std::vector<Employee> employees = getEmployees();
+	const std::vector<Employee> employees = getEmployees(conn);
 
 	CROW_LOG_INFO << "[LIST] Employees: ";
 	for (const auto employee : employees)
@@ -2782,11 +2888,11 @@ void Database::printEmployees()
 	}
 }
 
-void Database::printProducts()
+void Database::printProducts(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] printProducts";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	const std::vector<Product> products = getProducts();
+	const std::vector<Product> products = getProducts(conn);
 
 	CROW_LOG_INFO << "[LIST] Products: ";
 	for (const auto product : products)
@@ -2795,10 +2901,10 @@ void Database::printProducts()
 	}
 }
 
-void Database::printOrders()
+void Database::printOrders(Conn& conn)
 {
 	/*
-	CROW_LOG_DEBUG << "[DB] printOrders";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	const std::vector<Order> orders = getOrders();
 
@@ -2808,11 +2914,11 @@ void Database::printOrders()
 	}*/
 }
 
-void Database::printIngredients()
+void Database::printIngredients(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] printIngredients";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	const std::vector<Ingredient> ingredients = getIngredients();
+	const std::vector<Ingredient> ingredients = getIngredients(conn);
 
 	CROW_LOG_INFO << "[LIST] Ingredients: ";
 	for (const auto ingredient : ingredients)
@@ -2821,11 +2927,11 @@ void Database::printIngredients()
 	}
 }
 
-void Database::printAllergens()
+void Database::printAllergens(Conn& conn)
 {
-	CROW_LOG_DEBUG << "[DB] printAllergens";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	const std::vector<Allergen> allergens = getAllergens();
+	const std::vector<Allergen> allergens = getAllergens(conn);
 
 	CROW_LOG_INFO << "[LIST] Allergens: ";
 	for (const auto allergen : allergens)
@@ -2836,28 +2942,29 @@ void Database::printAllergens()
 
 
 // Change
-void Database::moveTable(const int& current_n_table,
+void Database::moveTable(Conn& conn, 
+						 const int& current_n_table,
 						 const int& new_n_table)
 {
-	CROW_LOG_DEBUG << "[DB] moveTable";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT * FROM tables WHERE n_table = " << current_n_table;
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT * FROM tables WHERE n_table = " << current_n_table;
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		res->next();
 		const int current_table_id = res->getInt("table_id");
 
-		query << "SELECT table_id, bill FROM tables WHERE n_table = " << new_n_table;
-		res.reset((stmt->executeQuery(query.str())));
-		query.str("");
+		ss << "SELECT table_id, bill FROM tables WHERE n_table = " << new_n_table;
+		res = executeStmt(conn, ss.str());
+		ss.str("");
 
-		const Table curr_table = getTableByNumber(current_n_table);
-		const Table new_table = getTableByNumber(new_n_table);
+		const Table curr_table = getTableByNumber(conn, current_n_table);
+		const Table new_table = getTableByNumber(conn, new_n_table);
 
 		// If theres an existing table
 		if (res->next())
@@ -2865,9 +2972,9 @@ void Database::moveTable(const int& current_n_table,
 			 const int new_table_id = res->getInt("table_id");
 			 int new_table_bill = res->getInt("bill");
 
-			query << "SELECT product_id, amount FROM tableproduct WHERE table_id =" << current_table_id;
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT product_id, amount FROM tableproduct WHERE table_id =" << current_table_id;
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			// For each product of current table
 			while (res->next())
@@ -2875,9 +2982,9 @@ void Database::moveTable(const int& current_n_table,
 				const int current_table_product_amount = res->getInt("amount");
 				const int current_table_product_id = res->getInt("product_id");
 
-				query << "SELECT * FROM tableproduct WHERE table_id =" << new_table_id << " AND product_id = " << current_table_product_id;
-				std::unique_ptr<sql::ResultSet> res2( stmt->executeQuery(query.str()));
-				query.str("");
+				ss << "SELECT * FROM tableproduct WHERE table_id =" << new_table_id << " AND product_id = " << current_table_product_id;
+				auto res2 = executeStmt(conn, ss.str());
+				ss.str("");
 
 				// If product_id matches between current and new table. Update amount and new table bill
 				if (res2->next())
@@ -2885,9 +2992,9 @@ void Database::moveTable(const int& current_n_table,
 					int new_table_product_id = res2->getInt("product_id");
 					int new_table_amount = res2->getInt("amount");
 
-					query << "SELECT * FROM tableproduct WHERE table_id =" << current_table_id << " AND product_id = " << current_table_product_id;
-					std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT * FROM tableproduct WHERE table_id =" << current_table_id << " AND product_id = " << current_table_product_id;
+					auto res3 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					if (res3->next())
 					{
@@ -2895,15 +3002,15 @@ void Database::moveTable(const int& current_n_table,
 						new_table_amount += current_table_amount;
 
 						// Update new table product amount
-						pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
-						pstmt->setInt(1, new_table_amount);
-						pstmt->setInt(2, new_table_id);
-						pstmt->setInt(3, current_table_product_id);
-						pstmt->execute();
+						auto pstmt1 = prepareStatement(conn, "UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+						pstmt1->setInt(1, new_table_amount);
+						pstmt1->setInt(2, new_table_id);
+						pstmt1->setInt(3, current_table_product_id);
+						pstmt1->execute();
 
-						query << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
-						res3.reset((stmt->executeQuery(query.str())));
-						query.str("");
+						ss << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
+						res3 = executeStmt(conn, ss.str());
+						ss.str("");
 
 						if (res3->next())
 						{
@@ -2911,47 +3018,47 @@ void Database::moveTable(const int& current_n_table,
 							new_table_bill += current_table_product_price * current_table_product_amount;
 
 							// Update new table bill
-							pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
-							pstmt->setInt(1, new_table_bill);
-							pstmt->setInt(2, new_table_id);
-							pstmt->execute();
+							auto pstmt2 = prepareStatement(conn, "UPDATE tables SET bill = ? WHERE table_id = ?");
+							pstmt2->setInt(1, new_table_bill);
+							pstmt2->setInt(2, new_table_id);
+							pstmt2->execute();
 
 							// Delete the current table tableproduct row
-							pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ?");
-							pstmt->setInt(1, current_table_id);
-							pstmt->setInt(2, current_table_product_id);
-							pstmt->execute();
+							auto pstmt3 = prepareStatement(conn, "DELETE FROM tableproduct WHERE table_id = ? AND product_id = ?");
+							pstmt3->setInt(1, current_table_id);
+							pstmt3->setInt(2, current_table_product_id);
+							pstmt3->execute();
 						}
 					}
 				}
 				else
 				{ // If product doesnt match, change its table_id and update table bill
-					pstmt = con->prepareStatement("UPDATE tableproduct SET table_id = ? WHERE table_id = ? AND product_id = ?");
-					pstmt->setInt(1, new_table_id);
-					pstmt->setInt(2, current_table_id);
-					pstmt->setInt(3, current_table_product_id);
-					pstmt->execute();
+					auto pstmt1 = prepareStatement(conn, "UPDATE tableproduct SET table_id = ? WHERE table_id = ? AND product_id = ?");
+					pstmt1->setInt(1, new_table_id);
+					pstmt1->setInt(2, current_table_id);
+					pstmt1->setInt(3, current_table_product_id);
+					pstmt1->execute();
 
-					query << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
-					std::unique_ptr<sql::ResultSet> res3(stmt->executeQuery(query.str()));
-					query.str("");
+					ss << "SELECT price FROM products WHERE product_id =" << current_table_product_id;
+					auto res3 = executeStmt(conn, ss.str());
+					ss.str("");
 
 					res3->next();
 					int current_table_product_price = res3->getDouble("price");
 					new_table_bill += (current_table_product_price * current_table_product_amount);
 
-					pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
-					pstmt->setInt(1, new_table_bill);
-					pstmt->setInt(2, new_table_id);
-					pstmt->execute();
+					auto pstmt2 = prepareStatement(conn, "UPDATE tables SET bill = ? WHERE table_id = ?");
+					pstmt2->setInt(1, new_table_bill);
+					pstmt2->setInt(2, new_table_id);
+					pstmt2->execute();
 				}
 			}
 
-			removeTable(curr_table);
+			removeTable(conn, curr_table);
 		}
 		else
 		{ // If there is no existing table just change n_table
-			pstmt = con->prepareStatement("UPDATE tables SET n_table = ? WHERE table_id = ?");
+			auto pstmt = prepareStatement(conn, "UPDATE tables SET n_table = ? WHERE table_id = ?");
 			pstmt->setInt(1, new_n_table);
 			pstmt->setInt(2, current_table_id);
 			pstmt->execute();
@@ -2963,21 +3070,22 @@ void Database::moveTable(const int& current_n_table,
 	}
 }
 
-void Database::changeTableProductAmount(const Table& table,
+void Database::changeTableProductAmount(Conn& conn, 
+										const Table& table,
 										const Product& product,
 										const int& new_amount)
 {
-	CROW_LOG_DEBUG << "[DB] changeTableProductAmount";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT table_id, bill, discount FROM tables WHERE n_table = " << table.n_table;
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT table_id, bill, discount FROM tables WHERE n_table = " << table.n_table;
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -2985,17 +3093,17 @@ void Database::changeTableProductAmount(const Table& table,
 			const double bill = res->getDouble("bill");
 			const double discount = res->getDouble("discount");
 
-			query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int product_id = res->getInt("product_id");
 
-				query << "SELECT amount FROM tableproduct WHERE table_id = '" << table_id << "' AND product_id = '" << product_id << "'";
-				res.reset((stmt->executeQuery(query.str())));
-				query.str("");
+				ss << "SELECT amount FROM tableproduct WHERE table_id = '" << table_id << "' AND product_id = '" << product_id << "'";
+				res = executeStmt(conn, ss.str());
+				ss.str("");
 
 				if (res->next())
 				{
@@ -3005,20 +3113,20 @@ void Database::changeTableProductAmount(const Table& table,
 					{
 						const double new_bill = bill + product.price * (new_amount - amount) * (1.0 - discount);
 
-						pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE n_table = ?");
-						pstmt->setDouble(1, new_bill);
-						pstmt->setInt(2, table.n_table);
-						pstmt->execute();
+						auto pstmt1 = prepareStatement(conn, "UPDATE tables SET bill = ? WHERE n_table = ?");
+						pstmt1->setDouble(1, new_bill);
+						pstmt1->setInt(2, table.n_table);
+						pstmt1->execute();
 
-						pstmt = con->prepareStatement("UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
-						pstmt->setInt(1, new_amount);
-						pstmt->setInt(2, table_id);
-						pstmt->setInt(3, product_id);
-						pstmt->execute();
+						auto pstmt2 = prepareStatement(conn, "UPDATE tableproduct SET amount = ? WHERE table_id = ? AND product_id = ?");
+						pstmt2->setInt(1, new_amount);
+						pstmt2->setInt(2, table_id);
+						pstmt2->setInt(3, product_id);
+						pstmt2->execute();
 					}
 					else
 					{
-						removeTableProduct(table.n_table, product, amount);
+						removeTableProduct(conn, table.n_table, product, amount);
 					}
 				}
 			}
@@ -3032,36 +3140,37 @@ void Database::changeTableProductAmount(const Table& table,
 
 
 // Remove
-void Database::removeTable(const Table& table)
+void Database::removeTable(Conn& conn, 
+						   const Table& table)
 {
-	CROW_LOG_DEBUG << "[DB] removeTable";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		const double bill = table.bill;
 		const double discount = table.discount;
 		const int n_table = table.n_table;
 
-		std::stringstream query;
-		query << "SELECT * FROM tables WHERE n_table = " << table.n_table;
-		std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-		query.str("");
+		std::stringstream ss;
+		ss << "SELECT * FROM tables WHERE n_table = " << table.n_table;
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int table_id = res->getInt("table_id");
 
-			pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ?");
-			pstmt->setInt(1, table_id);
-			pstmt->execute();
+			auto pstmt1 = prepareStatement(conn, "DELETE FROM tableproduct WHERE table_id = ?");
+			pstmt1->setInt(1, table_id);
+			pstmt1->execute();
 
-			pstmt = con->prepareStatement("DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
-			pstmt->setInt(1, n_table);
-			pstmt->setDouble(2, bill);
-			pstmt->setDouble(3, discount);
-			pstmt->execute();
+			auto pstmt2 = prepareStatement(conn, "DELETE FROM tables WHERE n_table = ? AND bill = ? AND discount = ?");
+			pstmt2->setInt(1, n_table);
+			pstmt2->setDouble(2, bill);
+			pstmt2->setDouble(3, discount);
+			pstmt2->execute();
 
 			CROW_LOG_INFO << "[REMOVED] Table with n_table " << n_table <<
 				", bill " << bill <<
@@ -3074,15 +3183,16 @@ void Database::removeTable(const Table& table)
 	}
 }
 
-void Database::removeEmployee(const Employee& employee)
+void Database::removeEmployee(Conn& conn, 
+							  const Employee& employee)
 {
-	CROW_LOG_DEBUG << "[DB] removeEmployee";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		pstmt = con->prepareStatement("DELETE FROM employees WHERE firstName = ? AND lastName = ? AND level = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM employees WHERE firstName = ? AND lastName = ? AND level = ?");
 		pstmt->setString(1, employee.firstName);
 		pstmt->setString(2, employee.lastName);
 		pstmt->setInt(3, employee.level);
@@ -3097,19 +3207,20 @@ void Database::removeEmployee(const Employee& employee)
 	}
 }
 
-void Database::removeProduct(const Product& product)
+void Database::removeProduct(Conn& conn, 
+							 const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] removeProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		std::string name = product.name;
 		const double price = product.price;
 		const int page = product.page;
 
-		pstmt = con->prepareStatement("DELETE FROM products WHERE name = ? AND price = ? AND page = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM products WHERE name = ? AND price = ? AND page = ?");
 		pstmt->setString(1, name);
 		pstmt->setDouble(2, price);
 		pstmt->setDouble(3, page);
@@ -3125,19 +3236,20 @@ void Database::removeProduct(const Product& product)
 	}
 }
 
-void Database::removeTableProduct(const int& n_table,
+void Database::removeTableProduct(Conn& conn, 
+								  const int& n_table,
 								  const Product& product,
 								  const int& times)
 {
-	CROW_LOG_DEBUG << "[DB] remoTableProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT * FROM tables WHERE n_table = " << n_table;
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT * FROM tables WHERE n_table = " << n_table;
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
@@ -3145,27 +3257,27 @@ void Database::removeTableProduct(const int& n_table,
 			const double bill = res->getDouble("bill");
 			const double discount = res->getDouble("discount");
 
-			query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = " << product.price;
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = " << product.price;
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int product_id = res->getInt("product_id");
 
-				pstmt = con->prepareStatement("DELETE FROM tableproduct WHERE table_id = ? AND product_id = ? AND details = ?");
-				pstmt->setInt(1, table_id);
-				pstmt->setInt(2, product_id);
-				pstmt->setString(3, product.details);
-				pstmt->execute();
+				auto pstmt1 = prepareStatement(conn, "DELETE FROM tableproduct WHERE table_id = ? AND product_id = ? AND details = ?");
+				pstmt1->setInt(1, table_id);
+				pstmt1->setInt(2, product_id);
+				pstmt1->setString(3, product.details);
+				pstmt1->execute();
 
 				double new_bill = bill - (product.price * times * (1.0 - discount));
 				if (new_bill < 0) new_bill = 0;
 
-				pstmt = con->prepareStatement("UPDATE tables SET bill = ? WHERE table_id = ?");
-				pstmt->setDouble(1, new_bill);
-				pstmt->setInt(2, table_id);
-				pstmt->execute();
+				auto pstmt2 = prepareStatement(conn, "UPDATE tables SET bill = ? WHERE table_id = ?");
+				pstmt2->setDouble(1, new_bill);
+				pstmt2->setInt(2, table_id);
+				pstmt2->execute();
 			}
 		}
 
@@ -3179,32 +3291,33 @@ void Database::removeTableProduct(const int& n_table,
 	}
 }
 
-void Database::removeProductIngredient(const Product& product,
+void Database::removeProductIngredient(Conn& conn, 
+									   const Product& product,
 									   const Ingredient& ingredient)
 {
-	CROW_LOG_DEBUG << "[DB] removeProductIngredient";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::stringstream query;
+		std::stringstream ss;
 
-		query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-		std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.str()));
-		query.str("");
+		ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+		auto res = executeStmt(conn, ss.str());
+		ss.str("");
 
 		if (res->next())
 		{
 			const int product_id = res->getInt("product_id");
 
-			query << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
-			res.reset((stmt->executeQuery(query.str())));
-			query.str("");
+			ss << "SELECT ingredient_id FROM ingredients WHERE name = '" << ingredient.name << "'";
+			res = executeStmt(conn, ss.str());
+			ss.str("");
 
 			if (res->next())
 			{
 				const int ingredient_id = res->getInt("ingredient_id");
 
-				pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ? AND ingredient_id = ?");
+				auto pstmt = prepareStatement(conn, "DELETE FROM productingredient WHERE product_id = ? AND ingredient_id = ?");
 				pstmt->setInt(1, product_id);
 				pstmt->setInt(2, ingredient_id);
 				pstmt->execute();
@@ -3220,60 +3333,63 @@ void Database::removeProductIngredient(const Product& product,
 	}
 }
 
-void Database::removeProductIngredients(const Product& product)
+void Database::removeProductIngredients(Conn& conn, 
+										const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] remoProductIngredients";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	std::unique_lock<std::mutex> lock(mutex);
+	////std::unique_lock<std::shared_mutex> lock(mutex);
 
-	std::stringstream query;
+	std::stringstream ss;
 
-	query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-	std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-	query.str("");
+	ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+	auto res = executeStmt(conn, ss.str());
+	ss.str("");
 
 	if (res->next())
 	{
 		const int product_id = res->getInt("product_id");
 
-		pstmt = con->prepareStatement("DELETE FROM productingredient WHERE product_id = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM productingredient WHERE product_id = ?");
 		pstmt->setInt(1, product_id);
 		pstmt->execute();
 	}
 }
 
-void Database::removeProductAllergens(const Product& product)
+void Database::removeProductAllergens(Conn& conn, 
+									  const Product& product)
 {
-	CROW_LOG_DEBUG << "[DB] removeProductAllergens";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
-	std::unique_lock<std::mutex> lock(mutex);
+	////std::unique_lock<std::shared_mutex> lock(mutex);
 
-	std::stringstream query;
+	std::stringstream ss;
 
-	query << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
-	std::unique_ptr<sql::ResultSet> res( stmt->executeQuery(query.str()));
-	query.str("");
+	ss << "SELECT product_id FROM products WHERE name = '" << product.name << "' AND price = '" << product.price << "'";
+	auto res = executeStmt(conn, ss.str());
+	ss.str("");
 
 	if (res->next())
 	{
 		const int product_id = res->getInt("product_id");
 
-		pstmt = con->prepareStatement("DELETE FROM productallergen WHERE product_id = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM productallergen WHERE product_id = ?");
 		pstmt->setInt(1, product_id);
 		pstmt->execute();
 	}
 }
 
-void Database::removeOrder(const Order& order)
+void Database::removeOrder(Conn& conn, 
+						   const Order& order)
 {
 	/*
-	CROW_LOG_DEBUG << "[DB] removeOrder";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try {
 		std::string time = order.time;
 		std::string message = order.message;
 
-		pstmt = con->prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
+		auto pstmt = prepareStatement("DELETE FROM orders WHERE time = ? AND message = ?");
 		pstmt->setString(1, time);
 		pstmt->setString(2, message);
 		pstmt->execute();
@@ -3287,17 +3403,18 @@ void Database::removeOrder(const Order& order)
 	}*/
 }
 
-void Database::removeIngredient(const Ingredient& ingredient)
+void Database::removeIngredient(Conn& conn, 
+								const Ingredient& ingredient)
 {
-	CROW_LOG_DEBUG << "[DB] removeIngredient";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		std::string name = ingredient.name;
 
-		pstmt = con->prepareStatement("DELETE FROM ingredients WHERE name = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM ingredients WHERE name = ?");
 		pstmt->setString(1, name);
 		pstmt->execute();
 
@@ -3309,17 +3426,18 @@ void Database::removeIngredient(const Ingredient& ingredient)
 	}
 }
 
-void Database::removeAllergen(const Allergen& allergen)
+void Database::removeAllergen(Conn& conn, 
+							  const Allergen& allergen)
 {
-	CROW_LOG_DEBUG << "[DB] removeAllergen";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		std::string name = allergen.name;
 
-		pstmt = con->prepareStatement("DELETE FROM allergens WHERE name = ?");
+		auto pstmt = prepareStatement(conn, "DELETE FROM allergens WHERE name = ?");
 		pstmt->setString(1, name);
 		pstmt->execute();
 
@@ -3333,14 +3451,15 @@ void Database::removeAllergen(const Allergen& allergen)
 
 
 // Modify
-void Database::modifyProduct(const Product& oldProduct,
+void Database::modifyProduct(Conn& conn, 
+							 const Product& oldProduct,
 							 const Product& newProduct)
 {
-	CROW_LOG_DEBUG << "[DB] modifyProduct";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
 		const std::string selectedElementName = oldProduct.name;
 		const double selectedElementPrice = oldProduct.price;
@@ -3352,10 +3471,10 @@ void Database::modifyProduct(const Product& oldProduct,
 		const double newPrice = newProduct.price;
 		const std::string newColor = newProduct.color;
 
-		std::stringstream query;
-		query << "UPDATE products SET name = ?, price = ?, color = ? WHERE name = '" << selectedElementName << "' AND price = '" << selectedElementPrice << "' AND page = '" << selectedElementPage << "'";
-		pstmt = con->prepareStatement(query.str());
-		query.str("");
+		std::stringstream ss;
+		ss << "UPDATE products SET name = ?, price = ?, color = ? WHERE name = '" << selectedElementName << "' AND price = '" << selectedElementPrice << "' AND page = '" << selectedElementPage << "'";
+		auto pstmt = prepareStatement(conn, ss.str());
+		ss.str("");
 		pstmt->setString(1, newName);
 		pstmt->setDouble(2, newPrice);
 		pstmt->setString(3, newColor);
@@ -3367,18 +3486,20 @@ void Database::modifyProduct(const Product& oldProduct,
 	}
 }
 
-void Database::changeNumClients(const Table& table, const int& n_clients)
+void Database::changeNumClients(Conn& conn, 
+								const Table& table,
+								const int& n_clients)
 {
-	CROW_LOG_DEBUG << "[DB] changeNumClients";
+	CROW_LOG_DEBUG << "[DB] " << __func__;
 
 	try
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		////std::unique_lock<std::shared_mutex> lock(mutex);
 
-		std::stringstream query;
-		query << "UPDATE tables SET n_clients = ? WHERE n_table = ?";
-		pstmt = con->prepareStatement(query.str());
-		query.str("");
+		std::stringstream ss;
+		ss << "UPDATE tables SET n_clients = ? WHERE n_table = ?";
+		auto pstmt = prepareStatement(conn, ss.str());
+		ss.str("");
 		pstmt->setInt(1, n_clients);
 		pstmt->setInt(2, table.n_table);
 		pstmt->execute();

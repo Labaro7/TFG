@@ -4,7 +4,6 @@ let currentButton = document.getElementById("productsPagesButton" + 1);
 
 // First row
 const n_clients = document.getElementById("numberOfClients");
-const n_table = document.getElementById("numTable");
 
 // Third row
 const multiplier_array = [1, 2, 5];
@@ -620,8 +619,8 @@ function clearDisplay() {
 }
 
 function acceptMoveTableMenu() {
+    const n_table = document.getElementById("numTable");
     const api_moveTable = "/moveTable";
-
     let _current_n_table = parseInt(n_table.textContent.substr(7));
     let _new_n_table = parseInt(document.getElementById("tableInput").value);
     let data = {
@@ -664,6 +663,7 @@ function cancelMoveTableMenu() {
 }
 
 function moveTable() {
+    const n_table = document.getElementById("numTable");
     const current_n_table = parseInt(n_table.textContent.substr(7));
     const new_n_table = parseInt(document.getElementById("tableInput").value);
 
@@ -736,6 +736,7 @@ function formatDate(date) {
 }
 
 function payTable() {
+    const n_table = document.getElementById("numTable");
     let billPrice = price.textContent.slice(0, -2);
     const paidPrice = document.getElementById("paidInput").value;
 
@@ -744,15 +745,21 @@ function payTable() {
     if (paidPrice === "") paidPrice = 0.0;
 
     let data = {
-        n_table: n_table.textContent.substr(7),
+        n_table: parseInt(n_table.textContent.substr(7)),
         n_clients: parseInt(n_clients.textContent),
         ticket: current_ticket,
-        bill: billPrice,
-        paid: paidPrice,
+        bill: parseFloat(billPrice),
+        paid: parseFloat(paidPrice),
         discount: 0.0,
         method: "Card",
         date: formatDate(new Date())
     }
+
+    console.log("DATA", data);
+
+    //debugger;
+
+
     if (getCookie("employee_name") != null) {
         data.employee = getCookie("employee_name")
     }
@@ -809,6 +816,8 @@ function cancelDeleteTableWarningMenu() {
 ;}
 
 function deleteTable() {
+    const n_table = document.getElementById("numTable");
+
     let data = {
         n_table: n_table.textContent.substr(7),
         employee: "Adri"

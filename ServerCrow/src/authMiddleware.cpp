@@ -9,6 +9,7 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
 
 	if (cts::AUTH_NEEDED)
 	{
+		std::cout << "AUTH RECEIVED: " << req.url << std::endl;
 		const auto cookieHeader = req.get_header_value(cts::SESSION_TOKEN_NAME);
 		if (!cookieHeader.empty())
 		{
@@ -20,11 +21,12 @@ void AuthMiddleware::before_handle(crow::request& req, crow::response& res, cont
 				const std::string session_token = cookieHeader.substr(pos, cts::SESSION_TOKEN_LENGTH);
 				CROW_LOG_INFO << "Received session token: " << session_token;
 
-				if (!server.db()->getEmployeeBySessionToken(session_token).isEmpty()) authenticated = true;
+				auto conn = server.db()->getConnection();
+				if (!server.db()->getEmployeeBySessionToken(conn, session_token).isEmpty()) authenticated = true;
 			}
 		}
 
-		if (!authenticated && req.url != "/login" && req.url != "/static/login.css" && req.url != "/static/login.js" && req.url != "/static/favicon.png")
+		if (!authenticated && req.url != "/login" && req.url != "/static/login.css" && req.url != "/static/login.js" && req.url != "/static/favicon.png" && req.url != "/switchAuth" && req.url.substr(0,8) != "/static/")
 		{
 			req.url = "/login";
 

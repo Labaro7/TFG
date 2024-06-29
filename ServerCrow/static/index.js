@@ -5,6 +5,16 @@ const currentTablesPage = document.getElementById("current-tables-page");
 
 init();
 
+function logout() {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        const [name] = cookie.split("=");
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
+
+    window.location.replace('/');
+}
+
 function init() {
     let tablePrices = document.getElementsByClassName("tablePrice");
 

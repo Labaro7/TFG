@@ -10,24 +10,25 @@
 </head>
 
 <body>
-    <div class="login-container">
-        <div id="login">
-            <svg xmlns="http://www.w3.org/2000/svg" width="80px" height="80px" viewBox="0 0 24 24" fill="none">
-                <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <h2>Login</h2>
+    <div id="brand">
+        <img id="brandImage" src="\static\images\dinet_logo_light.png">
+        <div id="brandDescription">
+            A web-based business management system
         </div>
+    </div>
 
-        <form>
-            <label for="username">Username</label>
+    <div class="login-container">
+        <div id="form">
+            <label id="usernameText" for="username">Username</label>
             <input type="text" id="username" required>
 
-            <label for="password">Password</label>
+            <label id="passwordText" for="password">Password</label>
             <input type="password" id="password" required>
 
-            <button onclick="login()">Login</button>
-        </form>
+            <button id="loginButton" onclick="login()">
+                Login
+            </button>
+        </div>
     </div>
 
     <script src="..\static\login.js"></script>

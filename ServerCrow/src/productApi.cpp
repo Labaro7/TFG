@@ -43,6 +43,28 @@ std::string ProductAPI::extractURISegment(std::string& uri)
 	return direction;
 }
 
+crow::json::wvalue ProductAPI::buildProductsJSON(const std::unordered_map<int, Product>& products)
+{
+	crow::json::wvalue::list data;
+
+	// Sort by most sold
+
+	for (const auto& product : products)
+	{
+		crow::json::wvalue products_json;
+		products_json["id"] = product.first;
+		products_json["name"] = product.second.name;
+		products_json["price"] = product.second.price;
+		products_json["color"] = product.second.color;
+		products_json["page"] = product.second.page;
+		products_json["deployable"] = product.second.deployable;
+
+		data.push_back(products_json);
+	}
+
+	return data;
+}
+
 crow::json::wvalue ProductAPI::buildOrderedProductsJSON(const std::unordered_map<int, OrderedProduct>& products)
 {
 	crow::json::wvalue::list data;
@@ -92,7 +114,7 @@ bool isNumeric(const std::string& str)
 	return true;
 }
 
-crow::json::wvalue ProductAPI::processRequest(std::string& uri)
+crow::json::wvalue ProductAPI::processRequest(Conn& conn, std::string& uri)
 {
 	crow::json::wvalue data;
 
@@ -108,7 +130,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		mode == cts::MYSQL_YEAR)
 	{
 		const std::string& date = extractURISegment(uri);
-		const std::unordered_map<int, OrderedProduct>& products = database->getOrderedProductsByDate(date, mode);
+		const std::unordered_map<int, OrderedProduct>& products = database->getOrderedProductsByDate(conn, date, mode);
 
 		if (!products.empty())
 		{
@@ -120,7 +142,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		if (isNumeric(uri))
 		{
 			const int product_id = std::stoi(extractURISegment(uri));
-			OrderedProduct product = database->getOrderedProductById(product_id);
+			OrderedProduct product = database->getOrderedProductById(conn, product_id);
 			std::unordered_map<int, OrderedProduct> products;
 
 			if (!product.isEmpty())
@@ -133,7 +155,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 	else if (mode == "NAME")
 	{
 		const std::string product_name = extractURISegment(uri);
-		OrderedProduct product = database->getOrderedProductByName(product_name);
+		OrderedProduct product = database->getOrderedProductByName(conn, product_name);
 		std::unordered_map<int, OrderedProduct> products;
 
 		if (!product.isEmpty())
@@ -147,7 +169,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		if (isNumeric(uri))
 		{
 			const int page = std::stoi(extractURISegment(uri));
-			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPage(page);
+			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPage(conn, page);
 
 			if (!products.empty())
 			{
@@ -158,7 +180,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 	else if (mode == "MENU")
 	{
 		const std::string menu = extractURISegment(uri);
-		std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByMenu(menu);
+		std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByMenu(conn, menu);
 
 		if (!products.empty())
 		{
@@ -170,7 +192,7 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		try
 		{
 			const double price = std::stod(extractURISegment(uri));
-			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPrice(price);
+			std::unordered_map<int, OrderedProduct> products = database->getOrderedProductsByPrice(conn, price);
 
 			if (!products.empty())
 			{
@@ -184,11 +206,11 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 	}
 	else if (mode == "ALL")
 	{
-		std::unordered_map<int, OrderedProduct> products = database->getOrderedProducts();
+		std::unordered_map<int, Product> products = database->getProducts2(conn);
 
 		if (!products.empty())
 		{
-			data = buildOrderedProductsJSON(products);
+			data = buildProductsJSON(products);
 		}
 	}
 	else if(mode == "TABLE")
@@ -197,12 +219,12 @@ crow::json::wvalue ProductAPI::processRequest(std::string& uri)
 		{
 			const int n_table = std::stoi(uri);
 
-			data = buildOrderedProductsJSON(database->getTableByNumber(n_table));
+			data = buildOrderedProductsJSON(database->getTableByNumber(conn, n_table));
 		}
 	}
 	else
 	{
-		std::unordered_map<int, OrderedProduct> products = database->getOrderedProducts();
+		std::unordered_map<int, OrderedProduct> products = database->getOrderedProducts(conn);
 
 		if (!products.empty())
 		{

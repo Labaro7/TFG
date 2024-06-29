@@ -5,13 +5,6 @@ DatabaseManager::DatabaseManager()
     currentDatabase = std::make_shared<Database>();
 }
 
-DatabaseManager& DatabaseManager::getInstance()
-{
-    static DatabaseManager dbManager;
-
-    return dbManager;
-}
-
 std::string DatabaseManager::getDatabases()
 {
     std::stringstream ss;
