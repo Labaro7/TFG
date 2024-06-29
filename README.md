@@ -4,9 +4,9 @@
   <img src="https://github.com/Labaro7/TFG/assets/59017230/8d51efaa-4db7-4b3e-a706-5bdcd5d6deb7" width="50%">
 </div></br>
 
-DINET is a web-based system to manage a business. It is mainly focused on hospitality businesses (restaurants, bars, pubs, etc).
+DINET is a web-based business management system. It is mainly focused on hospitality businesses (restaurants, bars, pubs, etc) but it has the potential to be multipurpose.
 
-This is my Final Degree Project (TFG in Spanish).
+This is my Bachelor´s Degree Final Project (Trabajo de Fin de Grado in Spanish).
 
 The project manages the following aspects:
   - Web interface for the employees operations.
