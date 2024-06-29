@@ -10,10 +10,11 @@ This is my Final Degree Project (TFG in Spanish).
 
 The project manages the following aspects:
   - Web interface for the employees operations.
-  - Employees data (number of worked hours, number of orders taken, etc).
-  - Products, ingredients and allergens.
-  - Clients' orders and clients' tables control.
-  - Visualization of statistics.
+  - Web server to handle requests made by the employees.
+  - Customizable products, ingredients and allergens.
+  - Control over the orders of the clients and their respective tables.
+  - Employees' data.
+  - Visualization of statistics: number of orders, popularity of products, etc.
 
 ## 📷 Screenshots
 <div align="center">
