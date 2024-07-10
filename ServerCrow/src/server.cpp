@@ -421,10 +421,7 @@ std::vector<Table> Server::getTables(Conn& conn)
 
 Table Server::getTableByNumber(Conn& conn, int n_table)
 {
-	std::cout << "C1" << std::endl;
-
 	return db()->getTableByNumber(conn, n_table);
-	std::cout << "C2" << std::endl;
 }
 
 std::string Server::getLastModifiedFromTable(Conn& conn, 

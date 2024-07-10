@@ -64,8 +64,6 @@ int main()
 				 res.body = "Error reading HTML template";
 			 }
 
-			 server.broadcastMessage("This is a broadcast message");
-
 			 res.set_header("Content-Type", "text/html");
 			 res.code = 200;
 			 res.write(modifiedHTML);
@@ -693,6 +691,18 @@ int main()
 				{
 					server.handleUnsubscription(&conn);
 				});
+
+		CROW_ROUTE(app, "/broadcastOrder")
+			.methods("POST"_method)
+			([&server](const crow::request& req, crow::response& res)
+			 {
+				 const std::string message = req.body;
+
+				 server.broadcastMessage(message);
+
+				 res.code = 200;
+				 res.end();
+			 });
 
 	// App methods chain
 	app.bindaddr(cts::SERVER_IP)

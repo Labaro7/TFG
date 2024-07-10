@@ -88,7 +88,7 @@ std::string insertDataInPlaceHolders(std::unique_ptr<sql::Connection>& conn,
 	}
 
 	// 1. HTML with the table number
-	ss << "<div id='numTable'>Table: " << n_table << "</div>" << std::endl;
+	ss << "<div id='numTable' onclick='openMoveTableMenu()'>Table: " << n_table << "</div>" << std::endl;
 	std::string tableNumberHTML = ss.str();
 	ss.str("");
 

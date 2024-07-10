@@ -1208,3 +1208,36 @@ function selectAllergensTab() {
     if (allergens.children.length > 0 && allergensList.children.length > 0) allergens.style.display = "flex";
     if (allergens.children.length > 0 && allergensList.children.length > 0) allergensList.style.display = "flex";
 }
+
+function broadcastOrder() {
+    const n_table = parseInt((document.getElementById("numTable").textContent).substr(7)); // Use substr(7) to eliminate "Table: "
+
+    const data = {
+        order: current_ticket,
+        added: added_ticket,
+        modified: modified_ticket,
+        deleted: deleted_ticket,
+        n_table: n_table,
+        n_clients: parseInt(n_clients.textContent),
+        employee: getCookie("employee_name")
+    };
+
+    const url = "/broadcastOrder";
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.text())
+        .then(data => {
+            //console.log('Response:', data);
+        })
+        .catch(error => {
+            //console.error('Error:', error);
+        });
+
+    console.log("sent");
+}

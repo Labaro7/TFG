@@ -962,9 +962,7 @@ Table Database::getTableByNumber(Conn& conn,
 
 	try
 	{
-		std::cout << "tab1" << std::endl;
 		std::shared_lock<std::shared_mutex> lock(mutex);
-		std::cout << "tab2" << std::endl;
 
 		std::stringstream ss;
 
